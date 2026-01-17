@@ -1,5 +1,5 @@
 # 📊 Auditoría de Modelos: v3 vs v4
-Actualizado el: 2026-01-17 02:12:22
+Actualizado el: 2026-01-16 23:16:41
 
 ## 🌡️ Alerta de Silenciamiento (Salud del Filtro)
 - ✅ **LOTO**: v4 tiene una tasa de aceptación saludable.
@@ -12,21 +12,21 @@ Actualizado el: 2026-01-17 02:12:22
 |:-------------------------------|-----------------------------:|----------------------------:|------------------------------:|-----------------------:|
 | ('LOTO', 'oraculo_neural_v3')  |                        1.67  |                        1.67 |                             1 |                  2     |
 | ('LOTO', 'oraculo_neural_v4')  |                        0     |                        0    |                             1 |                  0     |
-| ('LOTO3', 'oraculo_neural_v3') |                        5.238 |                       33.33 |                            14 |                  0.357 |
-| ('LOTO3', 'oraculo_neural_v4') |                       19.999 |                       66.67 |                            22 |                  0.727 |
+| ('LOTO3', 'oraculo_neural_v3') |                        6.666 |                       33.33 |                            16 |                  0.375 |
+| ('LOTO3', 'oraculo_neural_v4') |                       21.11  |                       66.67 |                            24 |                  0.75  |
 | ('LOTO4', 'oraculo_neural_v3') |                        1.538 |                       20    |                            13 |                  1     |
 | ('LOTO4', 'oraculo_neural_v4') |                        0     |                        0    |                            13 |                  0.077 |
-| ('RACHA', 'oraculo_neural_v3') |                       15     |                       60    |                            15 |                  4.8   |
-| ('RACHA', 'oraculo_neural_v4') |                       13     |                       15    |                            15 |                  4.467 |
+| ('RACHA', 'oraculo_neural_v3') |                       15     |                       60    |                            16 |                  4.75  |
+| ('RACHA', 'oraculo_neural_v4') |                       14.688 |                       40    |                            16 |                  4.375 |
 
 ## 🏆 Top 5 Mejores Aciertos (Histórico)
 | juego   | algoritmo         |   sorteo_objetivo |   score_afinidad |   aciertos |
 |:--------|:------------------|------------------:|-----------------:|-----------:|
 | LOTO3   | oraculo_neural_v4 |             23991 |            66.67 |          2 |
 | RACHA   | oraculo_neural_v3 |             10295 |            60    |          2 |
+| RACHA   | oraculo_neural_v4 |             10300 |            40    |          3 |
 | RACHA   | oraculo_neural_v3 |             10296 |            40    |          7 |
-| LOTO3   | oraculo_neural_v4 |             23989 |            33.33 |          1 |
-| LOTO3   | oraculo_neural_v4 |             23989 |            33.33 |          1 |
+| LOTO3   | oraculo_neural_v4 |             23994 |            33.33 |          1 |
 | LOTO3   | oraculo_neural_v4 |             23989 |            33.33 |          1 |
 | LOTO3   | oraculo_neural_v4 |             23989 |            33.33 |          1 |
 | LOTO3   | oraculo_neural_v4 |             23989 |            33.33 |          1 |
