@@ -9,7 +9,8 @@
       "Bash(grep:*)",
       "Bash(tree:*)",
       "Bash(dir /s /b)",
-      "Bash(dir:*)"
+      "Bash(dir:*)",
+      "Bash(done)"
     ]
   }
 }
