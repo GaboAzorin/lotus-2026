@@ -75,6 +75,15 @@ except ImportError:
     MetaLearner = None
     logger.warning("MetaLearner no disponible. Usando pesos lineales.")
 
+try:
+    from loto3_ultra import Loto3UltraEnsemble, ejecutar_loto3_ultra
+    Loto3Ultra = Loto3UltraEnsemble
+    logger.debug("Loto3Ultra importado correctamente")
+except ImportError:
+    Loto3Ultra = None
+    ejecutar_loto3_ultra = None
+    logger.warning("Loto3Ultra no disponible. Usando sistema legacy para LOTO3.")
+
 # --- CONFIGURACIÓN ---
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 DATA_DIR = os.path.join(BASE_DIR, '..', '..', 'data')
@@ -286,6 +295,38 @@ def soñar():
     for game_id, config in MULTIVERSO_CONFIG.items():
         logger.info("-" * 40)
         logger.info(f"UNIVERSO: {game_id}")
+
+        # === LOTO3 ULTRA: Sistema de prediccion avanzado ===
+        if game_id == "LOTO3" and Loto3Ultra is not None:
+            logger.info("Activando LOTO3 ULTRA (Ensemble Avanzado)...")
+            try:
+                # Ejecutar sistema ultra (genera y guarda automaticamente)
+                resultados_ultra = ejecutar_loto3_ultra(guardar=True)
+
+                if resultados_ultra:
+                    # Agregar a nuevas_filas para el registro de simulaciones
+                    for r in resultados_ultra[:5]:  # Top 5
+                        nuevas_filas.append({
+                            'id': base_id + len(nuevas_filas) * 100,
+                            'fecha_generacion': ahora.strftime('%Y-%m-%d %H:%M:%S'),
+                            'fecha_lanzamiento': r['fecha_lanzamiento'],
+                            'juego': 'LOTO3',
+                            'numeros': r['numeros'],
+                            'sorteo_objetivo': r['sorteo_objetivo'],
+                            'estado': 'PENDIENTE',
+                            'aciertos': 0,
+                            'score_afinidad': r['score_afinidad'],
+                            'hora_dia': hora_actual,
+                            'algoritmo': 'loto3_ultra_ensemble',
+                            'nota_especial': r.get('nota_especial', 'ULTRA')
+                        })
+                    logger.info(f"LOTO3 ULTRA: {len(resultados_ultra)} predicciones generadas")
+                    continue  # Saltar el procesamiento legacy para LOTO3
+                else:
+                    logger.warning("LOTO3 ULTRA no genero resultados, usando sistema legacy...")
+            except Exception as e:
+                logger.error(f"Error en LOTO3 ULTRA: {e}. Usando sistema legacy...")
+
         bolsa_pesos_consenso = {}
         top_consenso = []
         objetivo = None

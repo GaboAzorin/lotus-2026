@@ -102,6 +102,7 @@ lotus-2026/
 | `meta_learner.py` | Meta-aprendizaje: optimiza hiperparametros y pesos de algoritmos. |
 | `auto_optimizer.py` | Optimizador automatico de configuraciones. |
 | `loto3_tricore.py` | Predictor especializado para LOTO 3 (numeros posicionales 0-9). |
+| `loto3_ultra.py` | **Sistema avanzado LOTO 3** con todas las mejoras: Markov orden 3, modelos por franja horaria, calibracion de probabilidades, ventanas adaptativas, analisis de ciclos y patrones. |
 | `consolidar_laboratorio.py` | Consolida datos del laboratorio. |
 | `test_oraculo.py` | Tests del oraculo neural. |
 
@@ -221,6 +222,7 @@ pytest tests/
 | `oraculo_neural_v3` | oraculo_neural.py | RandomForest basado en reglamento |
 | `oraculo_neural_v4` | oraculo_neural.py | RandomForest basado en fisica posicional |
 | `consenso` | bot_dreamer.py | Votacion mayoritaria entre algoritmos |
+| `loto3_ultra_ensemble` | loto3_ultra.py | Ensemble avanzado: Markov O3 + RF calibrado + frecuencias + patrones |
 
 ---
 
