@@ -1,0 +1,57 @@
+2026-01-17 15:44:37 | INFO     | === LOG INICIADO: /home/runner/work/lotus-2026/lotus-2026/engine/models/../../logs/bot_dreamer_20260117_154437.log ===
+2026-01-17 15:44:38 | DEBUG    | OraculoNeural importado correctamente
+2026-01-17 15:44:38 | DEBUG    | LotoForense importado correctamente
+2026-01-17 15:44:38 | DEBUG    | MetaLearner importado correctamente
+2026-01-17 15:44:38 | INFO     | ============================================================
+2026-01-17 15:44:38 | INFO     | INICIANDO BOT SOÑADOR: LÓBULOS ESPECIALIZADOS v12.4
+2026-01-17 15:44:38 | INFO     | ============================================================
+2026-01-17 15:44:38 | DEBUG    | MetaLearner activo: True
+2026-01-17 15:44:38 | INFO     | Hora Chile: 2026-01-17 12:44:38 | Día: 5 | Hora: 12
+2026-01-17 15:44:38 | INFO     | Cortex cargado: Rankings y Morfología segmentados por juego.
+2026-01-17 15:44:38 | DEBUG    | Juegos en genoma: ['LOTO', 'LOTO3', 'LOTO4', 'RACHA']
+2026-01-17 15:44:38 | INFO     | ----------------------------------------
+2026-01-17 15:44:38 | INFO     | UNIVERSO: LOTO
+2026-01-17 15:44:38 | DEBUG    | Pesos de confianza: {'consenso_meritocratico_v2': 0.6931471805599453, 'consenso_v1': 0.7929925155296614, 'delta_tactico_v1': 0.6931471805599453, 'forense_biometrico_v1': 0.6931471805599453, 'gaussiano_tactico_v1': 0.6931471805599453, 'markov_chain_v1': 0.6931471805599453, 'oraculo_neural_v3': 0.6931471805599453, 'oraculo_neural_v4': 0.6931471805599453}
+2026-01-17 15:44:38 | INFO     | Objetivo Crononauta: #5375 | Fecha: 18/01/2026 21:00
+2026-01-17 15:44:38 | INFO     |   forense_biometrico: [7, 17, 18, 32, 35, 40] [Score ADN: 6.35]
+2026-01-17 15:44:38 | INFO     |   gaussiano_inteligente: [3, 4, 6, 19, 32, 37] [Score ADN: 5.95]
+2026-01-17 15:44:38 | INFO     |   delta_dna: [8, 19, 21, 22, 28, 31] [Score ADN: 6.35]
+2026-01-17 15:44:38 | INFO     |   markov_chain: [8, 21, 27, 29, 37, 39] [Score ADN: 14.05]
+2026-01-17 15:45:54 | INFO     |   oraculo_neural_v3 (Pool: 82): [7, 8, 19, 32, 38, 41] [OK] [Confianza: 1.83x]
+2026-01-17 15:46:10 | INFO     |   oraculo_neural_v4 (Pool: 100): [1, 13, 15, 29, 33, 35] [OK] [Confianza: 2.11x]
+2026-01-17 15:46:10 | INFO     | Consenso Determinista validado (Score ADN: 14.05)
+2026-01-17 15:46:10 | INFO     | TICKET FINAL: [8, 13, 15, 21, 29, 33] | 🔥 ALTA CONFIANZA (35.38%)
+2026-01-17 15:46:10 | INFO     | ----------------------------------------
+2026-01-17 15:46:10 | INFO     | UNIVERSO: LOTO3
+2026-01-17 15:46:10 | DEBUG    | Pesos de confianza: {'consenso_meritocratico_v2': 3.150596984114906, 'forense_biometrico_v1': 2.990719731730447, 'oraculo_neural_v3': 2.9349201341572337, 'oraculo_neural_v4': 3.2280337626529665}
+2026-01-17 15:46:10 | INFO     | Objetivo Crononauta: #23998 | Fecha: 17/01/2026 14:00
+2026-01-17 15:46:10 | INFO     |   forense_biometrico: [4, 5, 9] [Score ADN: 5.0]
+2026-01-17 15:46:17 | WARNING  | v3 SILENCIADO. Motivos: {'OK': 100}
+2026-01-17 15:46:24 | INFO     |   oraculo_neural_v4 (Pool: 100): [0, 7, 9] [OK] [Confianza: 1.84x]
+2026-01-17 15:46:24 | INFO     | Consenso Determinista validado (Score ADN: 6.1)
+2026-01-17 15:46:24 | INFO     | TICKET FINAL: [0, 7, 9] | 🔥 ALTA CONFIANZA (75.55%)
+2026-01-17 15:46:24 | INFO     | ----------------------------------------
+2026-01-17 15:46:24 | INFO     | UNIVERSO: LOTO4
+2026-01-17 15:46:24 | DEBUG    | Pesos de confianza: {'consenso_meritocratico_v2': 0.6931471805599453, 'forense_biometrico_v1': 0.6931471805599453, 'oraculo_neural_v3': 0.8919980393051105, 'oraculo_neural_v4': 0.6931471805599453}
+2026-01-17 15:46:24 | INFO     | Objetivo Crononauta: #11568 | Fecha: 17/01/2026 14:00
+2026-01-17 15:46:24 | INFO     |   forense_biometrico: [3, 5, 14, 15] [Score ADN: 3.25]
+2026-01-17 15:47:11 | INFO     |   oraculo_neural_v3 (Pool: 91): [5, 7, 8, 15] [OK] [Confianza: 2.22x]
+2026-01-17 15:47:19 | INFO     |   oraculo_neural_v4 (Pool: 100): [1, 5, 9, 16] [OK] [Confianza: 2.38x]
+2026-01-17 15:47:19 | INFO     | Consenso Determinista validado (Score ADN: 3.25)
+2026-01-17 15:47:19 | INFO     | TICKET FINAL: [5, 7, 8, 15] | 🔥 ALTA CONFIANZA (56.33%)
+2026-01-17 15:47:19 | INFO     | ----------------------------------------
+2026-01-17 15:47:19 | INFO     | UNIVERSO: RACHA
+2026-01-17 15:47:19 | DEBUG    | Pesos de confianza: {'consenso_meritocratico_v2': 2.900871992530031, 'forense_biometrico_v1': 2.8148097376737438, 'oraculo_neural_v3': 2.853015971352396, 'oraculo_neural_v4': 2.7806808921371178}
+2026-01-17 15:47:19 | INFO     | Objetivo Crononauta: #10301 | Fecha: 17/01/2026 15:00
+2026-01-17 15:47:19 | INFO     |   forense_biometrico: [1, 4, 5, 6, 7, 11, 12, 14, 19, 20] [Score ADN: 4.9]
+2026-01-17 15:47:58 | INFO     |   oraculo_neural_v3 (Pool: 73): [1, 2, 5, 6, 7, 10, 11, 12, 17, 20] [OK] [Confianza: 2.21x]
+2026-01-17 15:48:37 | INFO     |   oraculo_neural_v4 (Pool: 100): [1, 2, 3, 4, 8, 13, 15, 17, 18, 19] [OK] [Confianza: 2.14x]
+2026-01-17 15:48:37 | INFO     | Consenso Determinista validado (Score ADN: 17.3)
+2026-01-17 15:48:37 | INFO     | TICKET FINAL: [1, 2, 5, 6, 7, 11, 17, 18, 19, 20] | 🔥 ALTA CONFIANZA (62.19%)
+2026-01-17 15:48:37 | INFO     | Forzando sincronización del laboratorio...
+2026-01-17 15:48:37 | INFO     | Dashboard sincronizado correctamente.
+2026-01-17 15:48:37 | INFO     | ============================================================
+2026-01-17 15:48:37 | INFO     | PROCESO DEL SOÑADOR TERMINADO
+2026-01-17 15:48:37 | INFO     | Total predicciones generadas: 18
+2026-01-17 15:48:37 | INFO     | Log guardado en: /home/runner/work/lotus-2026/lotus-2026/engine/models/../../logs/bot_dreamer_20260117_154437.log
+2026-01-17 15:48:37 | INFO     | ============================================================
