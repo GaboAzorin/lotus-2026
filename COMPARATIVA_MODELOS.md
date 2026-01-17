@@ -1,5 +1,5 @@
 # 📊 Auditoría de Modelos: v3 vs v4
-Actualizado el: 2026-01-16 16:59:51
+Actualizado el: 2026-01-17 02:12:22
 
 ## 🌡️ Alerta de Silenciamiento (Salud del Filtro)
 - ✅ **LOTO**: v4 tiene una tasa de aceptación saludable.
@@ -14,8 +14,8 @@ Actualizado el: 2026-01-16 16:59:51
 | ('LOTO', 'oraculo_neural_v4')  |                        0     |                        0    |                             1 |                  0     |
 | ('LOTO3', 'oraculo_neural_v3') |                        5.238 |                       33.33 |                            14 |                  0.357 |
 | ('LOTO3', 'oraculo_neural_v4') |                       19.999 |                       66.67 |                            22 |                  0.727 |
-| ('LOTO4', 'oraculo_neural_v3') |                        1.667 |                       20    |                            12 |                  1     |
-| ('LOTO4', 'oraculo_neural_v4') |                        0     |                        0    |                            12 |                  0     |
+| ('LOTO4', 'oraculo_neural_v3') |                        1.538 |                       20    |                            13 |                  1     |
+| ('LOTO4', 'oraculo_neural_v4') |                        0     |                        0    |                            13 |                  0.077 |
 | ('RACHA', 'oraculo_neural_v3') |                       15     |                       60    |                            15 |                  4.8   |
 | ('RACHA', 'oraculo_neural_v4') |                       13     |                       15    |                            15 |                  4.467 |
 
@@ -30,5 +30,5 @@ Actualizado el: 2026-01-16 16:59:51
 | LOTO3   | oraculo_neural_v4 |             23989 |            33.33 |          1 |
 | LOTO3   | oraculo_neural_v4 |             23989 |            33.33 |          1 |
 | LOTO3   | oraculo_neural_v4 |             23989 |            33.33 |          1 |
-| LOTO3   | oraculo_neural_v4 |             23989 |            33.33 |          1 |
 | LOTO3   | oraculo_neural_v4 |             23990 |            33.33 |          1 |
+| LOTO3   | oraculo_neural_v4 |             23989 |            33.33 |          1 |
