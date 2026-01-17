@@ -456,7 +456,7 @@
 </head>
 <body>
 
-  <div class="container">
+  <main class="container" role="main">
     
     <header>
         <div class="brand">LOTO<span>AI</span></div>
@@ -537,8 +537,8 @@
                 Genera numeros usando distribucion estadistica. <span style="color:var(--danger);">Solo entretenimiento - no garantiza resultados.</span>
             </p>
 
-            <button class="gen-btn" onclick="generateLuckyNumbers()">
-                <i data-lucide="sparkles"></i> Generar Jugada
+            <button type="button" class="gen-btn" onclick="generateLuckyNumbers()" aria-label="Generar números de lotería aleatorios">
+                <i data-lucide="sparkles" aria-hidden="true"></i> Generar Jugada
             </button>
 
             <div id="gen-output" class="gen-result">
@@ -560,12 +560,12 @@
                 Datos: <span id="forensic-last-update" style="color:var(--gold); font-weight:bold;">cargando...</span>
             </p>
 
-            <div class="forensic-modes">
-                <button onclick="generarPrediccionForense('LOTO')" class="btn-mode active">LOTO</button>
-                <button onclick="generarPrediccionForense('RECARGADO')" class="btn-mode">Recargado</button>
-                <button onclick="generarPrediccionForense('REVANCHA')" class="btn-mode">Revancha</button>
-                <button onclick="generarPrediccionForense('DESQUITE')" class="btn-mode">Desquite</button>
-                <button onclick="generarPrediccionForense('JUBILAZO_1')" class="btn-mode">Jubilazo</button>
+            <div class="forensic-modes" role="group" aria-label="Seleccionar modalidad de juego">
+                <button type="button" onclick="generarPrediccionForense('LOTO')" class="btn-mode active" aria-pressed="true">LOTO</button>
+                <button type="button" onclick="generarPrediccionForense('RECARGADO')" class="btn-mode" aria-pressed="false">Recargado</button>
+                <button type="button" onclick="generarPrediccionForense('REVANCHA')" class="btn-mode" aria-pressed="false">Revancha</button>
+                <button type="button" onclick="generarPrediccionForense('DESQUITE')" class="btn-mode" aria-pressed="false">Desquite</button>
+                <button type="button" onclick="generarPrediccionForense('JUBILAZO_1')" class="btn-mode" aria-pressed="false">Jubilazo</button>
             </div>
 
             <div id="forensic-output" style="min-height:0; opacity:1; transition:all 0.3s;">
@@ -574,7 +574,7 @@
         </div>
 
     </div> <div class="search-wrapper">
-      <input type="number" id="search" placeholder="🔍 Buscar sorteo (ej: 5352)..." />
+      <input type="number" id="search" placeholder="Buscar sorteo (ej: 5352)..." aria-label="Buscar sorteo por número" />
     </div>
 
     <div class="hero" id="dashboard">
@@ -598,9 +598,9 @@
     </div>
 
     <div class="table-controls">
-      <label class="toggle-switch">
-        <input type="checkbox" id="filter-winners">
-        <span class="slider"></span>
+      <label class="toggle-switch" id="toggle-winners-label">
+        <input type="checkbox" id="filter-winners" role="switch" aria-checked="false" aria-labelledby="toggle-winners-label">
+        <span class="slider" aria-hidden="true"></span>
         <span class="label-text">Ver solo con ganadores</span>
       </label>
     </div>
@@ -617,16 +617,14 @@
     </div>
 
     <div style="text-align: center; margin-top: 2.5rem; margin-bottom: 1rem;">
-      <a href="web/auditoria.html" style="
+      <a href="web/laboratorio.html" class="nav-link" style="
           display: inline-flex; align-items: center; gap: 10px;
           background: rgba(0, 255, 65, 0.05); border: 1px solid rgba(0, 255, 65, 0.3); color: #00ff41;
           padding: 0.8rem 1.5rem; border-radius: 6px; text-decoration: none;
           font-family: 'JetBrains Mono', monospace; font-weight: 700; font-size: 0.85rem; letter-spacing: 1px;
           transition: all 0.3s ease; text-transform: uppercase;
-      " 
-      onmouseover="this.style.background='rgba(0, 255, 65, 0.15)'; this.style.boxShadow='0 0 15px rgba(0, 255, 65, 0.2)'; this.style.borderColor='#00ff41'" 
-      onmouseout="this.style.background='rgba(0, 255, 65, 0.05)'; this.style.boxShadow='none'; this.style.borderColor='rgba(0, 255, 65, 0.3)'">
-        <i data-lucide="shield-check" style="width: 18px;"></i> ACCEDER A AUDITORÍA DEL SISTEMA
+      ">
+        <i data-lucide="flask-conical" style="width: 18px;" aria-hidden="true"></i> VER LABORATORIO COMPLETO
       </a>
     </div>
 
@@ -681,7 +679,7 @@
             </p>
         </div>
     </footer>
-  </div>
+  </main>
 
   <script>
     lucide.createIcons();

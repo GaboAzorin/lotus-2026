@@ -437,7 +437,7 @@
     </style>
 </head>
 <body>
-    <div class="container">
+    <main class="container" role="main">
         <header>
             <div>
                 <h1>🔬 Laboratorio Multiverso</h1>
@@ -461,12 +461,12 @@
             </div>
         </div>
 
-        <div class="universe-tabs">
-            <button class="tab-btn active" data-game="LOTO" onclick="switchUniverse('LOTO')">LOTO CLÁSICO</button>
-            <button class="tab-btn" data-game="LOTO3" onclick="switchUniverse('LOTO3')">LOTO 3</button>
-            <button class="tab-btn" data-game="LOTO4" onclick="switchUniverse('LOTO4')">LOTO 4</button>
-            <button class="tab-btn" data-game="RACHA" onclick="switchUniverse('RACHA')">RACHA</button>
-        </div>
+        <nav class="universe-tabs" role="tablist" aria-label="Seleccionar tipo de juego">
+            <button type="button" class="tab-btn active" data-game="LOTO" onclick="switchUniverse('LOTO')" role="tab" aria-selected="true" aria-controls="panel-LOTO">LOTO CLÁSICO</button>
+            <button type="button" class="tab-btn" data-game="LOTO3" onclick="switchUniverse('LOTO3')" role="tab" aria-selected="false" aria-controls="panel-LOTO3">LOTO 3</button>
+            <button type="button" class="tab-btn" data-game="LOTO4" onclick="switchUniverse('LOTO4')" role="tab" aria-selected="false" aria-controls="panel-LOTO4">LOTO 4</button>
+            <button type="button" class="tab-btn" data-game="RACHA" onclick="switchUniverse('RACHA')" role="tab" aria-selected="false" aria-controls="panel-RACHA">RACHA</button>
+        </nav>
 
         <div class="kpi-grid">
             <div class="card">
@@ -615,14 +615,14 @@
 
             <div class="filters-container">
                 <div class="filter-group">
-                    <label>Sorteo Objetivo</label>
-                    <select id="f-sorteo" class="filter-select" onchange="applyFilters()">
+                    <label for="f-sorteo">Sorteo Objetivo</label>
+                    <select id="f-sorteo" class="filter-select" onchange="applyFilters()" aria-label="Filtrar por sorteo">
                         <option value="ALL">Todos los Sorteos</option>
                     </select>
                 </div>
                 <div class="filter-group">
-                    <label>Algoritmo</label>
-                    <select id="f-algo" class="filter-select" onchange="applyFilters()">
+                    <label for="f-algo">Algoritmo</label>
+                    <select id="f-algo" class="filter-select" onchange="applyFilters()" aria-label="Filtrar por algoritmo">
                         <option value="ALL">Todos</option>
                         <option value="forense">🔮 Biométrico/Ponderado</option>
                         <option value="gaussiano">📐 Gaussiano</option>
@@ -634,20 +634,20 @@
                     </select>
                 </div>
                 <div class="filter-group">
-                    <label>Día de Semana</label>
-                    <select id="f-dia" class="filter-select" onchange="applyFilters()">
+                    <label for="f-dia">Día de Semana</label>
+                    <select id="f-dia" class="filter-select" onchange="applyFilters()" aria-label="Filtrar por día de semana">
                         <option value="ALL">Todos</option>
                         <option value="1">Lunes</option> <option value="2">Martes</option> <option value="3">Miércoles</option>
                         <option value="4">Jueves</option> <option value="5">Viernes</option> <option value="6">Sábado</option> <option value="0">Domingo</option>
                     </select>
                 </div>
                 <div class="filter-group">
-                    <label>Hora</label>
-                    <select id="f-hora" class="filter-select" onchange="applyFilters()">
+                    <label for="f-hora">Hora</label>
+                    <select id="f-hora" class="filter-select" onchange="applyFilters()" aria-label="Filtrar por hora">
                         <option value="ALL">Todas</option>
                     </select>
                 </div>
-                <button class="btn-reset" onclick="resetFilters()">Limpiar</button>
+                <button type="button" class="btn-reset" onclick="resetFilters()" aria-label="Limpiar todos los filtros">Limpiar</button>
             </div>
 
             <div class="table-scroll">
@@ -687,7 +687,7 @@
                 </table>
             </div>
         </div>
-    </div>
+    </main>
 
     <script>
         // =========================================================
@@ -2175,7 +2175,6 @@
             });
         }
 
-        loadAllData();
     </script>
 </body>
 </html>

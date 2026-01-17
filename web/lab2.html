@@ -2,6 +2,7 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Loto Lab v12.7 - Semáforo de Inferencia</title>
     <style>
         body { font-family: 'Inter', sans-serif; background: #0f172a; color: #f8fafc; margin: 0; padding-bottom: 50px; }
@@ -84,10 +85,11 @@
 </head>
 <body>
 
-    <div class="header-main">
+    <header class="header-main">
         <h1>Laboratorio de Predicciones (Experimental)</h1>
-    </div>
+    </header>
 
+    <main role="main">
     <!-- ADVERTENCIA DE JUEGO RESPONSABLE -->
     <div style="background: linear-gradient(135deg, rgba(244, 63, 94, 0.15), rgba(244, 63, 94, 0.05)); border: 1px solid rgba(244, 63, 94, 0.4); border-radius: 8px; padding: 12px 16px; margin: 1rem 2rem; display: flex; align-items: flex-start; gap: 12px;">
         <span style="color: #f43f5e; font-size: 1.2rem;">⚠️</span>
@@ -112,6 +114,7 @@
 
     <h2 class="section-title title-RACHA">🟣 RACHA (Top 10)</h2>
     <div class="grid" id="grid-RACHA"></div>
+    </main>
 
     <script>
         const CONFIG_JUEGOS = ["LOTO", "LOTO3", "LOTO4", "RACHA"];
@@ -228,8 +231,8 @@
 
                     <p class="numbers">${numerosLegibles}</p>
 
-                    <div class="confidence-bar">
-                        <div class="confidence-fill" 
+                    <div class="confidence-bar" role="progressbar" aria-valuenow="${data.score_afinidad}" aria-valuemin="0" aria-valuemax="100" aria-label="Nivel de confianza: ${data.score_afinidad}%">
+                        <div class="confidence-fill"
                             style="width: ${Math.min(data.score_afinidad, 100)}%; background-color: ${status.color}">
                         </div>
                     </div>
