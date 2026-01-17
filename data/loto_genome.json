@@ -20,7 +20,7 @@
       "consenso_meritocratico_v2": 0.04,
       "forense_biometrico_v1": 0.05,
       "oraculo_neural_v3": 1.44,
-      "oraculo_neural_v4": 0.79
+      "oraculo_neural_v4": 0.91
     },
     "RACHA": {
       "consenso_meritocratico_v2": 17.19,
@@ -35,11 +35,19 @@
     "total_casos_estudiados": 11889,
     "total_estudiados": 263,
     "genome_version": "2.1",
-    "fixes_applied": ["sum_range_corrected", "hourly_keys_normalized"]
+    "fixes_applied": [
+      "sum_range_corrected",
+      "hourly_keys_normalized"
+    ],
+    "last_optimization": "2026-01-17T15:02:33.180408",
+    "optimization_changes": 1
   },
   "morphology": {
     "LOTO": {
-      "ideal_sum_range": [100, 170],
+      "ideal_sum_range": [
+        100,
+        170
+      ],
       "ideal_even_count": 2.6,
       "ideal_consecutivos": 0.67,
       "ideal_bajos_altos": 2.98,
@@ -49,7 +57,10 @@
       "ideal_avg_delta": 6.29
     },
     "LOTO3": {
-      "ideal_sum_range": [7, 20],
+      "ideal_sum_range": [
+        7,
+        20
+      ],
       "ideal_even_count": 1.4,
       "ideal_consecutivos": 0.61,
       "ideal_bajos_altos": 1.37,
@@ -59,7 +70,10 @@
       "ideal_avg_delta": 2.88
     },
     "RACHA": {
-      "ideal_sum_range": [88, 115],
+      "ideal_sum_range": [
+        88,
+        115
+      ],
       "ideal_even_count": 4.64,
       "ideal_consecutivos": 4.78,
       "ideal_bajos_altos": 5.49,
@@ -69,7 +83,10 @@
       "ideal_avg_delta": 1.92
     },
     "LOTO4": {
-      "ideal_sum_range": [32, 100],
+      "ideal_sum_range": [
+        32,
+        100
+      ],
       "ideal_even_count": 1.37,
       "ideal_consecutivos": 0.89,
       "ideal_bajos_altos": 3.68,
@@ -80,10 +97,42 @@
     }
   },
   "physical_limits": {
-    "LOTO": {"min_sum": 21, "max_sum": 231, "n_balls": 6, "range": [1, 41]},
-    "LOTO3": {"min_sum": 0, "max_sum": 27, "n_balls": 3, "range": [0, 9]},
-    "LOTO4": {"min_sum": 10, "max_sum": 154, "n_balls": 4, "range": [1, 41]},
-    "RACHA": {"min_sum": 55, "max_sum": 145, "n_balls": 10, "range": [1, 20]}
+    "LOTO": {
+      "min_sum": 21,
+      "max_sum": 231,
+      "n_balls": 6,
+      "range": [
+        1,
+        41
+      ]
+    },
+    "LOTO3": {
+      "min_sum": 0,
+      "max_sum": 27,
+      "n_balls": 3,
+      "range": [
+        0,
+        9
+      ]
+    },
+    "LOTO4": {
+      "min_sum": 10,
+      "max_sum": 154,
+      "n_balls": 4,
+      "range": [
+        1,
+        41
+      ]
+    },
+    "RACHA": {
+      "min_sum": 55,
+      "max_sum": 145,
+      "n_balls": 10,
+      "range": [
+        1,
+        20
+      ]
+    }
   },
   "last_processed": {
     "LOTO3": 23997,
@@ -93,28 +142,50 @@
   },
   "algo_ranking_hourly": {
     "LOTO3": {
-      "13": {"oraculo_neural_v3": 5.79, "oraculo_neural_v4": 2.67},
-      "17": {"oraculo_neural_v3": 6.35, "oraculo_neural_v4": 7.84},
-      "20": {"oraculo_neural_v3": 4.23, "oraculo_neural_v4": 8.49}
+      "13": {
+        "oraculo_neural_v3": 5.79,
+        "oraculo_neural_v4": 2.67
+      },
+      "17": {
+        "oraculo_neural_v3": 6.35,
+        "oraculo_neural_v4": 7.84
+      },
+      "20": {
+        "oraculo_neural_v3": 4.23,
+        "oraculo_neural_v4": 8.49
+      }
     },
     "RACHA": {
-      "14": {"oraculo_neural_v3": 3.0, "oraculo_neural_v4": 2.7},
-      "21": {"oraculo_neural_v3": 4.88, "oraculo_neural_v4": 6.27}
+      "14": {
+        "oraculo_neural_v3": 3.0,
+        "oraculo_neural_v4": 2.7
+      },
+      "21": {
+        "oraculo_neural_v3": 4.88,
+        "oraculo_neural_v4": 6.27
+      }
     },
     "LOTO4": {
-      "13": {"oraculo_neural_v4": 1.95},
-      "20": {"oraculo_neural_v3": 1.95}
+      "13": {
+        "oraculo_neural_v4": 1.95
+      },
+      "20": {
+        "oraculo_neural_v3": 1.95
+      }
     },
     "LOTO": {
-      "21": {"oraculo_neural_v3": 1.01, "oraculo_neural_v4": 1.06}
+      "21": {
+        "oraculo_neural_v3": 1.01,
+        "oraculo_neural_v4": 1.06
+      }
     }
   },
   "alpha_dinamico": {
-    "forense_biometrico_v1": 0.20,
+    "forense_biometrico_v1": 0.2,
     "gaussiano_tactico_v1": 0.18,
     "delta_tactico_v1": 0.18,
     "markov_chain_v1": 0.18,
-    "oraculo_neural_v3": 0.10,
+    "oraculo_neural_v3": 0.1,
     "oraculo_neural_v4": 0.08,
     "consenso_meritocratico_v2": 0.15,
     "default": 0.15

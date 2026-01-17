@@ -1,0 +1,76 @@
+body { font-family: 'Inter', sans-serif; background: #0f172a; color: #f8fafc; margin: 0; padding-bottom: 50px; }
+.header-main { text-align: center; padding: 2rem 0; background: #1e293b; border-bottom: 1px solid #334155; }
+h1 { margin: 0; text-transform: uppercase; letter-spacing: 3px; font-size: 1.5rem; color: #f1f5f9; }
+
+.section-title { padding: 2rem 2rem 0 2rem; text-transform: uppercase; letter-spacing: 2px; display: flex; align-items: center; gap: 10px; }
+.section-title::after { content: ""; height: 2px; flex-grow: 1; background: #334155; }
+
+/* Colores de Headers */
+.title-LOTO { color: #38bdf8; }
+.title-LOTO3 { color: #fbbf24; }
+.title-LOTO4 { color: #4ade80; }
+.title-RACHA { color: #a78bfa; }
+
+.grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(340px, 1fr)); gap: 1.5rem; padding: 1.5rem 2rem; }
+
+.card { background: #1e293b; border-radius: 12px; padding: 1.5rem; border: 1px solid #334155; position: relative; transition: transform 0.2s; }
+.card:hover { transform: translateY(-3px); border-color: #475569; }
+
+.high-conf { border-color: #10b981; box-shadow: 0 0 15px rgba(16, 185, 129, 0.15); }
+.disident-card {
+    border: 2px solid #f43f5e; box-shadow: 0 0 20px rgba(244, 63, 94, 0.25);
+    background: linear-gradient(145deg, #1e293b 0%, #2d161b 100%);
+    animation: pulse-red 2s infinite;
+}
+
+@keyframes pulse-red {
+    0% { box-shadow: 0 0 0 0 rgba(244, 63, 94, 0.4); }
+    70% { box-shadow: 0 0 0 10px rgba(244, 63, 94, 0); }
+    100% { box-shadow: 0 0 0 0 rgba(244, 63, 94, 0); }
+}
+
+.numbers { font-size: 1.6rem; font-weight: 800; color: #fbbf24; letter-spacing: 1px; margin: 15px 0; text-align: center; line-break: anywhere; }
+.tag { font-size: 0.7rem; font-weight: 600; padding: 4px 8px; border-radius: 4px; background: #334155; color: white; }
+
+/* Estilos de tiempo optimizados para Mobile */
+.time-box {
+    background: rgba(15, 23, 42, 0.5); /* Fondo un poco mas oscuro para resaltar texto */
+    border-radius: 8px;
+    padding: 10px;
+    margin-bottom: 12px;
+}
+
+.time-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin: 4px 0;
+}
+
+.time-label {
+    color: #94a3b8;
+    font-size: 0.75rem; /* ~12px: El minimo para legibilidad movil */
+}
+
+.time-value {
+    color: #f1f5f9;
+    font-weight: bold;
+    font-size: 0.8rem;
+}
+
+/* Especifico para la fecha de generacion (el "Sonado el") */
+.generation-info {
+    border-top: 1px solid rgba(51, 65, 85, 0.5);
+    margin-top: 6px;
+    padding-top: 6px;
+    color: #cbd5e1; /* Color mas claro para que se vea bien en mobile */
+    font-size: 0.7rem;
+    display: block; /* Asegura que tome su propia linea */
+}
+
+/* Semaforo de Confianza */
+.confidence-bar { height: 8px; background: #0f172a; border-radius: 4px; margin: 12px 0; border: 1px solid #334155; }
+.confidence-fill { height: 100%; border-radius: 4px; transition: width 1s, background-color 1s; }
+
+.footer-info { display: flex; justify-content: space-between; align-items: flex-end; margin-top: 10px; border-top: 1px solid #334155; padding-top: 10px; }
+.empty-msg { color: #64748b; font-style: italic; grid-column: 1/-1; text-align: center; padding: 2rem; }

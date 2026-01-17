@@ -1,0 +1,50 @@
+{
+  "optimizations": [
+    {
+      "timestamp": "2026-01-17T15:02:33.180408",
+      "tipo": "PROMOVER",
+      "juego": "LOTO4",
+      "algoritmo": "oraculo_neural_v4",
+      "razon": "Rendimiento 170.2% del promedio",
+      "metrica": 2.0
+    }
+  ],
+  "drift_alerts": [],
+  "health_checks": [
+    {
+      "timestamp": "2026-01-17T15:02:33.178399",
+      "total_predicciones": 220,
+      "juegos_activos": [
+        "LOTO3",
+        "RACHA",
+        "LOTO4"
+      ],
+      "algoritmos_activos": [
+        "oraculo_neural_v4",
+        "oraculo_neural_v3",
+        "forense_biometrico_v1",
+        "consenso_meritocratico_v2"
+      ],
+      "metricas": {
+        "LOTO3": {
+          "promedio_aciertos": 0.917,
+          "max_aciertos": 2,
+          "tasa_exito_3plus": 0.0,
+          "n_predicciones": 60
+        },
+        "RACHA": {
+          "promedio_aciertos": 5.462,
+          "max_aciertos": 8,
+          "tasa_exito_3plus": 100.0,
+          "n_predicciones": 80
+        },
+        "LOTO4": {
+          "promedio_aciertos": 1.175,
+          "max_aciertos": 3,
+          "tasa_exito_3plus": 1.25,
+          "n_predicciones": 80
+        }
+      }
+    }
+  ]
+}
