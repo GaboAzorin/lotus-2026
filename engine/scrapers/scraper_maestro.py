@@ -376,26 +376,83 @@ async def run_scraper():
         await browser.close()
         
         # ==============================================================================
-        # 5. INTELIGENCIA ARTIFICIAL: RECONSTRUCCIÓN TEMPORAL
+        # 5. PIPELINE DE INTELIGENCIA ARTIFICIAL COMPLETO
         # ==============================================================================
-        # Aquí invocamos la lógica que permite al bot "viajar en el tiempo" para entrenar
-        # con los datos que acabamos de descargar.
-        
-        print("\n⏳ INVOCANDO CEREBRO TEMPORAL (Juez + Entrenador + Oráculo)...")
+        # Ejecuta el ciclo completo de auto-mejora:
+        # 1. Juez Implacable → Audita predicciones vs resultados reales
+        # 2. Entrenador Cognitivo → Actualiza genoma con aprendizaje incremental
+        # 3. Generador Biométrico → Recalcula frecuencias con suavizado Laplace
+        # 4. Auto-Optimizer → Detecta drift, promueve/degrada algoritmos
+        # 5. Consolidar Laboratorio → Actualiza dashboard
+
+        print("\n" + "="*60)
+        print("🧠 PIPELINE DE INTELIGENCIA ARTIFICIAL v2.0")
+        print("="*60)
+
+        # --- PASO 1: JUEZ IMPLACABLE (Auditoría) ---
+        print("\n⚖️  PASO 1/5: JUEZ IMPLACABLE (Auditando predicciones)...")
         try:
-            import reconstructor_temporal
-            importlib.reload(reconstructor_temporal) # Aseguramos cargar código fresco
-            
-            # Esta función orquesta todo: Juez, Entrenador y Predicciones Backtest
-            reconstructor_temporal.reconstruir_linea_tiempo()
-            
+            from juez_implacable import juzgar
+            importlib.reload(sys.modules.get('juez_implacable', sys.modules[__name__]))
+            juzgar()
+            print("   ✅ Auditoría completada.")
         except ImportError:
-            print("   ⚠️  ALERTA: No se encontró 'reconstructor_temporal.py'.")
-            print("       Datos descargados, pero la IA no se ha entrenado.")
+            print("   ⚠️ juez_implacable.py no encontrado. Saltando auditoría.")
         except Exception as e:
-            print(f"   ❌ ERROR CRÍTICO EN RECONSTRUCCIÓN: {e}")
-            # No detenemos el script para permitir que al menos se suban los CSVs
-        
+            print(f"   ❌ Error en auditoría: {e}")
+
+        # --- PASO 2: ENTRENADOR COGNITIVO (Aprendizaje Incremental) ---
+        print("\n🧬 PASO 2/5: ENTRENADOR COGNITIVO (Aprendiendo de resultados)...")
+        try:
+            from entrenador_cognitivo import analizar_adn_ganador
+            importlib.reload(sys.modules.get('entrenador_cognitivo', sys.modules[__name__]))
+            analizar_adn_ganador()
+            print("   ✅ Genoma actualizado.")
+        except ImportError:
+            print("   ⚠️ entrenador_cognitivo.py no encontrado. Saltando entrenamiento.")
+        except Exception as e:
+            print(f"   ❌ Error en entrenamiento: {e}")
+
+        # --- PASO 3: GENERADOR BIOMÉTRICO (Frecuencias + Laplace) ---
+        print("\n📊 PASO 3/5: GENERADOR BIOMÉTRICO (Recalculando frecuencias)...")
+        try:
+            from generador_biometrico import generar_biometria
+            importlib.reload(sys.modules.get('generador_biometrico', sys.modules[__name__]))
+            generar_biometria()
+            print("   ✅ Biometría actualizada con suavizado Laplace.")
+        except ImportError:
+            print("   ⚠️ generador_biometrico.py no encontrado. Saltando biometría.")
+        except Exception as e:
+            print(f"   ❌ Error en biometría: {e}")
+
+        # --- PASO 4: AUTO-OPTIMIZER (Mejora Continua) ---
+        print("\n🔄 PASO 4/5: AUTO-OPTIMIZER (Optimización automática)...")
+        try:
+            from auto_optimizer import ejecutar_optimizacion
+            importlib.reload(sys.modules.get('auto_optimizer', sys.modules[__name__]))
+            ejecutar_optimizacion()
+            print("   ✅ Optimización completada.")
+        except ImportError:
+            print("   ⚠️ auto_optimizer.py no encontrado. Saltando optimización.")
+        except Exception as e:
+            print(f"   ❌ Error en optimización: {e}")
+
+        # --- PASO 5: CONSOLIDAR LABORATORIO (Dashboard) ---
+        print("\n📈 PASO 5/5: CONSOLIDAR LABORATORIO (Actualizando dashboard)...")
+        try:
+            from consolidar_laboratorio import ejecutar_consolidacion_hibrida
+            importlib.reload(sys.modules.get('consolidar_laboratorio', sys.modules[__name__]))
+            ejecutar_consolidacion_hibrida()
+            print("   ✅ Dashboard actualizado.")
+        except ImportError:
+            print("   ⚠️ consolidar_laboratorio.py no encontrado. Saltando consolidación.")
+        except Exception as e:
+            print(f"   ❌ Error en consolidación: {e}")
+
+        print("\n" + "="*60)
+        print("✨ PIPELINE COMPLETO - Sistema actualizado y optimizado")
+        print("="*60)
+
         # ==============================================================================
 
         # Finalmente, subimos todo a la nube
