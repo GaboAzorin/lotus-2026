@@ -42,7 +42,7 @@ class FileLock:
     Mutex basado en archivo para prevenir race conditions.
     AUDITORÍA v4: Previene conflictos entre Soñador y Juez.
     """
-    def __init__(self, lock_file, timeout=30):
+    def __init__(self, lock_file, timeout=120):
         self.lock_file = lock_file
         self.timeout = timeout
         self.fd = None
@@ -98,8 +98,8 @@ def consolidar():
     """
     logger.info("INICIANDO CONSOLIDACIÓN DE COLA Y LIMPIEZA...")
 
-    # AUDITORÍA v4: Adquirir lock antes de procesar
-    lock = FileLock(LOCK_FILE, timeout=30)
+    # AUDITORÍA v4: Adquirir lock antes de procesar (timeout extendido a 120s)
+    lock = FileLock(LOCK_FILE, timeout=120)
     if not lock.acquire():
         logger.error("No se pudo adquirir lock. Otro proceso está consolidando.")
         return
@@ -159,6 +159,7 @@ def consolidar():
         df_final.drop_duplicates(subset=['id'], keep='last', inplace=True)
 
         # 7. AUDITORÍA v4: Guardar CSV con escritura atómica
+        tmp_path = None
         try:
             dir_name = os.path.dirname(CSV_FILE)
             with tempfile.NamedTemporaryFile(
@@ -175,7 +176,7 @@ def consolidar():
             logger.info(f"CSV Actualizado. Total registros: {len(df_final)}")
         except Exception as e:
             logger.error(f"Error guardando CSV: {e}")
-            if 'tmp_path' in locals() and os.path.exists(tmp_path):
+            if tmp_path and os.path.exists(tmp_path):
                 try:
                     os.remove(tmp_path)
                 except OSError:

@@ -269,8 +269,8 @@ def analizar_adn_ganador():
                     terms.extend([len(set([n % 10 for n in nums]))] * peso)
                     primos.extend([len([n for n in nums if n in PRIMOS_SET])] * peso)
                     mult3.extend([len([n for n in nums if n % 3 == 0])] * peso)
-                    if len(nums) > 1:
-                        deltas.extend([float(np.mean(np.diff(nums)))] * peso)
+                    # np.diff requiere al menos 2 elementos (siempre true para todos los juegos)
+                    deltas.extend([float(np.mean(np.diff(nums)))] * peso)
                 except (ValueError, SyntaxError, TypeError) as e:
                     logger.debug(f"Error procesando fila para morfología: {e}")
                     continue
@@ -303,6 +303,7 @@ def analizar_adn_ganador():
     genoma["metadata"]["total_estudiados"] = genoma["metadata"].get("total_estudiados", 0) + len(df_nuevo)
 
     # AUDITORÍA v4: Escritura atómica para prevenir corrupción
+    tmp_path = None
     try:
         dir_name = os.path.dirname(GENOMA_FILE)
         with tempfile.NamedTemporaryFile(
@@ -317,7 +318,7 @@ def analizar_adn_ganador():
         shutil.move(tmp_path, GENOMA_FILE)
     except Exception as e:
         logger.error(f"Error guardando genoma: {e}")
-        if 'tmp_path' in locals() and os.path.exists(tmp_path):
+        if tmp_path and os.path.exists(tmp_path):
             try:
                 os.remove(tmp_path)
             except OSError:

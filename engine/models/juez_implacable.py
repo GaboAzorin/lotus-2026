@@ -147,7 +147,11 @@ def juzgar():
     # 3. Iterar y Juzgar
     for index, row in df_sim.iterrows():
         juego = row['juego']
-        target_id = str(int(float(row['sorteo_objetivo'])))
+        try:
+            target_id = str(int(float(row['sorteo_objetivo'])))
+        except (ValueError, TypeError):
+            # Fila con sorteo_objetivo malformado, saltar
+            continue
         
         if juego in maestros and target_id in maestros[juego]:
             # Realidad ahora es un dict con {"numeros": [...], "comodin": X}

@@ -6,7 +6,8 @@ import os
 import logging
 import tempfile
 import shutil
-from datetime import datetime
+import pytz
+from datetime import datetime, timedelta
 
 # Configurar logging
 logger = logging.getLogger(__name__)
@@ -25,6 +26,34 @@ PROJECT_ROOT = os.path.dirname(os.path.dirname(CURRENT_DIR))
 RUTA_DATA = os.path.join(PROJECT_ROOT, "data", "LOTO3_MAESTRO.csv")
 RUTA_DASHBOARD = os.path.join(PROJECT_ROOT, "dashboard_data.json")
 
+# Timezone Chile
+TZ_CHILE = pytz.timezone('America/Santiago')
+
+# Horarios de sorteo LOTO3: todos los días a las 14:00, 18:00 y 21:00
+HORARIOS_LOTO3 = [14, 18, 21]
+
+
+def calcular_proximo_sorteo_loto3():
+    """
+    Calcula la fecha y hora del próximo sorteo de LOTO3.
+    LOTO3 tiene sorteos todos los días a las 14:00, 18:00 y 21:00.
+    """
+    ahora = datetime.now(TZ_CHILE)
+
+    # Buscar el próximo horario de hoy o mañana
+    for dias_extra in range(2):  # hoy y mañana
+        fecha_check = ahora + timedelta(days=dias_extra)
+        for hora in sorted(HORARIOS_LOTO3):
+            candidato = TZ_CHILE.localize(datetime(
+                fecha_check.year, fecha_check.month, fecha_check.day, hora, 0, 0
+            ))
+            if candidato > ahora:
+                return candidato
+
+    # Fallback: mañana a las 14:00
+    manana = ahora + timedelta(days=1)
+    return TZ_CHILE.localize(datetime(manana.year, manana.month, manana.day, 14, 0, 0))
+
 # ==========================================
 # LÓGICA TRI-CORE (CORREGIDA PARA TUS HEADERS)
 # ==========================================
@@ -41,10 +70,11 @@ class CerebroPosicional:
         
         # Validación de seguridad
         if col_name not in df.columns:
-            # Fallback: A veces pandas agrega espacios o cambia mayúsculas
-            cols_limpias = [c.strip().lower() for c in df.columns]
-            if col_name in cols_limpias:
-                col_name = col_name # Está ok pero sucio en el origen
+            # Fallback: buscar columna con espacios o mayúsculas diferentes
+            for original_col in df.columns:
+                if original_col.strip().lower() == col_name.lower():
+                    col_name = original_col  # Usar el nombre real de la columna
+                    break
             else:
                 raise ValueError(f"Columna '{col_name}' no encontrada. Cabeceras disponibles: {list(df.columns)}")
 
@@ -132,17 +162,21 @@ def ejecutar_sistema_tricore():
 
     # 3. Consolidar Resultado
     score_final = int((confianza_total / 3) * 100)
-    
+
     # Calcular sorteo objetivo
     ultimo_sorteo = 0
     if 'sorteo' in df.columns:
         ultimo_sorteo = int(df['sorteo'].iloc[-1])
-    
+
+    # Calcular fecha/hora del próximo sorteo y hora actual de Chile
+    ahora_chile = datetime.now(TZ_CHILE)
+    proximo_sorteo = calcular_proximo_sorteo_loto3()
+
     nueva_jugada = {
-        "fecha_generacion": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
-        "fecha_lanzamiento": "Próximo Sorteo",
+        "fecha_generacion": ahora_chile.strftime("%Y-%m-%d %H:%M:%S"),
+        "fecha_lanzamiento": proximo_sorteo.strftime("%d/%m/%Y %H:%M"),
         "sorteo_objetivo": ultimo_sorteo + 1,
-        "juego": "LOTO3_TRICORE",
+        "juego": "LOTO3",
         "numeros": prediccion_final,
         "algoritmo": "Tri-Core (RF Independiente)",
         "score_afinidad": min(score_final, 99),  # AUDITORÍA v4: Eliminado +25 artificial
@@ -174,6 +208,7 @@ def guardar_en_dashboard(jugada):
     data = data[:200]  # Buffer de memoria
 
     # ESCRITURA ATÓMICA: write-temp-rename pattern
+    tmp_path = None
     try:
         dir_name = os.path.dirname(RUTA_DASHBOARD)
         with tempfile.NamedTemporaryFile(
@@ -192,7 +227,7 @@ def guardar_en_dashboard(jugada):
     except Exception as e:
         logger.error(f"Error escribiendo JSON: {e}")
         # Intentar limpiar archivo temporal si existe
-        if 'tmp_path' in locals() and os.path.exists(tmp_path):
+        if tmp_path and os.path.exists(tmp_path):
             try:
                 os.remove(tmp_path)
             except OSError:

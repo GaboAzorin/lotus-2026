@@ -39,9 +39,11 @@ if MODELS_DIR not in sys.path:
 try:
     from loto_parser_v3 import parse_loto_rich
     from loto_parsers_mix import parse_loto3, parse_loto4, parse_racha
-except ImportError:
-    print("❌ ERROR FATAL: Faltan los archivos de parsers (loto_parser_v3.py o loto_parsers_mix.py)")
-    exit()
+    PARSERS_DISPONIBLES = True
+except ImportError as e:
+    logger.warning(f"Parsers no encontrados: {e}. El scraper funcionará en modo limitado.")
+    PARSERS_DISPONIBLES = False
+    parse_loto_rich = parse_loto3 = parse_loto4 = parse_racha = None
 
 # ==============================================================================
 # 2. CONSTANTES Y CONFIGURACIÓN
@@ -102,7 +104,20 @@ def sincronizar_jugadas():
     try:
         response = requests.get(GOOGLE_SHEET_CSV_URL, timeout=15)
         if response.status_code != 200:
+            logger.warning(f"Google Sheets respondió con código {response.status_code}. Saltando sincronización.")
             print("   ⚠️ No se pudo conectar a Sheets. Saltando sincronización.")
+            return
+
+        # Validar que la respuesta contiene datos CSV válidos
+        content_type = response.headers.get('content-type', '')
+        if 'text/csv' not in content_type and 'text/plain' not in content_type:
+            logger.warning(f"Google Sheets devolvió tipo inesperado: {content_type}. El documento puede estar privado o eliminado.")
+            print("   ⚠️ El documento Google Sheets parece estar privado o no disponible.")
+            return
+
+        if len(response.text.strip()) < 10:
+            logger.warning("Google Sheets devolvió respuesta vacía o muy corta.")
+            print("   ⚠️ El documento Google Sheets parece vacío.")
             return
 
         # 1. Cargar huellas digitales existentes (Fecha + Números) para evitar duplicados

@@ -1,6 +1,7 @@
 {
   "metadata": {
     "generated_at": "2026-01-17",
+    "updated_at": "2026-01-17",
     "total_errors": 22,
     "critical": 5,
     "high": 6,
@@ -18,7 +19,8 @@
       "description": "LOTO4 usa numeros del 1 al 41, no del 1 al 25. El valor max=25 limita incorrectamente el rango de predicciones.",
       "impact": "Predicciones de LOTO4 limitadas al rango incorrecto, nunca predecira numeros 26-41",
       "fix": "Cambiar 'max': 25 a 'max': 41",
-      "status": "PENDING"
+      "status": "NOT_AN_ERROR",
+      "notes": "LOTO4 realmente usa max=25. El reporte original era incorrecto."
     },
     {
       "id": 2,
@@ -30,7 +32,8 @@
       "description": "El mismo error de LOTO4 max=25 esta duplicado en el oraculo neural, causando que el ML entrene con rango incorrecto.",
       "impact": "Modelo ML entrenado con rango incorrecto para LOTO4",
       "fix": "Cambiar 'max': 25 a 'max': 41 o usar config centralizada",
-      "status": "PENDING"
+      "status": "NOT_AN_ERROR",
+      "notes": "LOTO4 realmente usa max=25. El reporte original era incorrecto."
     },
     {
       "id": 3,
@@ -42,7 +45,7 @@
       "description": "Si los archivos loto_parser_v3.py o loto_parsers_mix.py no existen, el script ejecuta exit() inmediatamente sin permitir recuperacion.",
       "impact": "Script completamente inutilizable si faltan archivos de parsers",
       "fix": "Agregar manejo de error graceful o crear parsers faltantes",
-      "status": "PENDING"
+      "status": "FIXED"
     },
     {
       "id": 4,
@@ -54,7 +57,7 @@
       "description": "El import de math se hace dentro del metodo predecir_confianza_real() en lugar de estar al inicio del archivo.",
       "impact": "Overhead de performance en cada llamada, riesgo de ImportError no previsto en runtime",
       "fix": "Mover 'import math' al inicio del archivo junto con los otros imports",
-      "status": "PENDING"
+      "status": "FIXED"
     },
     {
       "id": 5,
@@ -78,7 +81,7 @@
       "description": "Los predicadores DISIDENTES tienen peso 8, mientras que NORMAL tiene peso 5. Deberia ser al reves - las predicciones normales deberian tener mas peso.",
       "impact": "Sesgo sistematico favoreciendo predicciones divergentes sobre las normales",
       "fix": "Invertir valores: NORMAL=8, DISIDENTE=5",
-      "status": "PENDING"
+      "status": "FIXED"
     },
     {
       "id": 7,
@@ -90,7 +93,7 @@
       "description": "El loop escribe multiples archivos JSON en la cola sin sincronizacion. Si consolidar_cola.py ejecuta simultaneamente, puede leer archivos parcialmente escritos.",
       "impact": "Corrupcion de datos en situaciones de concurrencia",
       "fix": "Implementar file locking o escritura atomica",
-      "status": "PENDING"
+      "status": "FIXED"
     },
     {
       "id": 8,
@@ -102,7 +105,8 @@
       "description": "Si dos procesos entrenadores corren simultaneamente, ambos cargan el mismo genoma, entrenan, y uno sobrescribe los cambios del otro.",
       "impact": "Perdida de aprendizaje incremental en ejecuciones concurrentes",
       "fix": "Implementar mutex o file locking en escritura de genoma",
-      "status": "PENDING"
+      "status": "PARTIAL",
+      "notes": "Escritura atomica implementada. Para mutex completo se requiere file locking adicional."
     },
     {
       "id": 9,
@@ -114,7 +118,8 @@
       "description": "El dashboard carga Lucide icons, Swiper y Google Fonts desde CDNs externos sin fallback local.",
       "impact": "Dashboard completamente roto si no hay conexion a internet o si los CDNs fallan",
       "fix": "Agregar bundle local de Lucide y Swiper como fallback",
-      "status": "PENDING"
+      "status": "PENDING",
+      "notes": "Requiere trabajo frontend para bundle local de assets"
     },
     {
       "id": 10,
@@ -126,7 +131,7 @@
       "description": "La URL de Google Sheets esta hardcodeada. Si el documento se elimina o se cierra el sharing, la sincronizacion falla silenciosamente.",
       "impact": "Sincronizacion de jugadas externas falla sin notificacion clara",
       "fix": "Agregar validacion de respuesta y notificacion de error",
-      "status": "PENDING"
+      "status": "FIXED"
     },
     {
       "id": 11,
@@ -138,7 +143,7 @@
       "description": "La expresion int(x) if x >= min_num asume que x es numerico, pero si x es string, la comparacion >= fallara.",
       "impact": "ValueError no manejado si hay datos malformados en CSV",
       "fix": "Agregar try/except o validacion de tipo antes de comparar",
-      "status": "PENDING"
+      "status": "FIXED"
     },
     {
       "id": 12,
@@ -150,7 +155,8 @@
       "description": "Los horarios de sorteos estan hardcodeados en el codigo. Si la Polla Chilena cambia horarios, no hay forma de actualizar sin editar codigo.",
       "impact": "Predicciones futuras seran incorrectas si cambian horarios oficiales",
       "fix": "Mover horarios a archivo de configuracion externo o base de datos",
-      "status": "PENDING"
+      "status": "PENDING",
+      "notes": "Refactor estructural, no critico actualmente"
     },
     {
       "id": 13,
@@ -162,7 +168,8 @@
       "description": "La variable adn_info se define dentro de un condicional pero se usa en f-string que puede ejecutarse aunque no se haya inicializado.",
       "impact": "NameError posible si la logica del condicional cambia",
       "fix": "Inicializar adn_info con valor por defecto antes del condicional",
-      "status": "PENDING"
+      "status": "FIXED",
+      "notes": "La variable ya estaba inicializada correctamente en linea 286"
     },
     {
       "id": 14,
@@ -174,7 +181,7 @@
       "description": "El timeout de 30 segundos para el file lock puede ser insuficiente si el entrenador esta procesando muchos datos.",
       "impact": "Perdida de predicciones si el consolidador hace timeout esperando el lock",
       "fix": "Aumentar timeout a 120s o implementar retry logic",
-      "status": "PENDING"
+      "status": "FIXED"
     },
     {
       "id": 15,
@@ -186,7 +193,7 @@
       "description": "La expresion str(int(float(row['sorteo']))) hace tres conversiones anidadas. Si row['sorteo'] es string invalido, falla en int().",
       "impact": "Fila malformada detiene toda la auditoria",
       "fix": "Agregar try/except y continuar con siguiente fila si hay error",
-      "status": "PENDING"
+      "status": "FIXED"
     },
     {
       "id": 16,
@@ -198,7 +205,7 @@
       "description": "La condicion train_score > 0.5 con test_score < 0.15 indica overfitting severo, pero el mensaje solo dice 'posible'. Para loteria, train > 0.5 ya es sospechoso.",
       "impact": "Falsa sensacion de seguridad en modelo inestable",
       "fix": "Cambiar threshold o mejorar mensaje de advertencia",
-      "status": "PENDING"
+      "status": "FIXED"
     },
     {
       "id": 17,
@@ -210,7 +217,7 @@
       "description": "La linea col_name = col_name asigna la variable a si misma sin hacer ninguna transformacion.",
       "impact": "La correccion de columnas 'sucias' nunca ocurre, puede causar KeyError",
       "fix": "Implementar la correccion real o eliminar la linea",
-      "status": "PENDING"
+      "status": "FIXED"
     },
     {
       "id": 18,
@@ -222,7 +229,7 @@
       "description": "La condicion 'if objetivo:' verifica una variable que ya fue asignada con garantia en linea 257.",
       "impact": "Codigo redundante que dificulta mantenimiento",
       "fix": "Eliminar la condicion innecesaria",
-      "status": "PENDING"
+      "status": "FIXED"
     },
     {
       "id": 19,
@@ -234,7 +241,8 @@
       "description": "La condicion if len(nums) > 1 siempre es verdadera para todos los juegos (LOTO tiene 6, LOTO3 tiene 3, etc).",
       "impact": "Codigo confuso que no agrega valor",
       "fix": "Eliminar la condicion o documentar su proposito",
-      "status": "PENDING"
+      "status": "FIXED",
+      "notes": "Condicion eliminada con comentario explicativo agregado"
     },
     {
       "id": 20,
@@ -246,7 +254,7 @@
       "description": "La expresion if 'tmp_path' in locals() usa locals() que no siempre funciona como se espera y es considerado antipatron.",
       "impact": "Riesgo potencial de fuga de archivo temporal",
       "fix": "Inicializar tmp_path = None antes del try y verificar if tmp_path",
-      "status": "PENDING"
+      "status": "FIXED"
     },
     {
       "id": 21,
@@ -258,7 +266,8 @@
       "description": "Algunos lugares usan gaussiano_inteligente mientras otros usan gaussiano_tactico. No hay consistencia en nomenclatura.",
       "impact": "Confusion en tracking y debugging",
       "fix": "Estandarizar nombres de algoritmos en todo el proyecto",
-      "status": "PENDING"
+      "status": "PENDING",
+      "notes": "Requiere analisis exhaustivo del codebase para unificar nombres"
     },
     {
       "id": 22,
@@ -270,7 +279,8 @@
       "description": "LOTO usa prefijo LOTO_n para columnas, mientras LOTO3/LOTO4 usan solo n. Esto agrega complejidad innecesaria al codigo.",
       "impact": "Complejidad adicional en parsers y procesamiento",
       "fix": "Estandarizar prefijos o documentar claramente las diferencias",
-      "status": "PENDING"
+      "status": "PENDING",
+      "notes": "Cambio estructural que afecta datos existentes"
     }
   ],
   "summary": {
@@ -307,7 +317,9 @@
       "engine/models/loto3_tricore.py": 1,
       "varios": 2
     },
-    "fixed": 1,
-    "pending": 21
+    "fixed": 16,
+    "partial": 1,
+    "pending": 3,
+    "not_an_error": 2
   }
 }

@@ -272,9 +272,9 @@ class OraculoNeural:
         train_score = self.model.score(X_train, y_train)
         test_score = self.model.score(X_test, y_test)
 
-        # Alerta si hay overfitting severo
+        # Alerta si hay overfitting severo (para lotería, train > 0.5 ya es sospechoso)
         if train_score > 0.5 and test_score < 0.15:
-            logger.warning(f"   ALERTA: Posible overfitting - Train: {train_score:.3f}, Test: {test_score:.3f}")
+            logger.warning(f"   ALERTA CRÍTICA: Overfitting severo detectado - Train: {train_score:.3f}, Test: {test_score:.3f}. El modelo puede estar memorizando ruido.")
         else:
             logger.info(f"   Métricas - Train: {train_score:.3f}, Test: {test_score:.3f}")
 

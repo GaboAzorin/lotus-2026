@@ -3,6 +3,7 @@ import numpy as np
 import joblib
 import os
 import json
+import math
 from sklearn.ensemble import RandomForestRegressor
 
 # Configuración
@@ -82,7 +83,6 @@ class MetaLearner:
 
             # ESCALADO SIGMOIDE: evita divergencia, siempre entre 0.5 y 3.0
             # sigmoide(x) = 1 / (1 + e^(-k*x)) donde k controla la pendiente
-            import math
             k = 4.0  # Factor de pendiente (ajustable)
             sigmoide = 1.0 / (1.0 + math.exp(-k * (esperanza_normalizada - 0.3)))
 

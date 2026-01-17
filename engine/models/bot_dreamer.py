@@ -7,13 +7,45 @@ import time
 import sys
 import numpy as np
 import math
+import logging
 from datetime import datetime, timedelta
+
+# --- CONFIGURACIÓN DE LOGGING ---
+_BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+_LOGS_DIR = os.path.join(_BASE_DIR, '..', '..', 'logs')
+os.makedirs(_LOGS_DIR, exist_ok=True)
+
+# Crear logger con timestamp en el nombre del archivo
+_log_timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+_log_file = os.path.join(_LOGS_DIR, f"bot_dreamer_{_log_timestamp}.log")
+
+# Configurar logger
+logger = logging.getLogger('bot_dreamer')
+logger.setLevel(logging.DEBUG)
+
+# Handler para archivo (detallado)
+file_handler = logging.FileHandler(_log_file, encoding='utf-8')
+file_handler.setLevel(logging.DEBUG)
+file_handler.setFormatter(logging.Formatter(
+    '%(asctime)s | %(levelname)-8s | %(message)s',
+    datefmt='%Y-%m-%d %H:%M:%S'
+))
+logger.addHandler(file_handler)
+
+# Handler para consola (resumido)
+console_handler = logging.StreamHandler()
+console_handler.setLevel(logging.INFO)
+console_handler.setFormatter(logging.Formatter('%(message)s'))
+logger.addHandler(console_handler)
+
+logger.info(f"=== LOG INICIADO: {_log_file} ===")
 
 try:
     from oraculo_neural import OraculoNeural
+    logger.debug("OraculoNeural importado correctamente")
 except ImportError:
     OraculoNeural = None
-    print("⚠️ Módulo OraculoNeural no disponible (¿Falta sklearn?).")
+    logger.warning("Módulo OraculoNeural no disponible (¿Falta sklearn?).")
 
 def clean_for_json(obj):
     """Sustituye NaNs por None para generar un JSON válido"""
@@ -30,16 +62,18 @@ current_dir = os.path.dirname(os.path.abspath(__file__))
 if current_dir not in sys.path: sys.path.append(current_dir)
 
 try:
-    from analizador_forense import LotoForense 
+    from analizador_forense import LotoForense
+    logger.debug("LotoForense importado correctamente")
 except ImportError:
     LotoForense = None
-    print("⚠️ ADVERTENCIA: No se pudo importar LotoForense. El bot funcionará a media capacidad.")
+    logger.warning("No se pudo importar LotoForense. El bot funcionará a media capacidad.")
 
 try:
     from meta_learner import MetaLearner
+    logger.debug("MetaLearner importado correctamente")
 except ImportError:
     MetaLearner = None
-    print("⚠️ MetaLearner no disponible. Usando pesos lineales.")
+    logger.warning("MetaLearner no disponible. Usando pesos lineales.")
 
 # --- CONFIGURACIÓN ---
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
@@ -223,45 +257,52 @@ def calcular_nivel_confianza(bolsa_pesos, n_objetivo):
     return round(confianza, 2)
 
 def soñar():
-    print("💤 --- INICIANDO BOT SOÑADOR: LÓBULOS ESPECIALIZADOS v12.4 ---")
+    logger.info("=" * 60)
+    logger.info("INICIANDO BOT SOÑADOR: LÓBULOS ESPECIALIZADOS v12.4")
+    logger.info("=" * 60)
 
     # --- NIVEL 4: Instanciar Meta-Learner ---
     meta_cerebro = MetaLearner() if MetaLearner else None
-    
+    logger.debug(f"MetaLearner activo: {meta_cerebro is not None}")
+
     if LotoForense is None:
-        print("❌ CRÍTICO: No se pudo importar LotoForense. Abortando.")
+        logger.error("CRÍTICO: No se pudo importar LotoForense. Abortando.")
         return
 
     ahora = datetime.now(TZ_CHILE)
     dia_semana = ahora.weekday()
     hora_actual = ahora.hour
     base_id = int(time.time())
-    
+
+    logger.info(f"Hora Chile: {ahora.strftime('%Y-%m-%d %H:%M:%S')} | Día: {dia_semana} | Hora: {hora_actual}")
+
     nuevas_filas = []
     genoma = cargar_genoma()
 
     if genoma:
-        print("   🧠 Cortex cargado: Rankings y Morfología segmentados por juego.")
+        logger.info("Cortex cargado: Rankings y Morfología segmentados por juego.")
+        logger.debug(f"Juegos en genoma: {list(genoma.get('algo_ranking', {}).keys())}")
 
     for game_id, config in MULTIVERSO_CONFIG.items():
-        print(f"🌌 Universo: {game_id}")
+        logger.info("-" * 40)
+        logger.info(f"UNIVERSO: {game_id}")
         bolsa_pesos_consenso = {}
         top_consenso = []
         objetivo = None
-        
+
         # A. Obtener pesos reales (Contextual Awareness: Sensibilidad Horaria)
         pesos_voto = obtener_pesos_del_lobulo(game_id, genoma, hora=hora_actual)
-        print(f"   ⚖️ Pesos de confianza (basado en mérito local): {pesos_voto}")
+        logger.debug(f"Pesos de confianza: {pesos_voto}")
 
         # B. Calcular Objetivo Crononauta (Lógica Completa)
         objetivo, fecha_sorteo = calcular_proximo_sorteo_real(game_id, config['csv'])
-        print(f"   🎯 Objetivo Crononauta: #{objetivo}")
-        
+        logger.info(f"Objetivo Crononauta: #{objetivo} | Fecha: {fecha_sorteo.strftime('%d/%m/%Y %H:%M')}")
+
         # C. Instanciar Algoritmos
-        try: 
+        try:
             forense = LotoForense(game_id=game_id, target_day=dia_semana, genoma=genoma)
         except Exception as e:
-            print(f"   ⚠️ Error instanciando Forense: {e}")
+            logger.warning(f"Error instanciando Forense: {e}")
             continue
 
         # D. Usar los nuevos motores con Conciencia de ADN
@@ -291,7 +332,7 @@ def soñar():
                     adn_info = f"[Score ADN: {ganador_alg['score']}]"
                 else:
                     # Si el algoritmo solo genera ruido, pasamos al siguiente
-                    print(f"   ⚠️ {nombre}: Ningún candidato superó el filtro. Saltando.")
+                    logger.warning(f"{nombre}: Ningún candidato superó el filtro. Saltando.")
                     continue
                 
                 # Registrar Predicción Individual
@@ -309,7 +350,7 @@ def soñar():
                     'algoritmo': alg_name_trad,
                     'nota_especial': 'NORMAL' # Nueva línea: evita NaNs al consolidar
                 })
-                print(f"   🔹 {nombre}: {pred} {adn_info if 'adn_info' in locals() else ''}")
+                logger.info(f"  {nombre}: {pred} {adn_info}")
                 
                 # E. Voto para el Consenso (Ponderado por Ranking Local real)
                 peso = pesos_voto.get(alg_name_trad, 1.0)
@@ -334,7 +375,7 @@ def soñar():
                     reintentos += 1
                     
             except Exception as e:
-                print(f"   ⚠️ Error en {nombre}: {e}")
+                logger.error(f"Error en {nombre}: {e}")
 
         # --- BLOQUE: ORÁCULO NEURAL (MACHINE LEARNING) CON RESCATE DE DISIDENCIA ---
         if OraculoNeural:
@@ -411,26 +452,26 @@ def soñar():
                         if meta_cerebro:
                             peso_ia *= confianza_ml_individual
                         
-                        # Los disidentes (v4) reciben un impulso extra de presencia si son validados por el Meta-Learner
-                        multiplicador_voto = 5 if nota == "NORMAL" else 8
+                        # Las predicciones NORMAL tienen más peso; los disidentes menos
+                        multiplicador_voto = 8 if nota == "NORMAL" else 5
                         
                         for num in pred_ml:
                             bolsa_pesos_consenso[num] = bolsa_pesos_consenso.get(num, 0) + (peso_ia * multiplicador_voto)
                         
                         label_status = f"[{ganador_ml['estado_adn']}]"
-                        print(f"   🔹 {alg_name_ml} (Pool: {len(pool_ml)}): {pred_ml} {label_status} [Confianza: {round(confianza_ml_individual, 2)}x]")
-                    
+                        logger.info(f"  {alg_name_ml} (Pool: {len(pool_ml)}): {pred_ml} {label_status} [Confianza: {round(confianza_ml_individual, 2)}x]")
+
                     else:
                         pred_ml = None
-                        print(f"   ❌ {v} SILENCIADO. Motivos: {reproches}")
+                        logger.warning(f"{v} SILENCIADO. Motivos: {reproches}")
 
                 except Exception as e:
-                    print(f"   ⚠️ Fallo en ML {v}: {e}")
+                    logger.error(f"Fallo en ML {v}: {e}")
         # -------------------------------------------------------
 
         # F. Generar Consenso Meritocrático con Filtro de Curación
         try:
-            if bolsa_pesos_consenso and objetivo: # Cambiar esta condición
+            if bolsa_pesos_consenso:
                 n_balls = forense.rules['n']
                 
                 # Reiniciamos variables locales del consenso
@@ -455,9 +496,9 @@ def soñar():
                 if pasa:
                     top_consenso = candidato_top
                     es_valida = True
-                    print(f"   ✅ Consenso Determinista validado (Score ADN: {score_adn})")
+                    logger.info(f"Consenso Determinista validado (Score ADN: {score_adn})")
                 else:
-                    print(f"   ⚠️ Consenso Top-N rechazado por morfología. Iniciando Muestreo Estocástico...")
+                    logger.debug("Consenso Top-N rechazado por morfología. Iniciando Muestreo Estocástico...")
                     
                     # 2. Muestreo Estocástico: Elegimos números basados en su peso acumulado
                     # Preparamos probabilidades para np.random.choice
@@ -474,14 +515,14 @@ def soñar():
                         if pasa_m:
                             top_consenso = muestreo
                             es_valida = True
-                            print(f"   ✨ Muestreo exitoso tras {intentos_muestreo} intentos (Score ADN: {score_m})")
+                            logger.info(f"Muestreo exitoso tras {intentos_muestreo} intentos (Score ADN: {score_m})")
                             break
                         intentos_muestreo += 1
 
                 if not es_valida:
                     # Fallback al top si nada funcionó, pero marcamos como BAJA CONFIANZA
                     top_consenso = candidato_top
-                    print(f"   🚨 ADVERTENCIA: No se halló combinación ideal. Usando fallback.")
+                    logger.warning("No se halló combinación ideal. Usando fallback.")
 
                 # Cálculo de confianza final
                 confianza_final = calcular_nivel_confianza(bolsa_pesos_consenso, n_balls)
@@ -501,34 +542,54 @@ def soñar():
                     'algoritmo': 'consenso_meritocratico_v2',
                     'nota_especial': alerta
                 })
-                print(f"   🤝 TICKET FINAL: {top_consenso} | {alerta} ({confianza_final}%)")
+                logger.info(f"TICKET FINAL: {top_consenso} | {alerta} ({confianza_final}%)")
         except Exception as e:
-            print(f"   ❌ Error en fase de consenso: {e}")
+            logger.error(f"Error en fase de consenso: {e}")
 
-    # G. Guardado Asíncrono (QUEUE SYSTEM)
+    # G. Guardado Asíncrono (QUEUE SYSTEM) con escritura atómica
     import uuid
+    import tempfile
+    import shutil
     QUEUE_DIR = os.path.join(DATA_DIR, 'queue')
     os.makedirs(QUEUE_DIR, exist_ok=True)
 
     if nuevas_filas:
-        # 1. Guardar los tickets individuales en la queue
+        # 1. Guardar los tickets individuales en la queue con escritura atómica
         for fila in nuevas_filas:
             fila_limpia = clean_for_json(fila) # Sanitización final
             file_id = str(uuid.uuid4())
             filepath = os.path.join(QUEUE_DIR, f"prediccion_{file_id}.json")
-            with open(filepath, 'w', encoding='utf-8') as f:
-                json.dump(fila_limpia, f, ensure_ascii=False, indent=2)
+            tmp_path = None
+            try:
+                with tempfile.NamedTemporaryFile(
+                    mode='w', encoding='utf-8', suffix='.json',
+                    dir=QUEUE_DIR, delete=False
+                ) as tmp_file:
+                    json.dump(fila_limpia, tmp_file, ensure_ascii=False, indent=2)
+                    tmp_path = tmp_file.name
+                shutil.move(tmp_path, filepath)
+            except Exception as e:
+                logger.error(f"Error escribiendo predicción: {e}")
+                if tmp_path and os.path.exists(tmp_path):
+                    try:
+                        os.remove(tmp_path)
+                    except OSError:
+                        pass
 
-        # 2. ¡EL CIERRE DEL CÍRCULO! 
-        print("🔄 Forzando sincronización del laboratorio...")
+        # 2. ¡EL CIERRE DEL CÍRCULO!
+        logger.info("Forzando sincronización del laboratorio...")
         try:
             from consolidar_laboratorio import ejecutar_consolidacion_hibrida
             ejecutar_consolidacion_hibrida()
-            print("✅ Dashboard sincronizado correctamente.")
+            logger.info("Dashboard sincronizado correctamente.")
         except Exception as e:
-            print(f"❌ Error fatal sincronizando dashboard: {e}")
+            logger.error(f"Error fatal sincronizando dashboard: {e}")
 
-    print("\n✨ PROCESO DEL SOÑADOR TERMINADO.")
+    logger.info("=" * 60)
+    logger.info("PROCESO DEL SOÑADOR TERMINADO")
+    logger.info(f"Total predicciones generadas: {len(nuevas_filas)}")
+    logger.info(f"Log guardado en: {_log_file}")
+    logger.info("=" * 60)
 
 if __name__ == "__main__":
     soñar()

@@ -123,8 +123,14 @@ def _procesar_juego(df, game_name, positions_dict, biometrics_dict):
     for pos in sorted_pos:
         col = positions_dict[pos]
 
-        # Calcular frecuencias observadas
-        counts_raw = df[col].dropna().apply(lambda x: int(x) if x >= min_num else None).dropna().value_counts().to_dict()
+        # Calcular frecuencias observadas con conversión segura
+        def safe_convert(x):
+            try:
+                val = int(float(x))
+                return val if val >= min_num else None
+            except (ValueError, TypeError):
+                return None
+        counts_raw = df[col].dropna().apply(safe_convert).dropna().value_counts().to_dict()
 
         # SUAVIZADO LAPLACE: añadir +1 a TODOS los números del rango
         counts_smooth = {}
