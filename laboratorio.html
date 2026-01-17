@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Laboratorio LotoAI - Financial Master Ultimate</title>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="stylesheet" href="css/laboratorio.css">
+</head>
+<body>
+    <main class="container" role="main">
+        <header>
+            <div>
+                <h1>Laboratorio Multiverso</h1>
+                <p style="margin: 5px 0 0 0; font-size: 0.9rem; color: var(--text-muted);">Monitor de Inteligencia Artificial Forense & Analisis Financiero</p>
+            </div>
+            <div>
+                <span class="status-badge" id="last-update">Cargando datos...</span>
+                <a href="index.html" class="nav-link" style="margin-left: 10px;">Inicio</a>
+            </div>
+        </header>
+
+        <!-- ADVERTENCIA DE JUEGO RESPONSABLE -->
+        <div style="background: linear-gradient(135deg, rgba(248, 81, 73, 0.15), rgba(248, 81, 73, 0.05)); border: 1px solid rgba(248, 81, 73, 0.4); border-radius: 8px; padding: 12px 16px; margin-bottom: 20px; display: flex; align-items: flex-start; gap: 12px;">
+            <i data-lucide="alert-triangle" style="color: var(--danger); flex-shrink: 0; margin-top: 2px; width: 20px;"></i>
+            <div>
+                <h4 style="color: var(--danger); font-size: 0.8rem; margin: 0 0 5px 0; text-transform: uppercase; letter-spacing: 1px;">Juego Responsable</h4>
+                <p style="color: var(--text-muted); font-size: 0.75rem; line-height: 1.5; margin: 0;">
+                    <strong style="color: white;">Esto es un experimento estadistico.</strong> La loteria es un juego de azar - el pasado NO predice el futuro.
+                    Probabilidad de ganar LOTO: <strong style="color: var(--danger);">1 en 4.496.388</strong>. Juega solo con dinero que puedas perder.
+                </p>
+            </div>
+        </div>
+
+        <nav class="universe-tabs" role="tablist" aria-label="Seleccionar tipo de juego">
+            <button type="button" class="tab-btn active" data-game="LOTO" onclick="switchUniverse('LOTO')" role="tab" aria-selected="true" aria-controls="panel-LOTO">LOTO CLASICO</button>
+            <button type="button" class="tab-btn" data-game="LOTO3" onclick="switchUniverse('LOTO3')" role="tab" aria-selected="false" aria-controls="panel-LOTO3">LOTO 3</button>
+            <button type="button" class="tab-btn" data-game="LOTO4" onclick="switchUniverse('LOTO4')" role="tab" aria-selected="false" aria-controls="panel-LOTO4">LOTO 4</button>
+            <button type="button" class="tab-btn" data-game="RACHA" onclick="switchUniverse('RACHA')" role="tab" aria-selected="false" aria-controls="panel-RACHA">RACHA</button>
+        </nav>
+
+        <div class="kpi-grid">
+            <div class="card">
+                <h3>Total simulaciones</h3>
+                <div class="value" id="total-sims">0</div>
+            </div>
+            <div class="card">
+                <h3>Sorteo objetivo actual</h3>
+                <div class="value" id="target-draw" style="color: var(--warning); font-size: 1.3rem; line-height: 1.3;">...</div>
+            </div>
+            <div class="card">
+                <h3>Mejor Momento</h3>
+                <div class="value" id="best-moment">--</div>
+            </div>
+            <div class="card">
+                <h3>Precision promedio</h3>
+                <div class="value" id="avg-score">0%</div>
+            </div>
+        </div>
+
+        <div id="loto3-safe-plan" class="card" style="display:none; border: 1px solid var(--accent); background: linear-gradient(145deg, rgba(88, 166, 255, 0.05) 0%, rgba(0,0,0,0) 100%); margin-bottom: 30px;">
+            <div style="display:flex; justify-content:space-between; align-items:flex-start;">
+                <div>
+                    <h3 style="color:var(--accent); font-size:1.1rem; margin-bottom:5px;">Sugerencia Experimental (Solo Entretenimiento)</h3>
+                    <p style="margin:0; font-size:0.9rem; color:var(--text-muted);">
+                        Algoritmo: <strong id="plan-algo-name" style="color:white;">--</strong>.
+                        <span style="color:var(--danger); font-size:0.8rem;">Esto NO garantiza resultados - es solo un experimento estadistico.</span>
+                    </p>
+                </div>
+                <div style="text-align:right;">
+                     <span class="status-badge" style="background:var(--accent);">Sorteo #<span id="plan-target">--</span></span>
+                </div>
+            </div>
+
+            <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap:20px; margin-top:20px;">
+                <div style="background:rgba(0,0,0,0.3); padding:15px; border-radius:8px; border:1px dashed var(--border);">
+                    <div style="font-size:0.8rem; text-transform:uppercase; color:var(--text-muted); margin-bottom:10px;">Tus Numeros</div>
+                    <div style="display:flex; gap:10px; justify-content:center; font-size:2rem; font-weight:bold; margin-bottom:15px;">
+                        <span id="plan-n1" style="background:#0d1117; padding:5px 15px; border-radius:6px; border:1px solid var(--accent); color:white;">-</span>
+                        <span id="plan-n2" style="background:#0d1117; padding:5px 15px; border-radius:6px; border:1px solid var(--accent); color:white;">-</span>
+                        <span id="plan-n3" style="background:#0d1117; padding:5px 15px; border-radius:6px; border:1px solid var(--accent); color:var(--money);">-</span>
+                    </div>
+                    <div style="text-align:center; font-size:0.8rem; color:var(--warning);">
+                        Jugar en este orden exacto
+                    </div>
+                </div>
+
+                <div>
+                    <table style="width:100%; font-size:0.9rem;">
+                        <tr>
+                            <td style="padding:8px 0; color:var(--text-muted);">Apuesta A (Escudo)</td>
+                            <td style="text-align:right; font-weight:bold; color:white;">TERMINACION</td>
+                            <td style="text-align:right; color:var(--text-muted);">$100</td>
+                        </tr>
+                        <tr>
+                            <td style="padding:8px 0; color:var(--text-muted);">Apuesta B (Lanza)</td>
+                            <td style="text-align:right; font-weight:bold; color:white;">PAR</td>
+                            <td style="text-align:right; color:var(--text-muted);">$100</td>
+                        </tr>
+                        <tr style="border-top:1px solid var(--border);">
+                            <td style="padding:10px 0; font-weight:bold;">COSTO TOTAL</td>
+                            <td></td>
+                            <td style="text-align:right; font-weight:bold; color:var(--money); font-size:1.1rem;">$200</td>
+                        </tr>
+                    </table>
+                    <div style="margin-top:10px; font-size:0.8rem; color:var(--text-muted); font-style:italic;">
+                        * Si aciertas el ultimo numero, recuperas y duplicas. Si aciertas par, ganas x9.
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="kpi-grid" id="financial-panel" style="display:none; border-top: 1px solid var(--border); padding-top: 25px; margin-top:20px;">
+            <div class="card money-card">
+                <h3>Inversion Hipotetica</h3>
+                <div class="value" id="hypo-invest">$0</div>
+                <small style="color:#8fbc8f; display:block; margin-top:5px;">(Simulaciones x Costo)</small>
+            </div>
+            <div class="card money-card">
+                <h3>Ganancia Hipotetica</h3>
+                <div class="value" id="hypo-win">$0</div>
+                <small style="color:#8fbc8f; display:block; margin-top:5px;">(Premios Prorrateados)</small>
+            </div>
+            <div class="card real-money">
+                <h3>Inversion Real</h3>
+                <div class="value" id="real-invest">$0</div>
+                <small style="color:#cc9933; display:block; margin-top:5px;">(Jugadas en CSV)</small>
+            </div>
+            <div class="card real-money">
+                <h3>Ganancia Real</h3>
+                <div class="value" id="real-win">$0</div>
+                <small style="color:#cc9933; display:block; margin-top:5px;">(A la billetera)</small>
+            </div>
+        </div>
+
+        <div id="financial-audit-log" style="display:none; margin-bottom:30px; background:var(--card); padding:20px; border-radius:8px; border:1px solid var(--border);">
+            <h3 style="color:var(--money); margin-top:0;">Detalle de Premios (Prorrateo Exacto)</h3>
+            <div class="table-scroll">
+                <table class="audit-table">
+                    <thead>
+                        <tr>
+                            <th>Fecha / Hora</th>
+                            <th>Algoritmo</th>
+                            <th>Numeros Jugados</th>
+                            <th>Aciertos</th>
+                            <th>Categoria Premio</th>
+                            <th>Calculo (Monto / Ganadores)</th>
+                            <th>Tu Premio</th>
+                        </tr>
+                    </thead>
+                    <tbody id="audit-table-body"></tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="chart-wrapper">
+            <div class="chart-header-controls">
+                <h3 style="margin:0; color:var(--text-muted); font-size:1rem;">Rendimiento Comparativo (Afinidad %)</h3>
+                <div class="chart-radios">
+                    <label><input type="radio" name="chartView" value="hour" checked onchange="switchChartView(this.value)"><span>Hora</span></label>
+                    <label><input type="radio" name="chartView" value="day" onchange="switchChartView(this.value)"><span>Dia Sem.</span></label>
+                    <label><input type="radio" name="chartView" value="month" onchange="switchChartView(this.value)"><span>Mes</span></label>
+                </div>
+            </div>
+            <div class="chart-container">
+                <canvas id="mainChart"></canvas>
+            </div>
+        </div>
+
+        <div class="card" style="margin-bottom: 2rem;">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1rem;">
+                <h3 style="margin:0; color:var(--accent); display:flex; align-items:center; gap:10px;">
+                    <i data-lucide="activity"></i> Evolucion Cognitiva de Algoritmos
+                </h3>
+            </div>
+            <div style="height: 300px; width: 100%;">
+                <canvas id="evolutionChart"></canvas>
+            </div>
+        </div>
+
+        <div class="card">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;">
+                <h3>Explorador de Simulaciones</h3>
+                <span id="filtered-count" style="font-size:0.8rem; color:var(--text-muted)">Mostrando 0 registros</span>
+            </div>
+
+            <div class="filters-container">
+                <div class="filter-group">
+                    <label for="f-sorteo">Sorteo Objetivo</label>
+                    <select id="f-sorteo" class="filter-select" onchange="applyFilters()" aria-label="Filtrar por sorteo">
+                        <option value="ALL">Todos los Sorteos</option>
+                    </select>
+                </div>
+                <div class="filter-group">
+                    <label for="f-algo">Algoritmo</label>
+                    <select id="f-algo" class="filter-select" onchange="applyFilters()" aria-label="Filtrar por algoritmo">
+                        <option value="ALL">Todos</option>
+                        <option value="forense">Biometrico/Ponderado</option>
+                        <option value="gaussiano">Gaussiano</option>
+                        <option value="delta">Delta</option>
+                        <option value="markov">Markov</option>
+                        <option value="oraculo_neural_v3">Oraculo V3 (Reglamento)</option>
+                        <option value="oraculo_neural_v4">Oraculo V4 (Fisica)</option>
+                        <option value="consenso">Consenso</option>
+                    </select>
+                </div>
+                <div class="filter-group">
+                    <label for="f-dia">Dia de Semana</label>
+                    <select id="f-dia" class="filter-select" onchange="applyFilters()" aria-label="Filtrar por dia de semana">
+                        <option value="ALL">Todos</option>
+                        <option value="1">Lunes</option> <option value="2">Martes</option> <option value="3">Miercoles</option>
+                        <option value="4">Jueves</option> <option value="5">Viernes</option> <option value="6">Sabado</option> <option value="0">Domingo</option>
+                    </select>
+                </div>
+                <div class="filter-group">
+                    <label for="f-hora">Hora</label>
+                    <select id="f-hora" class="filter-select" onchange="applyFilters()" aria-label="Filtrar por hora">
+                        <option value="ALL">Todas</option>
+                    </select>
+                </div>
+                <button type="button" class="btn-reset" onclick="resetFilters()" aria-label="Limpiar todos los filtros">Limpiar</button>
+            </div>
+
+            <div class="table-scroll">
+                <table id="logs-table">
+                    <thead>
+                        <tr>
+                            <th class="sortable-header" onclick="sortLogs('date')">Fecha/Hora <span id="log-sort-date" class="sort-icon"></span></th>
+                            <th class="sortable-header" onclick="sortLogs('algo')">Algoritmo <span id="log-sort-algo" class="sort-icon"></span></th>
+                            <th class="sortable-header" onclick="sortLogs('target')">Sorteo <span id="log-sort-target" class="sort-icon"></span></th>
+                            <th>Prediccion</th>
+                            <th class="sortable-header" onclick="sortLogs('status')">Estado <span id="log-sort-status" class="sort-icon"></span></th>
+                            <th class="sortable-header" onclick="sortLogs('score')">Score <span id="log-sort-score" class="sort-icon"></span></th>
+                            <th>Accion</th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="card">
+            <h3 style="margin-bottom:15px; color:var(--accent);">Resumen de Desempeno por Sorteo (Agregado)</h3>
+            <div class="table-scroll">
+                <table id="aggregate-table">
+                    <thead id="agg-head"></thead>
+                    <tbody id="aggregate-body"></tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="card" style="margin-top: 20px;">
+            <h3 style="margin-bottom:15px; color:var(--gold);">Analisis Financiero Detallado (Balance Historico)</h3>
+            <div class="table-scroll">
+                <table id="financial-table">
+                    <thead id="fin-head"></thead>
+                    <tbody id="fin-body"></tbody>
+                </table>
+            </div>
+        </div>
+    </main>
+
+    <script src="js/laboratorio.js"></script>
+    <script>
+        lucide.createIcons();
+        loadAllData();
+    </script>
+</body>
+</html>
