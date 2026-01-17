@@ -1,0 +1,91 @@
+name: Soñador (Generador de Predicciones)
+
+on:
+  schedule:
+    - cron: '*/15 * * * *' # Ejecutar cada 15 minutos
+  workflow_dispatch: # Permite ejecución manual
+
+permissions:
+  contents: write
+
+jobs:
+  dream:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout repo
+      uses: actions/checkout@v3
+
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.11'
+
+    - name: Install dependencies
+      # Las dependencias son las mismas para ambos scripts, así que no hay que agregar nada extra.
+      run: |
+        pip install pandas numpy scikit-learn scipy
+
+    # --- MOTOR 1: LOTO CLÁSICO / RACHA ---
+    - name: Ejecutar Bot Dreamer
+      run: python engine/models/bot_dreamer.py
+
+    # --- MOTOR 2: NUEVO TRI-CORE LOTO 3 (Agregado) ---
+    - name: Ejecutar Tri-Core (Loto 3)
+      run: python engine/models/loto3_tricore.py
+
+    # --- FASE DE SINCRONIZACIÓN ---
+    - name: Sincronizar y Guardar (Retry Logic Blindado)
+      run: |
+        git config --global user.name 'LotoAI Bot'
+        git config --global user.email 'bot@lotoai.com'
+        
+        # --- FASE 1: COMMIT LOCAL (Asegurar el trabajo) ---
+        
+        # Agrega cambios de AMBOS scripts (Dreamer y Tri-Core)
+        git add .
+        
+        # Verificamos si hay cambios reales
+        if git diff-index --quiet HEAD; then
+          echo "💤 Nada nuevo que guardar."
+          exit 0
+        else
+          git commit -m "🧠 Bot: Predicción Multiverso (Loto + TriCore)"
+        fi
+
+        # --- FASE 2: SINCRONIZACIÓN (El Bucle de la Perseverancia) ---
+        MAX_RETRIES=10
+        COUNT=0
+        SUCCESS=0
+        
+        while [ $COUNT -lt $MAX_RETRIES ]; do
+          echo "🔄 Intento de sincronización $COUNT/$MAX_RETRIES..."
+          
+          # Intentamos traer cambios remotos y aplicar nuestro commit encima (Rebase)
+          if git pull origin main --rebase; then
+            
+            # Si el rebase funcionó, intentamos subir
+            if git push origin main; then
+              echo "✅ Éxito: Predicciones subidas al multiverso."
+              SUCCESS=1
+              break
+            else
+              echo "⚠️ Push rechazado (race condition). Reintentando..."
+            fi
+            
+          else
+            echo "⚠️ Conflicto en Pull/Rebase. Abortando rebase..."
+            git rebase --abort
+            
+            # CRÍTICO: Si falla el rebase, guardamos cambios locales
+            git stash || true
+          fi
+          
+          sleep $((RANDOM % 10 + 5))
+          COUNT=$((COUNT+1))
+        done
+        
+        if [ $SUCCESS -eq 0 ]; then
+          echo "❌ Error crítico: Imposible sincronizar tras $MAX_RETRIES intentos."
+          exit 1
+        fi
