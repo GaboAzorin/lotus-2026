@@ -6,7 +6,10 @@
       "Bash(python:*)",
       "Bash(pip install:*)",
       "Bash(set:*)",
-      "Bash(grep:*)"
+      "Bash(grep:*)",
+      "Bash(tree:*)",
+      "Bash(dir /s /b)",
+      "Bash(dir:*)"
     ]
   }
 }

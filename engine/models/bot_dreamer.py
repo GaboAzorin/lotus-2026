@@ -395,14 +395,14 @@ def soñar():
                             'fecha_generacion': ahora.strftime('%Y-%m-%d %H:%M:%S'),
                             'fecha_lanzamiento': fecha_sorteo.strftime('%d/%m/%Y %H:%M'),
                             'juego': game_id,
-                            'numeros': list(top_consenso), # Asegurar lista
-                            'sorteo_objetivo': objetivo_sorteo,
+                            'numeros': list(pred_ml),
+                            'sorteo_objetivo': objetivo,
                             'estado': 'PENDIENTE',
-                            'aciertos': 0, 
-                            'score_afinidad': confianza_final,
+                            'aciertos': 0,
+                            'score_afinidad': ganador_ml['score'],
                             'hora_dia': hora_actual,
-                            'algoritmo': 'consenso_meritocratico_v2',
-                            'nota_especial': 'NORMAL' # Nueva línea: evita NaNs al consolidar
+                            'algoritmo': alg_name_ml,
+                            'nota_especial': nota
                         })
                         
                         # 5. Voto Ponderado para el Consenso Meritocrático
