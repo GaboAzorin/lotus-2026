@@ -475,7 +475,7 @@
             </div>
             <div class="card">
                 <h3>Sorteo objetivo actual</h3>
-                <div class="value" id="target-draw" style="color: var(--warning)">...</div>
+                <div class="value" id="target-draw" style="color: var(--warning); font-size: 1.3rem; line-height: 1.3;">...</div>
             </div>
             <div class="card">
                 <h3>Mejor Momento</h3>
@@ -973,14 +973,15 @@
                     if(isNaN(obj.dateObj)) obj.dateObj = new Date();
 
                     if (headers.includes('juego')) {
-                        obj.juego = parts[2]; 
+                        obj.juego = parts[2];
                         obj.numeros = parts[3];
                         obj.objetivo = parts[4];
                         obj.estado = parts[5];
                         obj.aciertos = parseInt(parts[6] || 0);
                         obj.score = parseFloat(parts[7] || 0);
-                        obj.hora = parseInt(parts[8]); 
+                        obj.hora = parseInt(parts[8]);
                         obj.algoritmo = parts[9] || 'unknown';
+                        obj.fechaLanzamiento = parts[11] ? parts[11].replace(/\r/g, '').trim() : '';
                     } else {
                         // Soporte Legacy
                         obj.juego = 'LOTO';
@@ -989,8 +990,9 @@
                         obj.estado = parts[4];
                         obj.aciertos = parseInt(parts[5] || 0);
                         obj.score = parseFloat(parts[6] || 0);
-                        obj.hora = parseInt(parts[7]); 
+                        obj.hora = parseInt(parts[7]);
                         obj.algoritmo = parts[8] || 'unknown';
+                        obj.fechaLanzamiento = '';
                     }
                     
                     if(isNaN(obj.hora)) {
@@ -1390,9 +1392,29 @@
             });
             if (unique.includes(currentVal)) sel.value = currentVal;
         }
+        function formatFechaLanzamiento(fechaStr) {
+            // Convierte "18/01/2026 21:00" a "sáb 18, a las 21:00"
+            if (!fechaStr) return '';
+            try {
+                const diasSemana = ['dom', 'lun', 'mar', 'mié', 'jue', 'vie', 'sáb'];
+                const [fechaPart, horaPart] = fechaStr.split(' ');
+                const [dia, mes, anio] = fechaPart.split('/').map(Number);
+                const fecha = new Date(anio, mes - 1, dia);
+                const diaSemana = diasSemana[fecha.getDay()];
+                return `(${diaSemana} ${dia}, a las ${horaPart})`;
+            } catch(e) {
+                return '';
+            }
+        }
         function updateKPIs(data) {
             document.getElementById('total-sims').textContent = data.length;
-            document.getElementById('target-draw').textContent = data.length ? "#" + data[0].objetivo : "--";
+            if (data.length) {
+                const sorteoInfo = "#" + data[0].objetivo;
+                const fechaInfo = formatFechaLanzamiento(data[0].fechaLanzamiento);
+                document.getElementById('target-draw').textContent = sorteoInfo + " " + fechaInfo;
+            } else {
+                document.getElementById('target-draw').textContent = "--";
+            }
             document.getElementById('last-update').textContent = data.length ? data[0].fechaStr.split(' ')[1] : "--";
             const auditados = data.filter(d => d.estado === 'AUDITADO');
             const avg = auditados.length ? (auditados.reduce((a,b)=>a+b.score,0)/auditados.length).toFixed(1) : 0;
