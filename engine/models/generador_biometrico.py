@@ -17,6 +17,23 @@ UNIVERSOS = {
     "RACHA":        {"file": "RACHA_MAESTRO.csv",          "mode": "simple", "prefix": "n", "cols": 10}
 }
 
+# Rangos de números válidos por juego para suavizado Laplace
+RANGOS_JUEGO = {
+    "LOTO": (1, 41),
+    "RECARGADO": (1, 41),
+    "REVANCHA": (1, 41),
+    "DESQUITE": (1, 41),
+    "AHORA_SI_QUE_SI": (1, 41),
+    "JUBILAZO_1": (1, 41),
+    "JUBILAZO_2": (1, 41),
+    "LOTO3": (0, 9),
+    "LOTO4": (1, 41),
+    "RACHA": (1, 20)
+}
+
+# Suavizado Laplace: añade 1 a todos los conteos para evitar prob 0
+LAPLACE_SMOOTHING = 1
+
 def safe_int(x):
     try: return int(x)
     except: return None
@@ -85,27 +102,51 @@ def generar_biometria():
     print(f"\n✅ CEREBRO SINCRONIZADO. Archivo guardado en: {OUTPUT_FILE}")
 
 def _procesar_juego(df, game_name, positions_dict, biometrics_dict):
-    """Auxiliar para calcular frecuencias y escribir en el diccionario"""
+    """
+    Auxiliar para calcular frecuencias con suavizado Laplace.
+
+    MEJORAS v2.1:
+    - Suavizado Laplace: +1 a todos los números para evitar prob 0
+    - Normalización a pesos (probabilidades)
+    - Incluye rango completo del juego
+    """
     game_data = {
-        "source_type": "MECHANICAL", # Etiqueta para el frontend
+        "source_type": "MECHANICAL",
         "positions": {}
     }
-    
+
+    # Determinar rango de números para este juego
+    rango = RANGOS_JUEGO.get(game_name, (1, 41))
+    min_num, max_num = rango
+
     sorted_pos = sorted(positions_dict.keys())
     for pos in sorted_pos:
         col = positions_dict[pos]
-        # Calcular frecuencias ignorando nulos y ceros
-        counts = df[col].dropna().apply(lambda x: int(x) if x > 0 else None).dropna().value_counts().to_dict()
-        # Convertir keys a string para JSON
-        counts_str = {str(k): v for k, v in counts.items()}
-        
+
+        # Calcular frecuencias observadas
+        counts_raw = df[col].dropna().apply(lambda x: int(x) if x >= min_num else None).dropna().value_counts().to_dict()
+
+        # SUAVIZADO LAPLACE: añadir +1 a TODOS los números del rango
+        counts_smooth = {}
+        total_con_laplace = 0
+        for num in range(min_num, max_num + 1):
+            count = counts_raw.get(num, 0) + LAPLACE_SMOOTHING
+            counts_smooth[num] = count
+            total_con_laplace += count
+
+        # NORMALIZACIÓN: convertir a pesos (probabilidades)
+        weights = {}
+        for num, count in counts_smooth.items():
+            weights[str(num)] = round(count / total_con_laplace, 6)
+
         game_data["positions"][str(pos)] = {
             "col_name": col,
-            "counts": counts_str
+            "counts": {str(k): v for k, v in counts_smooth.items()},
+            "weights": weights  # NUEVO: pesos normalizados listos para usar
         }
-    
+
     biometrics_dict["games"][game_name] = game_data
-    print(f"      🔹 {game_name}: {len(sorted_pos)} posiciones analizadas.")
+    print(f"      🔹 {game_name}: {len(sorted_pos)} posiciones con suavizado Laplace.")
 
 if __name__ == "__main__":
     generar_biometria()

@@ -57,24 +57,38 @@ class MetaLearner:
         print(f"🧠 META-LEARNER: Cerebro de nivel 2 actualizado con {len(df_audit)} experiencias.")
 
     def predecir_confianza_real(self, juego, algoritmo, hora, score_adn):
-        """Devuelve el multiplicador de peso basado en la probabilidad de éxito real"""
-        if not self.model or not self.maps['algos']: return 1.0 
-        
+        """
+        Devuelve el multiplicador de peso basado en la probabilidad de éxito real.
+        Usa escalado SIGMOIDE para evitar divergencia a infinito.
+        Rango de salida: [0.5, 3.0] - nunca diverge.
+        """
+        if not self.model or not self.maps['algos']: return 1.0
+
+        # Máximo de aciertos por juego para normalizar
+        MAX_ACIERTOS = {'LOTO': 6, 'LOTO3': 3, 'LOTO4': 4, 'RACHA': 10}
+
         try:
-            # Recuperamos las IDs correctas de los diccionarios
             j_id = self.maps['juegos'].get(juego, -1)
             a_id = self.maps['algos'].get(algoritmo, -1)
-            
-            if j_id == -1 or a_id == -1: return 1.0 # Si es nuevo, peso neutro
 
-            input_data = np.array([[j_id, a_id, hora, score_adn]]) 
-            # El modelo predice cuántos aciertos se esperan
+            if j_id == -1 or a_id == -1: return 1.0
+
+            input_data = np.array([[j_id, a_id, hora, score_adn]])
             esperanza_aciertos = self.model.predict(input_data)[0]
-            
-            # Normalizamos el multiplicador (Si espera muchos aciertos, sube el peso)
-            # Para LOTO3 (max 3), una esperanza de 1.0 es altísima.
-            multiplicador = 1.0 + (esperanza_aciertos * 2.0) 
-            
-            return max(0.5, multiplicador) 
-        except:
+
+            # Normalizar por el máximo del juego
+            max_juego = MAX_ACIERTOS.get(juego, 6)
+            esperanza_normalizada = esperanza_aciertos / max_juego
+
+            # ESCALADO SIGMOIDE: evita divergencia, siempre entre 0.5 y 3.0
+            # sigmoide(x) = 1 / (1 + e^(-k*x)) donde k controla la pendiente
+            import math
+            k = 4.0  # Factor de pendiente (ajustable)
+            sigmoide = 1.0 / (1.0 + math.exp(-k * (esperanza_normalizada - 0.3)))
+
+            # Mapear sigmoide [0,1] a multiplicador [0.5, 3.0]
+            multiplicador = 0.5 + (sigmoide * 2.5)
+
+            return multiplicador
+        except Exception as e:
             return 1.0
