@@ -17,18 +17,31 @@ async function loadPredictions() {
 
         CONFIG_JUEGOS.forEach(gameKey => {
             const container = document.getElementById(`grid-${gameKey}`);
-            const filtered = rawData.filter(item => {
+
+            // Filtrar predicciones de este juego
+            const gameData = rawData.filter(item => {
                 if (!item.juego) return false;
                 const juegoUpper = item.juego.toString().toUpperCase().trim();
 
                 // Filtro exacto: LOTO no debe matchear LOTO3 o LOTO4
                 if (gameKey === "LOTO") {
-                    // Solo acepta "LOTO" exacto o variantes como "LOTO_HISTORIAL", pero NO "LOTO3" ni "LOTO4"
                     return juegoUpper === "LOTO" || (juegoUpper.startsWith("LOTO") && !juegoUpper.match(/^LOTO\d/));
                 }
                 // Para LOTO3, LOTO4, RACHA: match exacto o que empiece con el nombre
                 return juegoUpper === gameKey || juegoUpper.startsWith(gameKey + "_");
-            }).slice(0, 10);
+            });
+
+            if (gameData.length === 0) {
+                container.innerHTML = `<p class="empty-msg">No hay senales para ${gameKey}.</p>`;
+                return;
+            }
+
+            // Encontrar proximo sorteo (max sorteo_objetivo) y filtrar solo ese
+            const maxSorteo = Math.max(...gameData.map(item => item.sorteo_objetivo));
+            const filtered = gameData
+                .filter(item => item.sorteo_objetivo === maxSorteo)
+                .sort((a, b) => b.score_afinidad - a.score_afinidad)
+                .slice(0, 10);
 
             if (filtered.length > 0) {
                 filtered.forEach(item => { renderCard(item, `grid-${gameKey}`); });
