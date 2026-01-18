@@ -1,5 +1,5 @@
 # 📊 Auditoría de Modelos: v3 vs v4
-Actualizado el: 2026-01-18 06:25:00
+Actualizado el: 2026-01-18 12:31:12
 
 ## 🌡️ Alerta de Silenciamiento (Salud del Filtro)
 - ✅ **LOTO3**: v4 tiene una tasa de aceptación saludable.
