@@ -20,7 +20,7 @@
       "consenso_meritocratico_v2": 0.04,
       "forense_biometrico_v1": 0.05,
       "oraculo_neural_v3": 1.44,
-      "oraculo_neural_v4": 1.05
+      "oraculo_neural_v4": 1.21
     },
     "RACHA": {
       "consenso_meritocratico_v2": 17.19,
@@ -39,7 +39,7 @@
       "sum_range_corrected",
       "hourly_keys_normalized"
     ],
-    "last_optimization": "2026-01-17T19:19:43.683902",
+    "last_optimization": "2026-01-17T23:07:52.283829",
     "optimization_changes": 1
   },
   "morphology": {

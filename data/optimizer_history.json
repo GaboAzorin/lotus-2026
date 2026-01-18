@@ -23,6 +23,30 @@
       "algoritmo": "TODOS",
       "razon": "Concept drift detectado (z=2.93)",
       "metrica": 2.9263019740353595
+    },
+    {
+      "timestamp": "2026-01-17T23:07:52.282829",
+      "tipo": "PROMOVER",
+      "juego": "LOTO4",
+      "algoritmo": "oraculo_neural_v4",
+      "razon": "Rendimiento 165.5% del promedio",
+      "metrica": 1.885
+    },
+    {
+      "timestamp": "2026-01-17T23:07:52.282829",
+      "tipo": "REENTRENAR",
+      "juego": "LOTO3",
+      "algoritmo": "TODOS",
+      "razon": "Concept drift detectado (z=-2.80)",
+      "metrica": -2.7950736312644144
+    },
+    {
+      "timestamp": "2026-01-17T23:07:52.283829",
+      "tipo": "REENTRENAR",
+      "juego": "RACHA",
+      "algoritmo": "TODOS",
+      "razon": "Concept drift detectado (z=-2.18)",
+      "metrica": -2.184741849266267
     }
   ],
   "drift_alerts": [
@@ -32,6 +56,20 @@
       "z_score": 2.93,
       "mean_reciente": 1.06,
       "mean_historico": 0.923
+    },
+    {
+      "timestamp": "2026-01-17T23:07:52.271631",
+      "juego": "LOTO3",
+      "z_score": -2.8,
+      "mean_reciente": 0.72,
+      "mean_historico": 0.918
+    },
+    {
+      "timestamp": "2026-01-17T23:07:52.273629",
+      "juego": "RACHA",
+      "z_score": -2.18,
+      "mean_reciente": 5.06,
+      "mean_historico": 5.38
     }
   ],
   "health_checks": [
@@ -102,6 +140,42 @@
           "max_aciertos": 3,
           "tasa_exito_3plus": 0.81,
           "n_predicciones": 124
+        }
+      }
+    },
+    {
+      "timestamp": "2026-01-17T23:07:52.278629",
+      "total_predicciones": 613,
+      "juegos_activos": [
+        "LOTO3",
+        "RACHA",
+        "LOTO4"
+      ],
+      "algoritmos_activos": [
+        "oraculo_neural_v4",
+        "oraculo_neural_v3",
+        "forense_biometrico_v1",
+        "consenso_meritocratico_v2",
+        "loto3_ultra_ensemble"
+      ],
+      "metricas": {
+        "LOTO3": {
+          "promedio_aciertos": 0.868,
+          "max_aciertos": 2,
+          "tasa_exito_3plus": 0.0,
+          "n_predicciones": 197
+        },
+        "RACHA": {
+          "promedio_aciertos": 5.303,
+          "max_aciertos": 8,
+          "tasa_exito_3plus": 100.0,
+          "n_predicciones": 208
+        },
+        "LOTO4": {
+          "promedio_aciertos": 1.139,
+          "max_aciertos": 3,
+          "tasa_exito_3plus": 0.48,
+          "n_predicciones": 208
         }
       }
     }
