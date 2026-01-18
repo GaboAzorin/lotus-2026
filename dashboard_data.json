@@ -1,16 +1,16 @@
 [
     {
-        "fecha_generacion": "2026-01-18 18:53:46",
+        "fecha_generacion": "2026-01-18 19:21:19",
         "fecha_lanzamiento": "18/01/2026 21:00",
         "sorteo_objetivo": 24002,
         "juego": "LOTO3",
         "numeros": [
-            7,
+            0,
             3,
-            8
+            5
         ],
         "algoritmo": "Tri-Core (RF Independiente)",
-        "score_afinidad": 11,
+        "score_afinidad": 12,
         "nota_especial": "ESTRUCTURA_POSICIONAL"
     },
     {
