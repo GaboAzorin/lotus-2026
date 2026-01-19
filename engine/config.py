@@ -70,7 +70,7 @@ GAME_CONFIG = {
     },
     "LOTO4": {
         "type": "SET",
-        "max": 25,
+        "max": 23,
         "min_val": 1,
         "n_balls": 4,
         "input_prefix": "pos",

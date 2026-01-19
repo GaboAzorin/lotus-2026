@@ -28,7 +28,7 @@ GAME_CONFIG = {
         "input_prefix": "LOTO_pos", "target_prefix": "LOTO_n"
     },
     "LOTO4": {
-        "type": "SET", "max": 25, "min_val": 1, "n_balls": 4,
+        "type": "SET", "max": 23, "min_val": 1, "n_balls": 4,
         "input_prefix": "pos", "target_prefix": "n"
     },
     "RACHA": {

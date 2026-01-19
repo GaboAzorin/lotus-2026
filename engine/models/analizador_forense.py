@@ -15,7 +15,7 @@ class LotoForense:
         self.configs = {
             "LOTO":   {"n": 6,  "min": 1, "max": 41, "replace": False, "col_prefix": "LOTO_n"},
             "LOTO3":  {"n": 3,  "min": 0, "max": 9,  "replace": True,  "col_prefix": "n"},
-            "LOTO4":  {"n": 4,  "min": 1, "max": 41, "replace": False, "col_prefix": "n"},
+            "LOTO4":  {"n": 4,  "min": 1, "max": 23, "replace": False, "col_prefix": "n"},
             "RACHA":  {"n": 10, "min": 1, "max": 20, "replace": False, "col_prefix": "n"}
         }
         

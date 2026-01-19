@@ -27,7 +27,7 @@ RANGOS_JUEGO = {
     "JUBILAZO_1": (1, 41),
     "JUBILAZO_2": (1, 41),
     "LOTO3": (0, 9),
-    "LOTO4": (1, 41),
+    "LOTO4": (1, 23),
     "RACHA": (1, 20)
 }
 
