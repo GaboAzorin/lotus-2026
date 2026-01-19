@@ -1,0 +1,18 @@
+{
+  "id": 1768860249,
+  "fecha_generacion": "2026-01-19 18:50:49",
+  "fecha_lanzamiento": "19/01/2026 21:00",
+  "juego": "LOTO3",
+  "numeros": [
+    3,
+    2,
+    8
+  ],
+  "sorteo_objetivo": 24006,
+  "estado": "PENDIENTE",
+  "aciertos": 0,
+  "score_afinidad": 22.81,
+  "hora_dia": 18,
+  "algoritmo": "loto3_ultra_ensemble",
+  "nota_especial": "Franja:NOCHE|Markov:10%|RF:33%"
+}
