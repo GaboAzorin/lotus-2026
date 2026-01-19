@@ -1,0 +1,25 @@
+{
+  "id": 1768854744,
+  "fecha_generacion": "2026-01-19 17:12:35",
+  "fecha_lanzamiento": "19/01/2026 22:00",
+  "juego": "RACHA",
+  "numeros": [
+    2,
+    3,
+    5,
+    7,
+    8,
+    10,
+    13,
+    14,
+    18,
+    20
+  ],
+  "sorteo_objetivo": 10306,
+  "estado": "PENDIENTE",
+  "aciertos": 0,
+  "score_afinidad": 64.87,
+  "hora_dia": 17,
+  "algoritmo": "consenso_meritocratico_v2",
+  "nota_especial": "🔥 ALTA CONFIANZA"
+}
