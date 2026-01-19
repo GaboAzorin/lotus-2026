@@ -7,8 +7,8 @@
       "forense_biometrico_v1": 0.26,
       "gaussiano_tactico_v1": 0.66,
       "markov_chain_v1": 0.51,
-      "oraculo_neural_v3": 0.62,
-      "oraculo_neural_v4": 0.88
+      "oraculo_neural_v3": 0.71,
+      "oraculo_neural_v4": 0.7
     },
     "LOTO3": {
       "consenso_meritocratico_v2": 22.35,
@@ -39,8 +39,8 @@
       "sum_range_corrected",
       "hourly_keys_normalized"
     ],
-    "last_optimization": "2026-01-17T23:07:52.283829",
-    "optimization_changes": 1
+    "last_optimization": "2026-01-18T22:54:21.852298",
+    "optimization_changes": 2
   },
   "morphology": {
     "LOTO": {
