@@ -1,0 +1,18 @@
+{
+  "id": 1768809955,
+  "fecha_generacion": "2026-01-19 04:54:15",
+  "fecha_lanzamiento": "19/01/2026 14:00",
+  "juego": "LOTO3",
+  "numeros": [
+    1,
+    7,
+    4
+  ],
+  "sorteo_objetivo": 24004,
+  "estado": "PENDIENTE",
+  "aciertos": 0,
+  "score_afinidad": 24.97,
+  "hora_dia": 4,
+  "algoritmo": "loto3_ultra_ensemble",
+  "nota_especial": "Franja:DIA|Markov:10%|RF:33%"
+}
