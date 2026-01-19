@@ -1,12 +1,12 @@
 [
     {
-        "fecha_generacion": "2026-01-19 05:22:15",
+        "fecha_generacion": "2026-01-19 05:57:51",
         "fecha_lanzamiento": "19/01/2026 14:00",
         "sorteo_objetivo": 24004,
         "juego": "LOTO3",
         "numeros": [
             3,
-            3,
+            4,
             7
         ],
         "algoritmo": "Tri-Core (RF Independiente)",
@@ -1957,6 +1957,27 @@
         "nota_especial": "Franja:DIA|Markov:10%|RF:33%"
     },
     {
+        "id": 1768812832,
+        "fecha_generacion": "2026-01-19 05:53:52",
+        "fecha_lanzamiento": "20/01/2026 21:00",
+        "juego": "LOTO",
+        "numeros": [
+            2,
+            19,
+            22,
+            27,
+            30,
+            31
+        ],
+        "sorteo_objetivo": 5376,
+        "estado": "PENDIENTE",
+        "aciertos": 0,
+        "score_afinidad": 0.0,
+        "hora_dia": 5,
+        "algoritmo": "forense_biometrico_v1",
+        "nota_especial": "NORMAL"
+    },
+    {
         "id": 1768810255,
         "fecha_generacion": "2026-01-19 04:54:15",
         "fecha_lanzamiento": "19/01/2026 14:00",
@@ -1973,6 +1994,27 @@
         "hora_dia": 4,
         "algoritmo": "loto3_ultra_ensemble",
         "nota_especial": "Franja:DIA|Markov:10%|RF:33%"
+    },
+    {
+        "id": 1768813881,
+        "fecha_generacion": "2026-01-19 05:53:52",
+        "fecha_lanzamiento": "20/01/2026 21:00",
+        "juego": "LOTO",
+        "numeros": [
+            4,
+            18,
+            20,
+            27,
+            29,
+            35
+        ],
+        "sorteo_objetivo": 5376,
+        "estado": "PENDIENTE",
+        "aciertos": 0,
+        "score_afinidad": 13.05,
+        "hora_dia": 5,
+        "algoritmo": "oraculo_neural_v4",
+        "nota_especial": "NORMAL"
     },
     {
         "id": 1768807251,
@@ -2097,6 +2139,52 @@
         "nota_especial": "NORMAL"
     },
     {
+        "id": 1768814432,
+        "fecha_generacion": "2026-01-19 05:53:52",
+        "fecha_lanzamiento": "19/01/2026 15:00",
+        "juego": "RACHA",
+        "numeros": [
+            2,
+            4,
+            7,
+            8,
+            9,
+            11,
+            13,
+            14,
+            15,
+            16
+        ],
+        "sorteo_objetivo": 10305,
+        "estado": "PENDIENTE",
+        "aciertos": 0,
+        "score_afinidad": 0.0,
+        "hora_dia": 5,
+        "algoritmo": "forense_biometrico_v1",
+        "nota_especial": "NORMAL"
+    },
+    {
+        "id": 1768813891,
+        "fecha_generacion": "2026-01-19 05:53:52",
+        "fecha_lanzamiento": "20/01/2026 21:00",
+        "juego": "LOTO",
+        "numeros": [
+            4,
+            18,
+            20,
+            29,
+            30,
+            36
+        ],
+        "sorteo_objetivo": 5376,
+        "estado": "PENDIENTE",
+        "aciertos": 0,
+        "score_afinidad": 38.58,
+        "hora_dia": 5,
+        "algoritmo": "consenso_meritocratico_v2",
+        "nota_especial": "🔥 ALTA CONFIANZA"
+    },
+    {
         "id": 1768807241,
         "fecha_generacion": "2026-01-19 04:01:12",
         "fecha_lanzamiento": "19/01/2026 15:00",
@@ -2203,6 +2291,31 @@
         "hora_dia": 4,
         "algoritmo": "loto3_ultra_ensemble",
         "nota_especial": "Franja:DIA|Markov:10%|RF:33%"
+    },
+    {
+        "id": 1768814001,
+        "fecha_generacion": "2026-01-19 05:53:52",
+        "fecha_lanzamiento": "19/01/2026 15:00",
+        "juego": "RACHA",
+        "numeros": [
+            2,
+            3,
+            4,
+            5,
+            7,
+            9,
+            10,
+            15,
+            16,
+            20
+        ],
+        "sorteo_objetivo": 10305,
+        "estado": "PENDIENTE",
+        "aciertos": 0,
+        "score_afinidad": 4.9,
+        "hora_dia": 5,
+        "algoritmo": "oraculo_neural_v3",
+        "nota_especial": "NORMAL"
     },
     {
         "id": 1768810855,
@@ -2372,6 +2485,46 @@
         "nota_especial": "NORMAL"
     },
     {
+        "id": 1768813981,
+        "fecha_generacion": "2026-01-19 05:53:52",
+        "fecha_lanzamiento": "19/01/2026 14:00",
+        "juego": "LOTO4",
+        "numeros": [
+            3,
+            4,
+            9,
+            23
+        ],
+        "sorteo_objetivo": 11572,
+        "estado": "PENDIENTE",
+        "aciertos": 0,
+        "score_afinidad": 54.54,
+        "hora_dia": 5,
+        "algoritmo": "consenso_meritocratico_v2",
+        "nota_especial": "🔥 ALTA CONFIANZA"
+    },
+    {
+        "id": 1768813034,
+        "fecha_generacion": "2026-01-19 05:53:52",
+        "fecha_lanzamiento": "20/01/2026 21:00",
+        "juego": "LOTO",
+        "numeros": [
+            5,
+            12,
+            19,
+            25,
+            26,
+            30
+        ],
+        "sorteo_objetivo": 5376,
+        "estado": "PENDIENTE",
+        "aciertos": 0,
+        "score_afinidad": 0.0,
+        "hora_dia": 5,
+        "algoritmo": "delta_dna_v1",
+        "nota_especial": "NORMAL"
+    },
+    {
         "id": 1768811753,
         "fecha_generacion": "2026-01-19 05:18:34",
         "fecha_lanzamiento": "20/01/2026 21:00",
@@ -2390,6 +2543,27 @@
         "score_afinidad": 5.95,
         "hora_dia": 5,
         "algoritmo": "oraculo_neural_v3",
+        "nota_especial": "NORMAL"
+    },
+    {
+        "id": 1768813135,
+        "fecha_generacion": "2026-01-19 05:53:52",
+        "fecha_lanzamiento": "20/01/2026 21:00",
+        "juego": "LOTO",
+        "numeros": [
+            1,
+            16,
+            21,
+            24,
+            30,
+            34
+        ],
+        "sorteo_objetivo": 5376,
+        "estado": "PENDIENTE",
+        "aciertos": 0,
+        "score_afinidad": 0.0,
+        "hora_dia": 5,
+        "algoritmo": "markov_chain_v1",
         "nota_especial": "NORMAL"
     },
     {
@@ -2446,6 +2620,25 @@
         "score_afinidad": 0.0,
         "hora_dia": 5,
         "algoritmo": "forense_biometrico_v1",
+        "nota_especial": "NORMAL"
+    },
+    {
+        "id": 1768813971,
+        "fecha_generacion": "2026-01-19 05:53:52",
+        "fecha_lanzamiento": "19/01/2026 14:00",
+        "juego": "LOTO4",
+        "numeros": [
+            5,
+            9,
+            10,
+            19
+        ],
+        "sorteo_objetivo": 11572,
+        "estado": "PENDIENTE",
+        "aciertos": 0,
+        "score_afinidad": 3.25,
+        "hora_dia": 5,
+        "algoritmo": "oraculo_neural_v4",
         "nota_especial": "NORMAL"
     },
     {
@@ -2743,6 +2936,31 @@
         "nota_especial": "NORMAL"
     },
     {
+        "id": 1768814011,
+        "fecha_generacion": "2026-01-19 05:53:52",
+        "fecha_lanzamiento": "19/01/2026 15:00",
+        "juego": "RACHA",
+        "numeros": [
+            1,
+            2,
+            3,
+            4,
+            8,
+            9,
+            14,
+            16,
+            17,
+            19
+        ],
+        "sorteo_objetivo": 10305,
+        "estado": "PENDIENTE",
+        "aciertos": 0,
+        "score_afinidad": 4.9,
+        "hora_dia": 5,
+        "algoritmo": "oraculo_neural_v4",
+        "nota_especial": "NORMAL"
+    },
+    {
         "id": 1768808405,
         "fecha_generacion": "2026-01-19 04:40:05",
         "fecha_lanzamiento": "20/01/2026 21:00",
@@ -2762,6 +2980,42 @@
         "hora_dia": 4,
         "algoritmo": "forense_biometrico_v1",
         "nota_especial": "NORMAL"
+    },
+    {
+        "id": 1768813632,
+        "fecha_generacion": "2026-01-19 05:53:52",
+        "fecha_lanzamiento": "19/01/2026 14:00",
+        "juego": "LOTO3",
+        "numeros": [
+            4,
+            6,
+            4
+        ],
+        "sorteo_objetivo": 24004,
+        "estado": "PENDIENTE",
+        "aciertos": 0,
+        "score_afinidad": 23.31,
+        "hora_dia": 5,
+        "algoritmo": "loto3_ultra_ensemble",
+        "nota_especial": "Franja:DIA|Markov:10%|RF:33%"
+    },
+    {
+        "id": 1768813732,
+        "fecha_generacion": "2026-01-19 05:53:52",
+        "fecha_lanzamiento": "19/01/2026 14:00",
+        "juego": "LOTO3",
+        "numeros": [
+            2,
+            4,
+            2
+        ],
+        "sorteo_objetivo": 24004,
+        "estado": "PENDIENTE",
+        "aciertos": 0,
+        "score_afinidad": 22.92,
+        "hora_dia": 5,
+        "algoritmo": "loto3_ultra_ensemble",
+        "nota_especial": "Franja:DIA|Markov:10%|RF:33%"
     },
     {
         "id": 1768809356,
@@ -2848,6 +3102,24 @@
         "nota_especial": "NORMAL"
     },
     {
+        "id": 1768813932,
+        "fecha_generacion": "2026-01-19 05:53:52",
+        "fecha_lanzamiento": "19/01/2026 14:00",
+        "juego": "LOTO3",
+        "numeros": [
+            8,
+            6,
+            6
+        ],
+        "sorteo_objetivo": 24004,
+        "estado": "PENDIENTE",
+        "aciertos": 0,
+        "score_afinidad": 22.38,
+        "hora_dia": 5,
+        "algoritmo": "loto3_ultra_ensemble",
+        "nota_especial": "Franja:DIA|Markov:10%|RF:33%"
+    },
+    {
         "id": 1768811714,
         "fecha_generacion": "2026-01-19 05:18:34",
         "fecha_lanzamiento": "19/01/2026 14:00",
@@ -2924,6 +3196,25 @@
         "nota_especial": "NORMAL"
     },
     {
+        "id": 1768813961,
+        "fecha_generacion": "2026-01-19 05:53:52",
+        "fecha_lanzamiento": "19/01/2026 14:00",
+        "juego": "LOTO4",
+        "numeros": [
+            3,
+            4,
+            9,
+            23
+        ],
+        "sorteo_objetivo": 11572,
+        "estado": "PENDIENTE",
+        "aciertos": 0,
+        "score_afinidad": 3.25,
+        "hora_dia": 5,
+        "algoritmo": "oraculo_neural_v3",
+        "nota_especial": "NORMAL"
+    },
+    {
         "id": 1768810304,
         "fecha_generacion": "2026-01-19 04:54:15",
         "fecha_lanzamiento": "20/01/2026 21:00",
@@ -2942,6 +3233,27 @@
         "score_afinidad": 13.05,
         "hora_dia": 4,
         "algoritmo": "oraculo_neural_v4",
+        "nota_especial": "NORMAL"
+    },
+    {
+        "id": 1768813871,
+        "fecha_generacion": "2026-01-19 05:53:52",
+        "fecha_lanzamiento": "20/01/2026 21:00",
+        "juego": "LOTO",
+        "numeros": [
+            5,
+            13,
+            20,
+            29,
+            30,
+            36
+        ],
+        "sorteo_objetivo": 5376,
+        "estado": "PENDIENTE",
+        "aciertos": 0,
+        "score_afinidad": 5.95,
+        "hora_dia": 5,
+        "algoritmo": "oraculo_neural_v3",
         "nota_especial": "NORMAL"
     },
     {
@@ -3028,251 +3340,28 @@
         "nota_especial": "NORMAL"
     },
     {
-        "id": 1768809457,
-        "fecha_generacion": "2026-01-19 04:54:15",
-        "fecha_lanzamiento": "20/01/2026 21:00",
-        "juego": "LOTO",
-        "numeros": [
-            8,
-            11,
-            16,
-            18,
-            19,
-            31
-        ],
-        "sorteo_objetivo": 5376,
-        "estado": "PENDIENTE",
-        "aciertos": 0,
-        "score_afinidad": 0.0,
-        "hora_dia": 4,
-        "algoritmo": "delta_dna_v1",
-        "nota_especial": "NORMAL"
-    },
-    {
-        "id": 1768806173,
-        "fecha_generacion": "2026-01-19 04:01:12",
-        "fecha_lanzamiento": "20/01/2026 21:00",
-        "juego": "LOTO",
-        "numeros": [
-            3,
-            14,
-            22,
-            31,
-            32,
-            41
-        ],
-        "sorteo_objetivo": 5376,
-        "estado": "PENDIENTE",
-        "aciertos": 0,
-        "score_afinidad": 0.0,
-        "hora_dia": 4,
-        "algoritmo": "gaussiano_inteligente_v1",
-        "nota_especial": "NORMAL"
-    },
-    {
-        "id": 1768806872,
-        "fecha_generacion": "2026-01-19 04:01:12",
-        "fecha_lanzamiento": "19/01/2026 14:00",
-        "juego": "LOTO3",
-        "numeros": [
-            7,
-            6,
-            3
-        ],
-        "sorteo_objetivo": 24004,
-        "estado": "PENDIENTE",
-        "aciertos": 0,
-        "score_afinidad": 23.31,
-        "hora_dia": 4,
-        "algoritmo": "loto3_ultra_ensemble",
-        "nota_especial": "Franja:DIA|Markov:10%|RF:33%"
-    },
-    {
-        "id": 1768809105,
-        "fecha_generacion": "2026-01-19 04:40:05",
-        "fecha_lanzamiento": "19/01/2026 14:00",
-        "juego": "LOTO3",
-        "numeros": [
-            7,
-            1,
-            6
-        ],
-        "sorteo_objetivo": 24004,
-        "estado": "PENDIENTE",
-        "aciertos": 0,
-        "score_afinidad": 24.58,
-        "hora_dia": 4,
-        "algoritmo": "loto3_ultra_ensemble",
-        "nota_especial": "Franja:DIA|Markov:10%|RF:33%"
-    },
-    {
-        "id": 1768810355,
-        "fecha_generacion": "2026-01-19 04:54:15",
-        "fecha_lanzamiento": "19/01/2026 14:00",
-        "juego": "LOTO3",
-        "numeros": [
-            1,
-            9,
-            2
-        ],
-        "sorteo_objetivo": 24004,
-        "estado": "PENDIENTE",
-        "aciertos": 0,
-        "score_afinidad": 22.52,
-        "hora_dia": 4,
-        "algoritmo": "loto3_ultra_ensemble",
-        "nota_especial": "Franja:DIA|Markov:10%|RF:33%"
-    },
-    {
-        "id": 1768806772,
-        "fecha_generacion": "2026-01-19 04:01:12",
-        "fecha_lanzamiento": "19/01/2026 14:00",
-        "juego": "LOTO3",
-        "numeros": [
-            5,
-            4,
-            3
-        ],
-        "sorteo_objetivo": 24004,
-        "estado": "PENDIENTE",
-        "aciertos": 0,
-        "score_afinidad": 23.5,
-        "hora_dia": 4,
-        "algoritmo": "loto3_ultra_ensemble",
-        "nota_especial": "Franja:DIA|Markov:10%|RF:33%"
-    },
-    {
-        "id": 1768809444,
-        "fecha_generacion": "2026-01-19 04:40:05",
-        "fecha_lanzamiento": "20/01/2026 21:00",
-        "juego": "LOTO",
-        "numeros": [
-            3,
-            16,
-            20,
-            31,
-            40,
-            41
-        ],
-        "sorteo_objetivo": 5376,
-        "estado": "PENDIENTE",
-        "aciertos": 0,
-        "score_afinidad": 5.95,
-        "hora_dia": 4,
-        "algoritmo": "oraculo_neural_v3",
-        "nota_especial": "NORMAL"
-    },
-    {
-        "id": 1768808607,
-        "fecha_generacion": "2026-01-19 04:40:05",
-        "fecha_lanzamiento": "20/01/2026 21:00",
-        "juego": "LOTO",
-        "numeros": [
-            10,
-            13,
-            17,
-            18,
-            21,
-            26
-        ],
-        "sorteo_objetivo": 5376,
-        "estado": "PENDIENTE",
-        "aciertos": 0,
-        "score_afinidad": 0.0,
-        "hora_dia": 4,
-        "algoritmo": "delta_dna_v1",
-        "nota_especial": "NORMAL"
-    },
-    {
-        "id": 1768809255,
-        "fecha_generacion": "2026-01-19 04:54:15",
-        "fecha_lanzamiento": "20/01/2026 21:00",
-        "juego": "LOTO",
+        "id": 1768814021,
+        "fecha_generacion": "2026-01-19 05:53:52",
+        "fecha_lanzamiento": "19/01/2026 15:00",
+        "juego": "RACHA",
         "numeros": [
             2,
-            7,
-            13,
-            28,
-            34,
-            35
-        ],
-        "sorteo_objetivo": 5376,
-        "estado": "PENDIENTE",
-        "aciertos": 0,
-        "score_afinidad": 0.0,
-        "hora_dia": 4,
-        "algoritmo": "forense_biometrico_v1",
-        "nota_especial": "NORMAL"
-    },
-    {
-        "id": 1768809464,
-        "fecha_generacion": "2026-01-19 04:40:05",
-        "fecha_lanzamiento": "20/01/2026 21:00",
-        "juego": "LOTO",
-        "numeros": [
+            3,
+            4,
+            5,
+            8,
+            9,
+            15,
             16,
-            18,
-            20,
-            35,
-            40,
-            41
+            17,
+            19
         ],
-        "sorteo_objetivo": 5376,
+        "sorteo_objetivo": 10305,
         "estado": "PENDIENTE",
         "aciertos": 0,
-        "score_afinidad": 34.83,
-        "hora_dia": 4,
+        "score_afinidad": 69.81,
+        "hora_dia": 5,
         "algoritmo": "consenso_meritocratico_v2",
         "nota_especial": "🔥 ALTA CONFIANZA"
-    },
-    {
-        "id": 1768809574,
-        "fecha_generacion": "2026-01-19 04:40:05",
-        "fecha_lanzamiento": "19/01/2026 15:00",
-        "juego": "RACHA",
-        "numeros": [
-            3,
-            4,
-            5,
-            6,
-            11,
-            12,
-            14,
-            16,
-            17,
-            19
-        ],
-        "sorteo_objetivo": 10305,
-        "estado": "PENDIENTE",
-        "aciertos": 0,
-        "score_afinidad": 5.9,
-        "hora_dia": 4,
-        "algoritmo": "oraculo_neural_v3",
-        "nota_especial": "NORMAL"
-    },
-    {
-        "id": 1768811893,
-        "fecha_generacion": "2026-01-19 05:18:34",
-        "fecha_lanzamiento": "19/01/2026 15:00",
-        "juego": "RACHA",
-        "numeros": [
-            1,
-            2,
-            3,
-            4,
-            8,
-            9,
-            14,
-            16,
-            17,
-            19
-        ],
-        "sorteo_objetivo": 10305,
-        "estado": "PENDIENTE",
-        "aciertos": 0,
-        "score_afinidad": 4.9,
-        "hora_dia": 5,
-        "algoritmo": "oraculo_neural_v4",
-        "nota_especial": "NORMAL"
     }
 ]
