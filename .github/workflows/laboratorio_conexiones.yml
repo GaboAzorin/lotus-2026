@@ -18,11 +18,24 @@ jobs:
 
     - name: Install dependencies
       run: |
-        pip install requests playwright curl_cffi
+        pip install requests playwright curl_cffi seleniumbase
         playwright install chromium
+        sbase install chromedriver
 
-    - name: Diagnóstico de Red (Requests & Curl_cffi)
+    # 1. Requests & Curl_cffi (Huellas múltiples)
+    - name: Diagnóstico de Red
       run: python experiments/diagnostico_red.py
+      continue-on-error: true
 
-    - name: Prueba Playwright
+    # 2. Playwright (Modo Stealth)
+    - name: Prueba Playwright Stealth
       run: python experiments/prueba_playwright.py
+      continue-on-error: true
+      
+    # 3. SeleniumBase (Undetected ChromeDriver)
+    # Requiere configuración de display virtual en Linux si no es headless nativo
+    - name: Prueba SeleniumBase (UC Mode)
+      run: |
+        sudo apt-get install -y xvfb
+        xvfb-run python experiments/prueba_seleniumbase.py
+      continue-on-error: true
