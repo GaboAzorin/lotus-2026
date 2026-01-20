@@ -84,7 +84,7 @@ BASE_URL = "https://www.polla.cl/es/view/resultados"
 
 # Configuración Scrape.do (Modo Nube)
 # Soporta múltiples tokens separados por comas para rotación
-SCRAPEDO_TOKENS_RAW = os.environ.get("SCRAPEDO_TOKEN", "ad46a71c504242c5b2f8b97f761965e74ca7b86c756")
+SCRAPEDO_TOKENS_RAW = os.environ.get("SCRAPEDO_TOKEN", "")
 SCRAPEDO_TOKENS_LIST = [t.strip() for t in SCRAPEDO_TOKENS_RAW.split(",") if t.strip()]
 USE_SCRAPEDO = os.environ.get("USE_SCRAPEDO", "false").lower() == "true"
 
