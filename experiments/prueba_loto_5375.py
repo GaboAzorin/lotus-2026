@@ -32,7 +32,8 @@ def get_csrf_token():
     encoded_url = urllib.parse.quote(BASE_URL)
     
     # Añadimos session_id para mantener la IP
-    target = f"http://api.scrape.do?token={SCRAPEDO_TOKEN}&url={encoded_url}&render=true&super=true&geoCode=cl&session={SESSION_ID}"
+    # IMPORTANTE: Quitamos render=true para recibir los headers raw (cookies)
+    target = f"http://api.scrape.do?token={SCRAPEDO_TOKEN}&url={encoded_url}&super=true&geoCode=cl&session={SESSION_ID}"
     
     try:
         resp = requests.get(target, timeout=90)

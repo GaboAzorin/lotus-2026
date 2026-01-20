@@ -329,7 +329,8 @@ def obtener_token_scrapedo(session_id=None):
 
     encoded_url = urllib.parse.quote(BASE_URL)
     # geoCode=cl es vital para Polla.cl
-    target = f"http://api.scrape.do?token={current_token}&url={encoded_url}&render=true&super=true&geoCode=cl"
+    # Quitamos render=true para poder leer las cookies de la respuesta
+    target = f"http://api.scrape.do?token={current_token}&url={encoded_url}&super=true&geoCode=cl"
     if session_id:
         target += f"&session={session_id}"
     
