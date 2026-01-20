@@ -16,13 +16,13 @@ def test_scrapedo():
     
     # Construir URL de la API de Scrape.do
     # render=true: Activa un navegador real (headless) en el lado de Scrape.do para ejecutar JS
-    # super=true: Usa proxies residenciales de alta calidad (útil para Imperva/Cloudflare)
-    # timeout: Aumentamos el timeout del request porque el renderizado toma tiempo
-    api_url = f"http://api.scrape.do?token={API_TOKEN}&url={encoded_url}&render=true&super=true"
+    # super=true: Usa proxies residenciales de alta calidad
+    # geoCode=cl: Fuerza el uso de una IP de Chile (CRUCIAL para polla.cl)
+    api_url = f"http://api.scrape.do?token={API_TOKEN}&url={encoded_url}&render=true&super=true&geoCode=cl"
     
     print(f"📡 Conectando a Scrape.do...")
     print(f"   Target: {TARGET_URL}")
-    print(f"   Modo: Render JS + Super Proxy")
+    print(f"   Modo: Render JS + Super Proxy + Geo: Chile")
     
     try:
         # Timeout generoso de 60s
