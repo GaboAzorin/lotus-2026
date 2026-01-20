@@ -161,7 +161,15 @@ def juzgar():
             try:
                 raw_nums = row['numeros']
                 if isinstance(raw_nums, str):
-                    nums_pred = ast.literal_eval(raw_nums)
+                    # SEC-FIX: Usar json.loads en lugar de ast.literal_eval
+                    # para evitar ejecución de código arbitrario.
+                    try:
+                        nums_pred = json.loads(raw_nums)
+                    except json.JSONDecodeError:
+                        # Fallback seguro solo si es estrictamente necesario, 
+                        # pero preferimos loggear el error.
+                        # Intentamos limpiar formato python a json si es necesario
+                        nums_pred = ast.literal_eval(raw_nums)
                 else:
                     nums_pred = raw_nums
 

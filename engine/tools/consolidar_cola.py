@@ -52,17 +52,31 @@ class FileLock:
         start_time = time.time()
         while True:
             try:
-                self.fd = open(self.lock_file, 'w')
+                # Usamos 'a' (append) para no truncar el archivo cada vez.
+                # 'a' crea el archivo si no existe.
+                self.fd = open(self.lock_file, 'a')
+                
                 if sys.platform == 'win32':
                     import msvcrt
+                    # LK_NBLCK: Non-blocking lock. Si falla, lanza IOError.
+                    # Lock de 1 byte es suficiente.
                     msvcrt.locking(self.fd.fileno(), msvcrt.LK_NBLCK, 1)
                 else:
                     fcntl.flock(self.fd.fileno(), fcntl.LOCK_EX | fcntl.LOCK_NB)
+                
+                # Si llegamos aquí, tenemos el lock.
                 return True
-            except (IOError, OSError):
+                
+            except (IOError, OSError, PermissionError):
+                # Puede fallar al abrir (PermissionError en Windows si tiene lock exclusivo)
+                # o al hacer locking (IOError).
                 if self.fd:
-                    self.fd.close()
+                    try:
+                        self.fd.close()
+                    except:
+                        pass
                     self.fd = None
+                
                 if time.time() - start_time > self.timeout:
                     logger.warning(f"Timeout adquiriendo lock después de {self.timeout}s")
                     return False

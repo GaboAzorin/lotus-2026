@@ -423,6 +423,12 @@ def soñar():
             for v in ["v3", "v4"]:
                 try:
                     oracle = OraculoNeural(game_id, version=v)
+                    
+                    # ERR-002: Validación robusta del método predecir
+                    if not hasattr(oracle, 'predecir'):
+                        logger.error(f"Clase OraculoNeural ({v}) malformada: falta método predecir")
+                        continue
+
                     f_tol = 2.5 if v == "v4" else 1.0 
                     
                     pool_ml = []

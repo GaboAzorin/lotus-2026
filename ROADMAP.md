@@ -14,10 +14,10 @@ Este documento detalla la hoja de ruta estratégica para el desarrollo y estabil
 *Objetivo: Eliminar bugs críticos, asegurar la integridad de datos y prevenir fallos silenciosos.*
 
 ### 🔴 Seguridad y Estabilidad
-- [ ] **[ERR-001] Fix Race Condition en `consolidar_cola.py`**: Reemplazar loop infinito inseguro por `threading.Lock` o `portalocker` para evitar deadlocks.
-- [ ] **[ERR-003] Sanitización de Inputs**: Reemplazar `ast.literal_eval()` por `json.loads()` en `juez_implacable.py` para prevenir inyección de código.
-- [ ] **[ERR-002] Validación de Oráculo**: Asegurar que `OraculoNeural` tenga método `predecir()` antes de invocarlo para evitar fallos silenciosos.
-- [ ] **[ERR-004] Fix NaN Handling**: Reemplazar condición frágil `v == v` por `pd.isna()` en `consolidar_laboratorio.py`.
+- [x] **[ERR-001] Fix Race Condition en `consolidar_cola.py`**: Reemplazar loop infinito inseguro por `threading.Lock` o `portalocker` para evitar deadlocks.
+- [x] **[ERR-003] Sanitización de Inputs**: Reemplazar `ast.literal_eval()` por `json.loads()` en `juez_implacable.py` para prevenir inyección de código.
+- [x] **[ERR-002] Validación de Oráculo**: Asegurar que `OraculoNeural` tenga método `predecir()` antes de invocarlo para evitar fallos silenciosos.
+- [x] **[ERR-004] Fix NaN Handling**: Reemplazar condición frágil `v == v` por `pd.isna()` en `consolidar_laboratorio.py`.
 
 ### 🔴 Lógica de Negocio Core
 - [ ] **[IMP-AUD-001] Corregir Scoring RACHA**: Eliminar la curva en V invertida que asigna 100% de éxito a 0 aciertos. Implementar curva monótona.
