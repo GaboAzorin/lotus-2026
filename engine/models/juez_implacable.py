@@ -72,15 +72,22 @@ def calcular_afinidad(prediccion, realidad_obj, juego):
     realidad = realidad_obj["numeros"]
     comodin_real = realidad_obj.get("comodin")
     
-    # --- REGLAS RACHA (Curva de Aprendizaje en V) ---
+    # --- REGLAS RACHA (Curva Monótona de Afinidad) ---
     if juego == "RACHA":
         aciertos = len(set(prediccion) & set(realidad))
-        if aciertos >= 10 or aciertos <= 0: return 100.0
-        if aciertos == 9 or aciertos == 1: return 85.0
-        if aciertos == 8 or aciertos == 2: return 60.0
-        if aciertos == 7 or aciertos == 3: return 40.0
-        if aciertos == 4 or aciertos == 6: return 15.0 
-        if aciertos == 5: return 5.0 
+        
+        # FIX [IMP-AUD-001]: Eliminamos la "V invertida". 
+        # La IA debe aprender a acertar, no a fallar intencionalmente.
+        # Nueva escala lineal ponderada hacia el éxito:
+        if aciertos >= 10: return 100.0  # Pleno
+        if aciertos == 9: return 90.0
+        if aciertos == 8: return 75.0
+        if aciertos == 7: return 50.0
+        if aciertos == 6: return 30.0
+        if aciertos == 5: return 15.0
+        if aciertos == 4: return 5.0
+        
+        # Menos de 4 aciertos es irrelevante para afinidad predictiva positiva
         return 0.0 
 
     # --- REGLAS LOTO 3 (Precisión Posicional Estricta) ---
