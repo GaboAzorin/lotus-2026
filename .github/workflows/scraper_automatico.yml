@@ -25,10 +25,8 @@ jobs:
 
     - name: Install dependencies
       run: |
-        pip install requests pandas numpy scikit-learn pytz
-        # Playwright es opcional en modo nube, pero lo dejamos por si acaso
-        # pip install playwright 
-        # playwright install chromium
+        pip install requests pandas numpy scikit-learn pytz playwright
+        playwright install chromium
 
     - name: Configurar Git User
       run: |
