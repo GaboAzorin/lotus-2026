@@ -67,17 +67,27 @@ async def run_test():
             await asyncio.sleep(5)
 
             # 2. Extraer Token CSRF
+            print(f"📄 Título de la página: {await page.title()}")
             print("🔍 Buscando Token CSRF...")
             token = await page.evaluate("document.querySelector('input[name=\"csrfToken\"]')?.value")
             
             if not token:
                 print("⚠️ Token no encontrado en DOM. Intentando regex en el contenido...")
                 content = await page.content()
+                
+                # Regex 1: Formato estándar en HTML
                 m = re.search(r'csrfToken["\']\s*[:=]\s*["\']([a-zA-Z0-9]+)["\']', content)
+                
+                # Regex 2: Formato JSON dentro de scripts
+                if not m:
+                    m = re.search(r'"csrfToken"\s*:\s*"([^"]+)"', content)
+                
                 if m:
                     token = m.group(1)
             
             if not token:
+                content_preview = (await page.content())[:1000]
+                print(f"❌ CONTENIDO HTML PREVIEW:\n{content_preview}")
                 raise Exception("No se pudo obtener el token CSRF.")
                 
             print(f"✅ Token obtenido: {token}")
