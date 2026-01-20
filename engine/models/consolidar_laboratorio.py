@@ -37,9 +37,17 @@ def ejecutar_consolidacion_hibrida():
         try:
             with open(archi, 'r', encoding='utf-8') as f:
                 data = json.load(f)
-                # Sanitizar el objeto individual por si acaso
-                # ERR-004: Usar pd.isna() en lugar de v == v para detección robusta de NaN
-                sanitized_data = {k: (v if not pd.isna(v) and v is not None else None) for k, v in data.items()}
+                # Sanitizar el objeto individual de forma robusta
+                sanitized_data = {}
+                for k, v in data.items():
+                    if isinstance(v, list):
+                        sanitized_data[k] = v
+                    elif v is None:
+                        sanitized_data[k] = None
+                    elif pd.isna(v):
+                         sanitized_data[k] = None
+                    else:
+                        sanitized_data[k] = v
                 
                 if str(sanitized_data.get('id')) not in ids_vistos:
                     todas_las_predicciones.append(sanitized_data)
