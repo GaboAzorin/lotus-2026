@@ -1,0 +1,34 @@
+name: Prueba Unitaria Loto #5375
+
+on:
+  workflow_dispatch: # Solo ejecución manual
+
+jobs:
+  verify_specific_draw:
+    name: Verificar Sorteo 5375
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout repo
+      uses: actions/checkout@v3
+
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.11'
+
+    - name: Install dependencies
+      run: pip install requests
+
+    - name: Ejecutar Script de Prueba
+      env:
+        # Usamos el mismo secreto que el scraper principal
+        SCRAPEDO_TOKEN: ${{ secrets.SCRAPEDO_TOKEN }}
+      run: python experiments/prueba_loto_5375.py
+
+    - name: Subir JSON Resultante
+      if: success()
+      uses: actions/upload-artifact@v4
+      with:
+        name: resultado-loto-5375
+        path: loto_5375_result.json
