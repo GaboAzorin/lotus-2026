@@ -36,7 +36,7 @@ Este documento detalla la hoja de ruta estratégica para el desarrollo y estabil
 ### 🟡 Mejoras de Modelado (ML)
 - [x] **[IMP-ML-001] Reducir Overfitting en Random Forest**: Ajustar hiperparámetros (`max_depth=5`, `min_samples_leaf=20`) en `oraculo_neural.py`.
 - [x] **[IMP-ML-003] Optimización de Hiperparámetros**: Implementar `GridSearchCV` con `TimeSeriesSplit` para encontrar la configuración óptima automáticamente.
-- [ ] **[IMP-ML-002] Explorar Gradient Boosting**: Integrar XGBoost o LightGBM como alternativas a Random Forest y comparar rendimiento.
+- [x] **[IMP-ML-002] Explorar Gradient Boosting**: Integrar XGBoost o LightGBM como alternativas a Random Forest y comparar rendimiento.
 
 ### 🔵 Ingeniería de Características (Feature Engineering)
 - [ ] **[IMP-FEAT-001] Análisis de Rachas**: Crear features para detectar números "calientes" (frecuentes recientes) y "fríos".

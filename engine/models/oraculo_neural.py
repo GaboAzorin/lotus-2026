@@ -5,9 +5,16 @@ import joblib
 import sys
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.multioutput import MultiOutputClassifier
-from sklearn.model_selection import TimeSeriesSplit
+from sklearn.model_selection import TimeSeriesSplit, GridSearchCV
 from datetime import datetime
 import logging
+
+# [IMP-ML-002] Intento de importación de XGBoost
+try:
+    from xgboost import XGBClassifier
+    XGB_AVAILABLE = True
+except ImportError:
+    XGB_AVAILABLE = False
 
 # Configurar logging
 logger = logging.getLogger(__name__)
