@@ -12,6 +12,7 @@ import logging
 import random
 import argparse
 import pytz
+import uuid
 from datetime import datetime, timedelta
 
 # Configurar logging
@@ -317,7 +318,7 @@ async def obtener_token_csrf(page):
     return token
 
 
-def obtener_token_scrapedo():
+def obtener_token_scrapedo(session_id=None):
     """Versión síncrona para obtener token vía Scrape.do (evita Playwright)."""
     import urllib.parse
     logger.info("☁️  Obteniendo token vía Scrape.do...")
@@ -329,9 +330,23 @@ def obtener_token_scrapedo():
     encoded_url = urllib.parse.quote(BASE_URL)
     # geoCode=cl es vital para Polla.cl
     target = f"http://api.scrape.do?token={current_token}&url={encoded_url}&render=true&super=true&geoCode=cl"
+    if session_id:
+        target += f"&session={session_id}"
     
     try:
         resp = requests.get(target, timeout=60)
+        
+        # Extracción de Cookies (Session Stickiness)
+        cookies_raw = ""
+        if 'Set-Cookie' in resp.headers:
+            cookies_raw = resp.headers['Set-Cookie']
+            logger.info("🍪 Cookies detectadas en header.")
+        elif resp.cookies:
+            # Fallback a jar
+            c_list = [f"{c.name}={c.value}" for c in resp.cookies]
+            cookies_raw = "; ".join(c_list)
+            logger.info("🍪 Cookies detectadas en jar.")
+
         if resp.status_code != 200:
             raise Exception(f"Scrape.do error {resp.status_code}")
             
@@ -354,7 +369,7 @@ def obtener_token_scrapedo():
             raise Exception("HTML descargado pero sin token visible.")
             
         logger.info(f"☁️  Token Scrape.do obtenido: {token[:10]}...")
-        return token, current_token # Retornamos también la key usada para mantener la sesión
+        return token, current_token, cookies_raw # Retornamos token, key y cookies
         
     except Exception as e:
         logger.error(f"❌ Error Scrape.do Token: {e}")
@@ -371,10 +386,14 @@ async def _run_scraper_cloud_mode(games_to_scrape=None):
     
     import urllib.parse
     
+    # Generar Session ID único para todo el ciclo
+    session_id = str(uuid.uuid4())[:8]
+    logger.info(f"🔗 Session ID: {session_id}")
+
     # --- A. OBTENCIÓN DE TOKEN ---
     try:
         # Ejecutamos síncrono porque requests bloquea, pero en script batch no es grave
-        token, used_api_key = obtener_token_scrapedo()
+        token, used_api_key, cookies_raw = obtener_token_scrapedo(session_id=session_id)
         token_timestamp = datetime.now()
     except Exception as e:
         logger.error(f"Error fatal Cloud Mode: {e}")
@@ -400,7 +419,7 @@ async def _run_scraper_cloud_mode(games_to_scrape=None):
                 if datetime.now() - token_timestamp > timedelta(minutes=TOKEN_REFRESH_MINUTES):
                     logger.info("Token expirado. Renovando vía Scrape.do...")
                     try:
-                        token, used_api_key = obtener_token_scrapedo()
+                        token, used_api_key, cookies_raw = obtener_token_scrapedo(session_id=session_id)
                         token_timestamp = datetime.now()
                     except Exception:
                         break
@@ -408,7 +427,7 @@ async def _run_scraper_cloud_mode(games_to_scrape=None):
                 # Construcción de Request Scrape.do
                 # Scrape.do reenvía el POST si nosotros hacemos POST a su API
                 # Usamos la MISMA API Key que obtuvo el token para mantener afinidad de sesión si es posible
-                api_target = f"http://api.scrape.do?token={used_api_key}&url={urllib.parse.quote(API_URL)}&geoCode=cl&super=true"
+                api_target = f"http://api.scrape.do?token={used_api_key}&url={urllib.parse.quote(API_URL)}&geoCode=cl&super=true&session={session_id}"
                 
                 payload = {
                     "gameId": game['id'], 
@@ -421,6 +440,10 @@ async def _run_scraper_cloud_mode(games_to_scrape=None):
                     "x-requested-with": "XMLHttpRequest",
                     "Content-Type": "application/x-www-form-urlencoded" 
                 }
+                
+                # Inyección de Cookies
+                if cookies_raw:
+                    headers["Cookie"] = cookies_raw
 
                 # Rate limiting suave
                 await asyncio.sleep(REQUEST_DELAY_SECONDS)

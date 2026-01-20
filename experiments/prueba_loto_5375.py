@@ -24,10 +24,10 @@ SESSION_ID = str(uuid.uuid4())[:8]
 print(f"🔗 Session ID generado: {SESSION_ID}")
 
 # Variable global para guardar cookies de la primera petición
-COOKIES_SESION = None
+COOKIES_RAW = ""
 
 def get_csrf_token():
-    global COOKIES_SESION
+    global COOKIES_RAW
     print(f"🌍 Paso 1: Visitando Polla.cl para obtener CSRF Token...")
     encoded_url = urllib.parse.quote(BASE_URL)
     
@@ -37,14 +37,31 @@ def get_csrf_token():
     try:
         resp = requests.get(target, timeout=90)
         
-        # Guardar cookies importantes (Set-Cookie headers)
-        # Scrape.do reenvía los headers del target.
-        # Las cookies vienen en el header 'Set-Cookie' o en resp.cookies si requests las procesó.
-        if resp.cookies:
-            COOKIES_SESION = resp.cookies
-            print(f"🍪 Cookies capturadas: {len(COOKIES_SESION)} cookies.")
-        else:
-            print("⚠️ No se detectaron cookies en la respuesta (sospechoso).")
+        # Extracción manual de cookies desde headers (para evitar filtrado por dominio en requests)
+        # Scrape.do a veces devuelve múltiples headers 'Set-Cookie', requests los combina o hay que acceder a ellos.
+        # En requests, resp.headers['Set-Cookie'] suele dar solo la última o combinadas.
+        # Mejor usar resp.cookies pero iterando sin importar el dominio, O inspeccionar headers crudos.
+        
+        cookie_parts = []
+        if 'Set-Cookie' in resp.headers:
+            # Extraer cookies crudas ignorando atributos como Domain/Path para reenviarlas tal cual
+            raw_cookies = resp.headers['Set-Cookie']
+            # Simple parser: tomar clave=valor antes del primer ;
+            # Nota: Si hay múltiples Set-Cookie, requests puede unirlos con coma.
+            # Una estrategia robusta es usar el CookieJar de requests si capturó algo, o forzar la lectura.
+            print(f"🍪 Header Set-Cookie detectado: {raw_cookies[:50]}...")
+            COOKIES_RAW = raw_cookies
+        
+        # Fallback: intentar sacar del CookieJar de requests (aunque el dominio no coincida)
+        if not COOKIES_RAW and resp.cookies:
+            c_list = []
+            for c in resp.cookies:
+                c_list.append(f"{c.name}={c.value}")
+            COOKIES_RAW = "; ".join(c_list)
+            print(f"🍪 Cookies extraídas del Jar: {COOKIES_RAW}")
+
+        if not COOKIES_RAW:
+            print("⚠️ No se detectaron cookies en la respuesta (ni headers ni jar).")
 
         if resp.status_code != 200:
             print(f"❌ Error HTTP {resp.status_code} al visitar página base.")
@@ -91,9 +108,17 @@ def get_specific_draw(csrf_token):
         "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
     }
     
+    # Inyectar cookies manualmente en el header
+    if COOKIES_RAW:
+        # Limpieza básica: si es un string directo de Set-Cookie, a veces funciona reenviarlo,
+        # pero lo ideal es enviar solo key=value.
+        # Intentaremos enviarlo en el header 'Cookie'.
+        headers["Cookie"] = COOKIES_RAW
+        print(f"🍪 Inyectando Cookie header: {COOKIES_RAW[:50]}...")
+    
     try:
         # Pasamos las cookies capturadas en el paso 1
-        resp = requests.post(target, data=payload, headers=headers, cookies=COOKIES_SESION, timeout=60)
+        resp = requests.post(target, data=payload, headers=headers, timeout=60)
         
         if resp.status_code == 200:
             try:
