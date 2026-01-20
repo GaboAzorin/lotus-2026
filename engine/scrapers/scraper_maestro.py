@@ -339,9 +339,12 @@ def obtener_token_scrapedo(session_id=None):
         
         # Extracción de Cookies (Session Stickiness)
         cookies_raw = ""
-        if 'Set-Cookie' in resp.headers:
+        if 'scrape.do-cookies' in resp.headers:
+            cookies_raw = resp.headers['scrape.do-cookies']
+            logger.info("🍪 Cookies detectadas en header scrape.do-cookies.")
+        elif 'Set-Cookie' in resp.headers:
             cookies_raw = resp.headers['Set-Cookie']
-            logger.info("🍪 Cookies detectadas en header.")
+            logger.info("🍪 Cookies detectadas en header Set-Cookie.")
         elif resp.cookies:
             # Fallback a jar
             c_list = [f"{c.name}={c.value}" for c in resp.cookies]
@@ -439,7 +442,9 @@ async def _run_scraper_cloud_mode(games_to_scrape=None):
                 # Headers que Scrape.do reenviará
                 headers = {
                     "x-requested-with": "XMLHttpRequest",
-                    "Content-Type": "application/x-www-form-urlencoded" 
+                    "Content-Type": "application/x-www-form-urlencoded",
+                    "Origin": "https://www.polla.cl",
+                    "Referer": "https://www.polla.cl/es/view/resultados"
                 }
                 
                 # Inyección de Cookies
