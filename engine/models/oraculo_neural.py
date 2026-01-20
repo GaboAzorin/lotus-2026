@@ -248,9 +248,10 @@ class OraculoNeural:
         logger.info(f"   Split temporal: Train={len(X_train)}, Test={len(X_test)}")
 
         # Hiperparámetros conservadores para lotería (evitar overfitting)
-        depth = 8  # Reducido de 10 para más regularización
-        est = 80   # Reducido de 100
-        min_leaf = 10  # Aumentado de 5 para más generalización
+        # [IMP-ML-001] Ajuste agresivo para reducir varianza
+        depth = 5  # Reducido de 8 para forzar generalización
+        est = 100  # Aumentado ligeramente para estabilidad
+        min_leaf = 20  # Aumentado de 10 para evitar memorizar combinaciones raras
 
         logger.info(f"   Hiperparámetros: Depth={depth}, Est={est}, MinLeaf={min_leaf}")
 
