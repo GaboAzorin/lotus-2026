@@ -83,16 +83,16 @@ def get_csrf_token():
         content = resp.text
         token = None
         
-        m_json = re.search(r'"csrfToken"\s*:\s*"([a-zA-Z0-9]+)"', content)
+        m_json = re.search(r'"csrfToken"\s*:\s*"([^"]+)"', content)
         if m_json: 
             token = m_json.group(1)
-            print("✅ Token encontrado en JSON script.")
+            print(f"✅ Token encontrado en JSON script: {token[:10]}...{token[-5:]}")
         
         if not token:
             m_input = re.search(r'name="csrfToken"\s+value="([^"]+)"', content)
             if m_input: 
                 token = m_input.group(1)
-                print("✅ Token encontrado en HTML input.")
+                print(f"✅ Token encontrado en HTML input: {token[:10]}...{token[-5:]}")
             
         if not token:
             raise Exception("No se pudo extraer el token CSRF del HTML.")
@@ -118,6 +118,7 @@ def get_specific_draw(csrf_token):
     
     headers = {
         "User-Agent": USER_AGENT,
+        "Accept": "application/json, text/javascript, */*; q=0.01",
         "x-requested-with": "XMLHttpRequest",
         "Content-Type": "application/x-www-form-urlencoded",
         "Origin": "https://www.polla.cl",

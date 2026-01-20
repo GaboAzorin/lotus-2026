@@ -363,7 +363,7 @@ def obtener_token_scrapedo(session_id=None):
         token = None
         
         # 1. Patrón JSON (común en Polla)
-        m_json = re.search(r'"csrfToken"\s*:\s*"([a-zA-Z0-9]+)"', content)
+        m_json = re.search(r'"csrfToken"\s*:\s*"([^"]+)"', content)
         if m_json:
             token = m_json.group(1)
         
@@ -446,6 +446,7 @@ async def _run_scraper_cloud_mode(games_to_scrape=None):
                 # Headers que Scrape.do reenviará
                 headers = {
                     "User-Agent": USER_AGENT_CLOUD,
+                    "Accept": "application/json, text/javascript, */*; q=0.01",
                     "x-requested-with": "XMLHttpRequest",
                     "Content-Type": "application/x-www-form-urlencoded",
                     "Origin": "https://www.polla.cl",
