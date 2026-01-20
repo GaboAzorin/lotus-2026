@@ -8,6 +8,7 @@ from sklearn.multioutput import MultiOutputClassifier
 from sklearn.model_selection import TimeSeriesSplit, GridSearchCV
 from datetime import datetime
 import logging
+import warnings
 
 # [IMP-ML-002] Intento de importación de XGBoost
 try:
@@ -459,37 +460,55 @@ class OraculoNeural:
 
         X_pred = np.array([input_features])
         
+        # --- FIX: Alineación de Features (Self-Healing de Dimensión) ---
+        if hasattr(self.model, 'n_features_in_'):
+            expected = self.model.n_features_in_
+            current = X_pred.shape[1]
+            if current != expected:
+                logger.warning(f"⚠️ Mismatch de features: Modelo espera {expected}, input tiene {current}.")
+                if current > expected:
+                    # Asumimos que los features extra están al final (ej: heat map nuevo)
+                    logger.info(f"✂️ Recortando input para coincidir con el modelo ({expected} cols).")
+                    X_pred = X_pred[:, :expected]
+                else:
+                    logger.error("❌ Faltan features. Se requiere re-entrenamiento forzoso.")
+                    # Disparamos error para que el catch de abajo inicie la recuperación
+                    raise ValueError(f"Feature mismatch: expected {expected}, got {current}")
+        
         try:
-            if self.version == "v4":
-                # v4: Predicción de bloque físico con limpieza de colisiones
-                raw_pred = self.model.predict(X_pred)[0]
-                numeros_unicos = []
-                for n in [int(x) for x in raw_pred]:
-                    if n not in numeros_unicos and self.config['min_val'] <= n <= self.config['max']:
-                        numeros_unicos.append(n)
+            with warnings.catch_warnings():
+                warnings.filterwarnings("ignore", category=UserWarning, message=".*valid feature names.*")
                 
-                # Si hubo colisiones (números repetidos), rellenamos con los más probables
-                if len(numeros_unicos) < n_balls:
+                if self.version == "v4":
+                    # v4: Predicción de bloque físico con limpieza de colisiones
+                    raw_pred = self.model.predict(X_pred)[0]
+                    numeros_unicos = []
+                    for n in [int(x) for x in raw_pred]:
+                        if n not in numeros_unicos and self.config['min_val'] <= n <= self.config['max']:
+                            numeros_unicos.append(n)
+                    
+                    # Si hubo colisiones (números repetidos), rellenamos con los más probables
+                    if len(numeros_unicos) < n_balls:
+                        probs = self.model.predict_proba(X_pred)
+                        # Sacamos los mejores candidatos que no estén ya en la lista
+                        fallback = self._decode_one_hot_probs(probs, n_balls * 2)
+                        for f in fallback:
+                            if f not in numeros_unicos:
+                                numeros_unicos.append(f)
+                            if len(numeros_unicos) == n_balls: break
+                    
+                    return sorted(numeros_unicos[:n_balls])
+                
+                elif self.config['type'] == 'SET':
+                    # v3: Inferencia probabilística estándar
                     probs = self.model.predict_proba(X_pred)
-                    # Sacamos los mejores candidatos que no estén ya en la lista
-                    fallback = self._decode_one_hot_probs(probs, n_balls * 2)
-                    for f in fallback:
-                        if f not in numeros_unicos:
-                            numeros_unicos.append(f)
-                        if len(numeros_unicos) == n_balls: break
-                
-                return sorted(numeros_unicos[:n_balls])
-            
-            elif self.config['type'] == 'SET':
-                # v3: Inferencia probabilística estándar
-                probs = self.model.predict_proba(X_pred)
-                if estocastico:
-                    return self._muestreo_probabilistico(probs, n_balls)
-                return self._decode_one_hot_probs(probs, n_balls)
-            else:
-                # Caso Loto3 (Posicional)
-                prediction = self.model.predict(X_pred)
-                return [int(x) for x in prediction[0]]
+                    if estocastico:
+                        return self._muestreo_probabilistico(probs, n_balls)
+                    return self._decode_one_hot_probs(probs, n_balls)
+                else:
+                    # Caso Loto3 (Posicional)
+                    prediction = self.model.predict(X_pred)
+                    return [int(x) for x in prediction[0]]
                 
         except Exception as e:
             # --- ZONA DE AUTO-CURACIÓN ---

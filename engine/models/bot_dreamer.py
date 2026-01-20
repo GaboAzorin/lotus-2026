@@ -48,13 +48,23 @@ except ImportError:
     logger.warning("Módulo OraculoNeural no disponible (¿Falta sklearn?).")
 
 def clean_for_json(obj):
-    """Sustituye NaNs por None para generar un JSON válido"""
+    """Sustituye NaNs por None y convierte tipos numpy para generar un JSON válido"""
     if isinstance(obj, dict):
         return {k: clean_for_json(v) for k, v in obj.items()}
     elif isinstance(obj, list):
         return [clean_for_json(i) for i in obj]
     elif isinstance(obj, float) and (math.isnan(obj) or math.isinf(obj)):
         return None
+    elif isinstance(obj, (np.integer, np.int64, np.int32)):
+        return int(obj)
+    elif isinstance(obj, (np.floating, np.float64, np.float32)):
+        if math.isnan(obj) or math.isinf(obj):
+            return None
+        return float(obj)
+    elif isinstance(obj, (np.bool_, bool)):
+        return bool(obj)
+    elif isinstance(obj, np.ndarray):
+        return clean_for_json(obj.tolist())
     return obj
 
 # Aseguramos que Python encuentre el módulo analizador_forense
