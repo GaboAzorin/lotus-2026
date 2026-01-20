@@ -553,18 +553,31 @@ def soñar():
                     pesos_list = np.array(list(bolsa_pesos_consenso.values()))
                     probabilidades = pesos_list / pesos_list.sum()
 
-                    while intentos_muestreo < 200:
-                        # Muestreamos n bolas sin repetición
-                        muestreo = np.random.choice(bolas_list, size=n_balls, replace=False, p=probabilidades)
-                        muestreo = sorted([int(x) for x in muestreo])
-                        
-                        pasa_m, score_m, _ = validar_cognitivamente(muestreo, genoma, game_id)
-                        if pasa_m:
-                            top_consenso = muestreo
-                            es_valida = True
-                            logger.info(f"Muestreo exitoso tras {intentos_muestreo} intentos (Score ADN: {score_m})")
-                            break
-                        intentos_muestreo += 1
+                    # ERR-005: Robustez en Consenso Estocástico
+                    # Si 'bolas_list' es menor que 'n_balls', no podemos muestrear sin reemplazo.
+                    if len(bolas_list) < n_balls:
+                        logger.warning(f"Insuficientes bolas para muestreo ({len(bolas_list)} < {n_balls}). Usando fallback determinista.")
+                        es_valida = False # Forzar fallback
+                        intentos_muestreo = 999 # Saltar loop
+                    else:
+                        while intentos_muestreo < 200:
+                            # Muestreamos n bolas sin repetición
+                            try:
+                                muestreo = np.random.choice(bolas_list, size=n_balls, replace=False, p=probabilidades)
+                                muestreo = sorted([int(x) for x in muestreo])
+                                
+                                pasa_m, score_m, _ = validar_cognitivamente(muestreo, genoma, game_id)
+                                if pasa_m:
+                                    top_consenso = muestreo
+                                    es_valida = True
+                                    logger.info(f"Muestreo exitoso tras {intentos_muestreo} intentos (Score ADN: {score_m})")
+                                    break
+                            except ValueError as ve:
+                                # Captura error si probabilidades no suman 1 o tamaño inválido
+                                logger.error(f"Error muestreo estocástico: {ve}")
+                                break
+                                
+                            intentos_muestreo += 1
 
                 if not es_valida:
                     # Fallback al top si nada funcionó, pero marcamos como BAJA CONFIANZA
