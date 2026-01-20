@@ -15,6 +15,7 @@ import pytz
 import uuid
 from datetime import datetime, timedelta
 from http.cookies import SimpleCookie
+from playwright.async_api import async_playwright
 
 # Configurar logging
 logger = logging.getLogger(__name__)
@@ -309,13 +310,27 @@ async def obtener_token_csrf(page):
     if not token:
         logger.warning("Token no encontrado en DOM. Intentando extracción profunda...")
         content = await page.content()
-        # Regex mejorada para capturar formato JSON también
+        
+        # Regex 1: Formato estándar JS/HTML
         m = re.search(r'csrfToken["\']\s*[:=]\s*["\']([a-zA-Z0-9]+)["\']', content)
         if m:
             token = m.group(1)
-            logger.info("Token recuperado vía Regex.")
+            logger.info("Token recuperado vía Regex (Formato 1).")
+            
+        # Regex 2: Formato JSON puro
+        if not token:
+            m2 = re.search(r'"csrfToken"\s*:\s*"([^"]+)"', content)
+            if m2:
+                token = m2.group(1)
+                logger.info("Token recuperado vía Regex (Formato 2 - JSON).")
 
     if not token:
+        logger.error("❌ FALLO CRÍTICO: No se pudo obtener CSRF Token.")
+        try:
+            body_content = await page.inner_html('body')
+            logger.error(f"Dumping HTML parcial para debug: {body_content[:500]}...")
+        except:
+            pass
         raise Exception("No se encontró token CSRF por ningún método.")
 
     logger.info("Token validado.")
