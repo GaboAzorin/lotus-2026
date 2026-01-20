@@ -247,27 +247,49 @@ class OraculoNeural:
 
         logger.info(f"   Split temporal: Train={len(X_train)}, Test={len(X_test)}")
 
-        # Hiperparámetros conservadores para lotería (evitar overfitting)
-        # [IMP-ML-001] Ajuste agresivo para reducir varianza
-        depth = 5  # Reducido de 8 para forzar generalización
-        est = 100  # Aumentado ligeramente para estabilidad
-        min_leaf = 20  # Aumentado de 10 para evitar memorizar combinaciones raras
+        # [IMP-ML-003] Optimización de Hiperparámetros (GridSearchCV)
+        # Solo ejecutamos GridSearch si tenemos suficientes datos para validar
+        if len(X_train) > 100:
+            logger.info("   🔍 Iniciando GridSearchCV para encontrar hiperparámetros óptimos...")
+            
+            # Espacio de búsqueda optimizado para series temporales ruidosas
+            param_grid = {
+                'estimator__n_estimators': [50, 100, 150],
+                'estimator__max_depth': [3, 5, 8],
+                'estimator__min_samples_leaf': [10, 20, 30]
+            }
 
-        logger.info(f"   Hiperparámetros: Depth={depth}, Est={est}, MinLeaf={min_leaf}")
-
-        # Configuración del Bosque con regularización
-        rf = RandomForestClassifier(
-            n_estimators=est,
-            max_depth=depth,
-            min_samples_leaf=min_leaf,
-            max_features='sqrt',  # Reducir features por árbol
-            class_weight='balanced' if (self.version == "v3" and self.config['type'] == 'SET') else None,
-            n_jobs=-1,
-            random_state=42
-        )
-
-        self.model = MultiOutputClassifier(rf)
-        self.model.fit(X_train, y_train)
+            # TimeSeriesSplit para validación cruzada interna (evita mirar al futuro)
+            tscv = TimeSeriesSplit(n_splits=3)
+            
+            base_rf = RandomForestClassifier(
+                random_state=42, 
+                max_features='sqrt',
+                class_weight='balanced' if (self.version == "v3" and self.config['type'] == 'SET') else None,
+                n_jobs=-1
+            )
+            
+            model_wrapper = MultiOutputClassifier(base_rf)
+            
+            grid_search = GridSearchCV(
+                estimator=model_wrapper,
+                param_grid=param_grid,
+                cv=tscv,
+                n_jobs=-1,
+                verbose=1
+            )
+            
+            try:
+                grid_search.fit(X_train, y_train)
+                logger.info(f"   🏆 Mejores parámetros: {grid_search.best_params_}")
+                self.model = grid_search.best_estimator_
+            except Exception as e:
+                logger.warning(f"   ⚠️ Falló GridSearchCV ({e}), usando configuración manual por defecto.")
+                # Fallback a configuración manual si GridSearch falla
+                self._entrenar_manual(X_train, y_train)
+        else:
+            logger.info("   ⚠️ Datos insuficientes para GridSearch, usando configuración manual.")
+            self._entrenar_manual(X_train, y_train)
 
         # --- MÉTRICAS DE EVALUACIÓN REALISTAS ---
         train_score = self.model.score(X_train, y_train)
@@ -288,6 +310,30 @@ class OraculoNeural:
         logger.info(f"Modelo {self.version} guardado en {os.path.basename(self.model_file)}")
 
         return {'train_score': train_score, 'test_score': test_score}
+
+    def _entrenar_manual(self, X_train, y_train):
+        """Configuración manual de fallback (la antigua lógica)"""
+        # Hiperparámetros conservadores para lotería (evitar overfitting)
+        # [IMP-ML-001] Ajuste agresivo para reducir varianza
+        depth = 5  # Reducido de 8 para forzar generalización
+        est = 100  # Aumentado ligeramente para estabilidad
+        min_leaf = 20  # Aumentado de 10 para evitar memorizar combinaciones raras
+
+        logger.info(f"   Hiperparámetros Manuales: Depth={depth}, Est={est}, MinLeaf={min_leaf}")
+
+        # Configuración del Bosque con regularización
+        rf = RandomForestClassifier(
+            n_estimators=est,
+            max_depth=depth,
+            min_samples_leaf=min_leaf,
+            max_features='sqrt',  # Reducir features por árbol
+            class_weight='balanced' if (self.version == "v3" and self.config['type'] == 'SET') else None,
+            n_jobs=-1,
+            random_state=42
+        )
+
+        self.model = MultiOutputClassifier(rf)
+        self.model.fit(X_train, y_train)
 
     # --- INFERENCIA Y AUTO-CURACIÓN ---
 
