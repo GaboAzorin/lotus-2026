@@ -140,10 +140,14 @@ def get_specific_draw(csrf_token):
     headers = {
         "User-Agent": USER_AGENT,
         "Accept": "application/json, text/javascript, */*; q=0.01",
+        "Accept-Language": "es-419,es;q=0.9,en;q=0.8",
         "x-requested-with": "XMLHttpRequest",
-        "Content-Type": "application/x-www-form-urlencoded",
+        "Content-Type": "application/x-www-form-urlencoded; charset=UTF-8",
         "Origin": "https://www.polla.cl",
-        "Referer": BASE_URL
+        "Referer": BASE_URL,
+        "Sec-Fetch-Dest": "empty",
+        "Sec-Fetch-Mode": "cors",
+        "Sec-Fetch-Site": "same-origin"
     }
     
     # Inyectar cookies manualmente en el header

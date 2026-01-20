@@ -463,10 +463,14 @@ async def _run_scraper_cloud_mode(games_to_scrape=None):
                 headers = {
                     "User-Agent": USER_AGENT_CLOUD,
                     "Accept": "application/json, text/javascript, */*; q=0.01",
+                    "Accept-Language": "es-419,es;q=0.9,en;q=0.8",
                     "x-requested-with": "XMLHttpRequest",
-                    "Content-Type": "application/x-www-form-urlencoded",
+                    "Content-Type": "application/x-www-form-urlencoded; charset=UTF-8",
                     "Origin": "https://www.polla.cl",
-                    "Referer": "https://www.polla.cl/es/view/resultados"
+                    "Referer": "https://www.polla.cl/es/view/resultados",
+                    "Sec-Fetch-Dest": "empty",
+                    "Sec-Fetch-Mode": "cors",
+                    "Sec-Fetch-Site": "same-origin"
                 }
                 
                 # Inyección de Cookies
