@@ -3,8 +3,9 @@ name: Scraper Automático (Loto & Polla)
 on:
   workflow_dispatch: # Ejecución manual
   schedule:
-    # Ejecutar todos los días a las 23:30 UTC (20:30 Chile aprox)
-    - cron: '30 23 * * *'
+    # Ejecutar cada HORA al minuto 5 (XX:05)
+    # El script Python decidirá si hay tarea pendiente o se duerme (ahorrando créditos)
+    - cron: '5 * * * *'
 
 jobs:
   run_scraper:
@@ -24,7 +25,7 @@ jobs:
 
     - name: Install dependencies
       run: |
-        pip install requests pandas numpy scikit-learn
+        pip install requests pandas numpy scikit-learn pytz
         # Playwright es opcional en modo nube, pero lo dejamos por si acaso
         # pip install playwright 
         # playwright install chromium
@@ -37,6 +38,7 @@ jobs:
     - name: Ejecutar Scraper Maestro (Modo Nube)
       env:
         USE_SCRAPEDO: "true"
+        # Secretos con las API Keys separadas por comas
         SCRAPEDO_TOKEN: ${{ secrets.SCRAPEDO_TOKEN || 'ad46a71c504242c5b2f8b97f761965e74ca7b86c756' }}
         GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       run: python engine/scrapers/scraper_maestro.py
@@ -47,4 +49,4 @@ jobs:
       with:
         name: logs-scraper
         path: |
-          *.log
+          logs/*.log

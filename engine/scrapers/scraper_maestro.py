@@ -9,15 +9,39 @@ import subprocess
 import sys
 import importlib
 import logging
+import random
+import argparse
+import pytz
 from datetime import datetime, timedelta
 
 # Configurar logging
 logger = logging.getLogger(__name__)
+logger.setLevel(logging.INFO)
+
 if not logger.handlers:
-    handler = logging.StreamHandler()
-    handler.setFormatter(logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s'))
-    logger.addHandler(handler)
-    logger.setLevel(logging.INFO)
+    # 1. Configurar Rutas
+    BASE_DIR_LOG = os.path.dirname(os.path.abspath(__file__))
+    LOGS_DIR = os.path.join(BASE_DIR_LOG, '..', '..', 'logs')
+    os.makedirs(LOGS_DIR, exist_ok=True)
+
+    # 2. Nombre del archivo de log (Timestamp)
+    log_filename = f"scraper_{datetime.now().strftime('%Y%m%d_%H%M%S')}.log"
+    log_path = os.path.join(LOGS_DIR, log_filename)
+
+    # 3. Formato
+    formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+
+    # 4. Handler Consola
+    console_handler = logging.StreamHandler()
+    console_handler.setFormatter(formatter)
+    logger.addHandler(console_handler)
+
+    # 5. Handler Archivo (Nuevo)
+    file_handler = logging.FileHandler(log_path, encoding='utf-8')
+    file_handler.setFormatter(formatter)
+    logger.addHandler(file_handler)
+
+    logger.info(f"📝 Log iniciado en: {log_path}")
 
 # ==============================================================================
 # 1. CONFIGURACIÓN DE ENTORNO Y RUTAS
@@ -57,8 +81,9 @@ API_URL = "https://www.polla.cl/es/get/draw/results"
 BASE_URL = "https://www.polla.cl/es/view/resultados"
 
 # Configuración Scrape.do (Modo Nube)
-# Se intenta leer de variable de entorno, si no, se usa la key proporcionada (fallback)
-SCRAPEDO_TOKEN = os.environ.get("SCRAPEDO_TOKEN", "ad46a71c504242c5b2f8b97f761965e74ca7b86c756")
+# Soporta múltiples tokens separados por comas para rotación
+SCRAPEDO_TOKENS_RAW = os.environ.get("SCRAPEDO_TOKEN", "ad46a71c504242c5b2f8b97f761965e74ca7b86c756")
+SCRAPEDO_TOKENS_LIST = [t.strip() for t in SCRAPEDO_TOKENS_RAW.split(",") if t.strip()]
 USE_SCRAPEDO = os.environ.get("USE_SCRAPEDO", "false").lower() == "true"
 
 # --- AUDITORÍA v4: RATE LIMITING Y TOKEN REFRESH ---
@@ -297,9 +322,13 @@ def obtener_token_scrapedo():
     import urllib.parse
     logger.info("☁️  Obteniendo token vía Scrape.do...")
     
+    # Rotación de Tokens (Balanceo de Carga)
+    current_token = random.choice(SCRAPEDO_TOKENS_LIST)
+    logger.info(f"🔑 Usando API Key: ...{current_token[-6:]}")
+
     encoded_url = urllib.parse.quote(BASE_URL)
     # geoCode=cl es vital para Polla.cl
-    target = f"http://api.scrape.do?token={SCRAPEDO_TOKEN}&url={encoded_url}&render=true&super=true&geoCode=cl"
+    target = f"http://api.scrape.do?token={current_token}&url={encoded_url}&render=true&super=true&geoCode=cl"
     
     try:
         resp = requests.get(target, timeout=60)
@@ -325,14 +354,14 @@ def obtener_token_scrapedo():
             raise Exception("HTML descargado pero sin token visible.")
             
         logger.info(f"☁️  Token Scrape.do obtenido: {token[:10]}...")
-        return token
+        return token, current_token # Retornamos también la key usada para mantener la sesión
         
     except Exception as e:
         logger.error(f"❌ Error Scrape.do Token: {e}")
         raise
 
 
-async def _run_scraper_cloud_mode():
+async def _run_scraper_cloud_mode(games_to_scrape=None):
     """
     MODO NUBE: Ejecuta el scraping usando Scrape.do como proxy residencial.
     No requiere navegador local ni Playwright. Ideal para GitHub Actions.
@@ -345,14 +374,22 @@ async def _run_scraper_cloud_mode():
     # --- A. OBTENCIÓN DE TOKEN ---
     try:
         # Ejecutamos síncrono porque requests bloquea, pero en script batch no es grave
-        token = obtener_token_scrapedo()
+        token, used_api_key = obtener_token_scrapedo()
         token_timestamp = datetime.now()
     except Exception as e:
         logger.error(f"Error fatal Cloud Mode: {e}")
         return
 
     # --- B. BUCLE DE JUEGOS ---
-    for game in GAME_CONFIG:
+    # Si games_to_scrape es None, scrapeamos todos (comportamiento default)
+    target_games = GAME_CONFIG
+    if games_to_scrape:
+        target_games = [g for g in GAME_CONFIG if g['name'].lower() in [x.lower() for x in games_to_scrape]]
+        if not target_games:
+            logger.warning(f"No se encontraron juegos para los filtros: {games_to_scrape}. Se usarán todos.")
+            target_games = GAME_CONFIG
+
+    for game in target_games:
         current_id = get_start_id(game)
         logger.info(f"{game['name']} (ID {game['id']}) | Buscando desde #{current_id}")
         consecutive_errors = 0
@@ -363,14 +400,15 @@ async def _run_scraper_cloud_mode():
                 if datetime.now() - token_timestamp > timedelta(minutes=TOKEN_REFRESH_MINUTES):
                     logger.info("Token expirado. Renovando vía Scrape.do...")
                     try:
-                        token = obtener_token_scrapedo()
+                        token, used_api_key = obtener_token_scrapedo()
                         token_timestamp = datetime.now()
                     except Exception:
                         break
 
                 # Construcción de Request Scrape.do
                 # Scrape.do reenvía el POST si nosotros hacemos POST a su API
-                api_target = f"http://api.scrape.do?token={SCRAPEDO_TOKEN}&url={urllib.parse.quote(API_URL)}&geoCode=cl&super=true"
+                # Usamos la MISMA API Key que obtuvo el token para mantener afinidad de sesión si es posible
+                api_target = f"http://api.scrape.do?token={used_api_key}&url={urllib.parse.quote(API_URL)}&geoCode=cl&super=true"
                 
                 payload = {
                     "gameId": game['id'], 
@@ -740,13 +778,81 @@ async def _run_scraper_internal():
         # Finalmente, subimos todo a la nube
         subir_cambios_a_github()
 
+def check_smart_schedule():
+    """
+    Analiza la hora actual (Chile) y decide qué juegos deben scrapearse.
+    Retorna una lista de juegos ["LOTO", "RACHA"] o lista vacía [] si no toca nada.
+    Si retorna None, significa "Ejecutar Todo" (fallback manual).
+    """
+    if not USE_SCRAPEDO:
+        return None # Modo manual local: ejecutar todo siempre
+
+    # Zona horaria Chile (Maneja invierno/verano automático)
+    try:
+        tz_chile = pytz.timezone('America/Santiago')
+    except pytz.UnknownTimeZoneError:
+        tz_chile = pytz.timezone('Chile/Continental') # Fallback antiguo
+        
+    now = datetime.now(tz_chile)
+    weekday = now.weekday() # 0=Lunes, 6=Domingo
+    hour = now.hour
+    minute = now.minute
+    
+    logger.info(f"🕒 Hora Chile detectada: {now.strftime('%A %H:%M')}")
+
+    # Lógica de Horarios (Ventana de 55 minutos para asegurar captura)
+    # El CRON corre a las XX:05. Verificamos si estamos en la hora correcta.
+    
+    games_to_run = []
+
+    # 1. LOTO (Mar, Jue, Dom a las 22:00)
+    # Se sortea a las 21:00, info disponible ~22:00.
+    if weekday in [1, 3, 6] and hour == 22:
+        games_to_run.append("LOTO")
+
+    # 2. LOTO 3 (14:00, 18:00, 21:00) -> Scrapear a las 14, 18, 21
+    if hour in [14, 18, 21]:
+        games_to_run.append("LOTO 3")
+
+    # 3. LOTO 4 (14:00, 21:00) -> Scrapear a las 14, 21
+    if hour in [14, 21]:
+        games_to_run.append("LOTO 4")
+
+    # 4. RACHA (15:00, 22:00) -> Scrapear a las 15, 22
+    if hour in [15, 22]:
+        games_to_run.append("RACHA")
+        
+    # --- SAFETY NET (RED DE SEGURIDAD) ---
+    # A las 23:00 revisamos TODO por si algo falló durante el día
+    if hour == 23:
+        logger.info("🛡️  Ejecución Safety Net (23:00): Revisando todo.")
+        return None # Ejecuta todo
+
+    if not games_to_run:
+        logger.info("💤 No hay sorteos programados para esta hora. Ahorrando créditos.")
+        return [] # Lista vacía = No hacer nada
+
+    logger.info(f"🎯 Objetivos para esta hora: {games_to_run}")
+    return games_to_run
+
 async def run_scraper():
     """Wrapper que maneja el bloqueo/desbloqueo de GitHub Actions."""
+    
+    # 1. Chequeo Inteligente (Solo en modo Nube)
+    targets = None
+    if USE_SCRAPEDO:
+        targets = check_smart_schedule()
+        if targets == []:
+            logger.info("⏭️  Salida anticipada (Smart Schedule). No hay sorteos en esta hora.")
+            return # No bloqueamos ni hacemos nada
+
+    # 2. Bloqueo y Ejecución
     bloquear_sonador()
     try:
         # Selección de MODO (Local vs Nube)
         if USE_SCRAPEDO:
-            await _run_scraper_cloud_mode()
+            # targets ya fue calculado arriba
+            await _run_scraper_cloud_mode(games_to_scrape=targets)
         else:
             await _run_scraper_internal()
     finally:
