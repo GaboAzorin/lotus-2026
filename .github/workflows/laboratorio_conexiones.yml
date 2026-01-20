@@ -1,0 +1,28 @@
+name: Laboratorio de Conexiones (Pruebas de Scraper)
+
+on:
+  workflow_dispatch: # Ejecución manual
+
+jobs:
+  test_access:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout repo
+      uses: actions/checkout@v3
+
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.11'
+
+    - name: Install dependencies
+      run: |
+        pip install requests playwright curl_cffi
+        playwright install chromium
+
+    - name: Diagnóstico de Red (Requests & Curl_cffi)
+      run: python experiments/diagnostico_red.py
+
+    - name: Prueba Playwright
+      run: python experiments/prueba_playwright.py
