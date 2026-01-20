@@ -214,6 +214,12 @@ def juzgar():
 
     # 5. Guardar
     if cambios > 0:
+        # [IMP-DATA-003] Backup preventivo antes de sobrescribir
+        try:
+            shutil.copy(FILE_SIMULACIONES, FILE_SIMULACIONES + ".bak")
+        except Exception as e:
+            print(f"⚠️ No se pudo crear backup: {e}")
+
         df_sim.to_csv(FILE_SIMULACIONES, index=False)
         print(f"✅ {cambios} veredictos actualizados y normalizados.")
     else:
