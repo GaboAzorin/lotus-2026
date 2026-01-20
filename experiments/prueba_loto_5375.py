@@ -3,63 +3,61 @@ import requests
 import urllib.parse
 import re
 import json
+import uuid
 
 # --- CONFIGURACIÓN ---
-# URL base para obtener el token CSRF (simulando visita humana)
 BASE_URL = "https://www.polla.cl/es/view/resultados"
-
-# Endpoint AJAX para obtener datos del sorteo
 API_URL = "https://www.polla.cl/es/get/draw/results"
-
-# Identificadores específicos para esta prueba
-# LOTO Game ID = 5271 (Este ID es constante para Loto Clásico)
 GAME_ID = "5271" 
-# Sorteo solicitado por el usuario
 DRAW_ID = "5375"
 
-# Obtener Token Scrape.do desde variables de entorno
+# Obtener Token Scrape.do
 SCRAPEDO_TOKEN_RAW = os.environ.get("SCRAPEDO_TOKEN")
-
 if not SCRAPEDO_TOKEN_RAW:
     print("❌ Error: No se encontró la variable SCRAPEDO_TOKEN.")
     exit(1)
-
-# Tomamos la primera key disponible si hay varias
 SCRAPEDO_TOKEN = SCRAPEDO_TOKEN_RAW.split(",")[0].strip()
 print(f"🔑 Usando API Key Scrape.do: {SCRAPEDO_TOKEN[:4]}...{SCRAPEDO_TOKEN[-4:]}")
 
+# Generar un SESSION_ID único para mantener la IP en Scrape.do
+SESSION_ID = str(uuid.uuid4())[:8]
+print(f"🔗 Session ID generado: {SESSION_ID}")
+
+# Variable global para guardar cookies de la primera petición
+COOKIES_SESION = None
+
 def get_csrf_token():
-    """
-    Paso 1: Visitar la página de resultados para obtener el token CSRF.
-    """
+    global COOKIES_SESION
     print(f"🌍 Paso 1: Visitando Polla.cl para obtener CSRF Token...")
     encoded_url = urllib.parse.quote(BASE_URL)
     
-    # Parámetros Scrape.do:
-    # render=true: Renderiza JS (necesario si el token se genera dinámicamente)
-    # super=true: Usa proxies residenciales premium (evita bloqueos 403)
-    # geoCode=cl: Geolocalización Chile (vital para Polla.cl)
-    target = f"http://api.scrape.do?token={SCRAPEDO_TOKEN}&url={encoded_url}&render=true&super=true&geoCode=cl"
+    # Añadimos session_id para mantener la IP
+    target = f"http://api.scrape.do?token={SCRAPEDO_TOKEN}&url={encoded_url}&render=true&super=true&geoCode=cl&session={SESSION_ID}"
     
     try:
         resp = requests.get(target, timeout=90)
+        
+        # Guardar cookies importantes (Set-Cookie headers)
+        # Scrape.do reenvía los headers del target.
+        # Las cookies vienen en el header 'Set-Cookie' o en resp.cookies si requests las procesó.
+        if resp.cookies:
+            COOKIES_SESION = resp.cookies
+            print(f"🍪 Cookies capturadas: {len(COOKIES_SESION)} cookies.")
+        else:
+            print("⚠️ No se detectaron cookies en la respuesta (sospechoso).")
+
         if resp.status_code != 200:
             print(f"❌ Error HTTP {resp.status_code} al visitar página base.")
-            print(f"Respuesta parcial: {resp.text[:200]}")
             raise Exception(f"Status {resp.status_code}")
         
         content = resp.text
         token = None
         
-        # Estrategia 1: Buscar en JSON incrustado (patrón más común reciente)
-        # "csrfToken": "abc..."
         m_json = re.search(r'"csrfToken"\s*:\s*"([a-zA-Z0-9]+)"', content)
         if m_json: 
             token = m_json.group(1)
             print("✅ Token encontrado en JSON script.")
         
-        # Estrategia 2: Buscar en input hidden (patrón clásico HTML)
-        # <input name="csrfToken" value="abc...">
         if not token:
             m_input = re.search(r'name="csrfToken"\s+value="([^"]+)"', content)
             if m_input: 
@@ -67,10 +65,6 @@ def get_csrf_token():
                 print("✅ Token encontrado en HTML input.")
             
         if not token:
-            # Guardar HTML para debug si falla
-            with open("debug_fail_token.html", "w", encoding="utf-8") as f:
-                f.write(content)
-            print("📸 HTML guardado en 'debug_fail_token.html'")
             raise Exception("No se pudo extraer el token CSRF del HTML.")
             
         return token
@@ -79,15 +73,11 @@ def get_csrf_token():
         raise
 
 def get_specific_draw(csrf_token):
-    """
-    Paso 2: Consultar la API interna de Polla para el sorteo específico.
-    """
     print(f"🔍 Paso 2: Consultando datos del Sorteo #{DRAW_ID} (Juego {GAME_ID})...")
     encoded_api = urllib.parse.quote(API_URL)
     
-    # Nota: Para la petición POST a la API, Scrape.do recomienda pasar los parámetros
-    # en la URL del proxy y el payload en el body.
-    target = f"http://api.scrape.do?token={SCRAPEDO_TOKEN}&url={encoded_api}&geoCode=cl&super=true"
+    # Usamos el mismo session_id para reutilizar el proxy IP
+    target = f"http://api.scrape.do?token={SCRAPEDO_TOKEN}&url={encoded_api}&geoCode=cl&super=true&session={SESSION_ID}"
     
     payload = {
         "gameId": GAME_ID,
@@ -95,7 +85,6 @@ def get_specific_draw(csrf_token):
         "csrfToken": csrf_token
     }
     
-    # Headers simulando una petición AJAX legítima
     headers = {
         "x-requested-with": "XMLHttpRequest",
         "Content-Type": "application/x-www-form-urlencoded",
@@ -103,7 +92,8 @@ def get_specific_draw(csrf_token):
     }
     
     try:
-        resp = requests.post(target, data=payload, headers=headers, timeout=60)
+        # Pasamos las cookies capturadas en el paso 1
+        resp = requests.post(target, data=payload, headers=headers, cookies=COOKIES_SESION, timeout=60)
         
         if resp.status_code == 200:
             try:
@@ -112,7 +102,7 @@ def get_specific_draw(csrf_token):
                 return data
             except json.JSONDecodeError:
                 print("❌ La respuesta no es un JSON válido.")
-                print(f"Contenido recibido: {resp.text[:500]}")
+                print(f"Contenido recibido (primeros 500 chars): {resp.text[:500]}")
                 return None
         else:
             print(f"❌ Error API: Status {resp.status_code}")
@@ -124,37 +114,28 @@ def get_specific_draw(csrf_token):
         return None
 
 if __name__ == "__main__":
-    print("🚀 Iniciando Prueba Unitaria: Loto Sorteo #5375")
+    print("🚀 Iniciando Prueba Unitaria: Loto Sorteo #5375 (Modo Persistente)")
     print("------------------------------------------------")
     
     try:
-        # 1. Obtener Token
         token = get_csrf_token()
-        
-        # 2. Obtener Datos
         data = get_specific_draw(token)
         
         if data:
-            # 3. Guardar Resultado
             filename = f"loto_{DRAW_ID}_result.json"
             with open(filename, "w", encoding="utf-8") as f:
                 json.dump(data, f, indent=4, ensure_ascii=False)
             
             print("------------------------------------------------")
             print(f"💾 Archivo guardado: {filename}")
-            
-            # 4. Mostrar resumen en consola
             if 'drawDate' in data:
                 print(f"📅 Fecha del Sorteo: {data['drawDate']}")
                 print(f"🔢 Números (raw): {data.get('results')}")
-                if 'totalWinners' in data:
-                    print(f"🏆 Ganadores Totales: {data['totalWinners']}")
             else:
-                print("⚠️ El JSON no tiene la estructura esperada (campo 'drawDate' faltante).")
-                
+                print("⚠️ Estructura JSON inesperada.")
             print("🎉 Prueba Finalizada con Éxito")
         else:
-            print("💀 La prueba falló en la etapa de obtención de datos.")
+            print("💀 La prueba falló.")
             exit(1)
             
     except Exception as e:
