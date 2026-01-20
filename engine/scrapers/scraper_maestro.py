@@ -236,6 +236,25 @@ def subir_cambios_a_github():
     except Exception as e:
         print(f"   ⚠️ No se pudo subir a GitHub (¿Sin internet?): {e}")
 
+def bloquear_sonador():
+    """Deshabilita el workflow 'soñador.yml' en GitHub para evitar conflictos."""
+    print("\n🔒 Bloqueando Soñador en GitHub (evitando conflictos)...")
+    try:
+        # Usamos gh cli. Asumimos que está instalado y autenticado.
+        subprocess.run(["gh", "workflow", "disable", "soñador.yml"], check=True, capture_output=True)
+        print("   ✅ Soñador pausado correctamente.")
+    except Exception as e:
+        print(f"   ⚠️ No se pudo bloquear Soñador (¿gh cli instalado?): {e}")
+
+def desbloquear_sonador():
+    """Habilita nuevamente el workflow 'soñador.yml' en GitHub."""
+    print("\n🔓 Desbloqueando Soñador en GitHub...")
+    try:
+        subprocess.run(["gh", "workflow", "enable", "soñador.yml"], check=True, capture_output=True)
+        print("   ✅ Soñador reactivado. Listo para soñar.")
+    except Exception as e:
+        print(f"   ⚠️ No se pudo desbloquear Soñador: {e}")
+
 # ==============================================================================
 # 4. MOTOR PRINCIPAL (SCRAPER)
 # ==============================================================================
@@ -268,7 +287,7 @@ async def obtener_token_csrf(page):
     return token
 
 
-async def run_scraper():
+async def _run_scraper_internal():
     logger.info("INICIANDO SCRAPER MAESTRO (Modo Manual/Local)...")
     sincronizar_jugadas()
 
@@ -485,6 +504,14 @@ async def run_scraper():
 
         # Finalmente, subimos todo a la nube
         subir_cambios_a_github()
+
+async def run_scraper():
+    """Wrapper que maneja el bloqueo/desbloqueo de GitHub Actions."""
+    bloquear_sonador()
+    try:
+        await _run_scraper_internal()
+    finally:
+        desbloquear_sonador()
 
 if __name__ == "__main__":
     asyncio.run(run_scraper())
