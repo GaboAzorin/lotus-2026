@@ -452,8 +452,20 @@ async def run_scraper():
         except Exception as e:
             print(f"   ❌ Error en optimización: {e}")
 
-        # --- PASO 5: CONSOLIDAR LABORATORIO (Dashboard) ---
-        print("\n📈 PASO 5/5: CONSOLIDAR LABORATORIO (Actualizando dashboard)...")
+        # --- PASO 5: REENTRENAMIENTO PROFUNDO (Modelos .pkl) ---
+        print("\n🧠 PASO 5/6: REENTRENAMIENTO PROFUNDO (Actualizando redes neuronales)...")
+        try:
+            from reentrenar_todo import reentrenar_modelos_profundos
+            importlib.reload(sys.modules.get('reentrenar_todo', sys.modules[__name__]))
+            reentrenar_modelos_profundos()
+            print("   ✅ Modelos reentrenados.")
+        except ImportError:
+            print("   ⚠️ reentrenar_todo.py no encontrado. Saltando reentrenamiento.")
+        except Exception as e:
+            print(f"   ❌ Error en reentrenamiento: {e}")
+
+        # --- PASO 6: CONSOLIDAR LABORATORIO (Dashboard) ---
+        print("\n📈 PASO 6/6: CONSOLIDAR LABORATORIO (Actualizando dashboard)...")
         try:
             from consolidar_laboratorio import ejecutar_consolidacion_hibrida
             importlib.reload(sys.modules.get('consolidar_laboratorio', sys.modules[__name__]))
