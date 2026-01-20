@@ -383,6 +383,12 @@ class OraculoNeural:
             target_dow = datetime.now().weekday()
 
         input_features.append(target_dow)
+        
+        # [IMP-FEAT-001] Inyección de Rachas en Inferencia
+        # Calculamos el mapa de calor usando toda la historia disponible hasta hoy
+        current_heat_map = self._calcular_mapa_calor(X_raw, len(X_raw), lookback=10)
+        input_features.extend(current_heat_map)
+
         X_pred = np.array([input_features])
         
         try:

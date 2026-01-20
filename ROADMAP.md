@@ -39,7 +39,7 @@ Este documento detalla la hoja de ruta estratégica para el desarrollo y estabil
 - [x] **[IMP-ML-002] Explorar Gradient Boosting**: Integrar XGBoost o LightGBM como alternativas a Random Forest y comparar rendimiento.
 
 ### 🔵 Ingeniería de Características (Feature Engineering)
-- [ ] **[IMP-FEAT-001] Análisis de Rachas**: Crear features para detectar números "calientes" (frecuentes recientes) y "fríos".
+- [x] **[IMP-FEAT-001] Análisis de Rachas**: Crear features para detectar números "calientes" (frecuentes recientes) y "fríos".
 - [ ] **[IMP-FEAT-003] Correlación Posicional**: Analizar si el valor de una bola influye en la paridad o terminación de la siguiente.
 
 ### 🔵 Validación
