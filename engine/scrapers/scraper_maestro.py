@@ -92,6 +92,9 @@ REQUEST_DELAY_SECONDS = 0.5  # Delay entre requests para evitar bloqueo IP
 TOKEN_REFRESH_MINUTES = 20   # Revalidar token CSRF cada 20 minutos
 MAX_CONSECUTIVE_ERRORS = 5   # Máximo errores antes de detener
 
+# User-Agent Fijo para mantener consistencia en modo nube
+USER_AGENT_CLOUD = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
+
 # Configuración Maestra (El Mapa del Multiverso)
 GAME_CONFIG = [
     {
@@ -335,7 +338,8 @@ def obtener_token_scrapedo(session_id=None):
         target += f"&session={session_id}"
     
     try:
-        resp = requests.get(target, timeout=60)
+        # Enviamos User-Agent para que sea consistente con las peticiones posteriores
+        resp = requests.get(target, headers={"User-Agent": USER_AGENT_CLOUD}, timeout=60)
         
         # Extracción de Cookies (Session Stickiness)
         cookies_raw = ""
@@ -441,6 +445,7 @@ async def _run_scraper_cloud_mode(games_to_scrape=None):
                 
                 # Headers que Scrape.do reenviará
                 headers = {
+                    "User-Agent": USER_AGENT_CLOUD,
                     "x-requested-with": "XMLHttpRequest",
                     "Content-Type": "application/x-www-form-urlencoded",
                     "Origin": "https://www.polla.cl",

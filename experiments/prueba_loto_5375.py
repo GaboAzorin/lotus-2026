@@ -117,6 +117,7 @@ def get_specific_draw(csrf_token):
     }
     
     headers = {
+        "User-Agent": USER_AGENT,
         "x-requested-with": "XMLHttpRequest",
         "Content-Type": "application/x-www-form-urlencoded",
         "Origin": "https://www.polla.cl",
