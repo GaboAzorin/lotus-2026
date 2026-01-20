@@ -12,10 +12,17 @@ def run_test():
         with SB(uc=True, headless=True, test=True) as sb:
             print(f"Navegando a {TARGET_URL}...")
             sb.open(TARGET_URL)
-            sb.sleep(5)
+            sb.sleep(8) # Esperar más tiempo a Cloudflare/Carga
+            
+            # --- CAPTURA DE EVIDENCIA ---
+            print("📸 Tomando screenshot de depuración...")
+            sb.save_screenshot("debug_screenshot.png")
+            sb.save_page_source("debug_source.html")
             
             title = sb.get_title()
+            current_url = sb.get_current_url()
             print(f"Título: {title}")
+            print(f"URL Final: {current_url}")
             
             if "Access Denied" in title or "Just a moment" in sb.get_page_source():
                 print("❌ Bloqueado por WAF.")
