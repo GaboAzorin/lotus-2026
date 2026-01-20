@@ -1,0 +1,54 @@
+2026-01-20 08:26:12 | INFO     | === LOG INICIADO: /home/runner/work/lotus-2026/lotus-2026/engine/models/../../logs/bot_dreamer_20260120_082612.log ===
+2026-01-20 08:26:13 | DEBUG    | OraculoNeural importado correctamente
+2026-01-20 08:26:13 | DEBUG    | LotoForense importado correctamente
+2026-01-20 08:26:13 | DEBUG    | MetaLearner importado correctamente
+2026-01-20 08:26:13 | DEBUG    | Loto3Ultra importado correctamente
+2026-01-20 08:26:13 | INFO     | ============================================================
+2026-01-20 08:26:13 | INFO     | INICIANDO BOT SOÑADOR: LÓBULOS ESPECIALIZADOS v12.4
+2026-01-20 08:26:13 | INFO     | ============================================================
+2026-01-20 08:26:13 | DEBUG    | MetaLearner activo: True
+2026-01-20 08:26:13 | INFO     | Hora Chile: 2026-01-20 05:26:13 | Día: 1 | Hora: 5
+2026-01-20 08:26:13 | INFO     | Cortex cargado: Rankings y Morfología segmentados por juego.
+2026-01-20 08:26:13 | DEBUG    | Juegos en genoma: ['LOTO', 'LOTO3', 'LOTO4', 'RACHA']
+2026-01-20 08:26:13 | INFO     | ----------------------------------------
+2026-01-20 08:26:13 | INFO     | UNIVERSO: LOTO
+2026-01-20 08:26:13 | DEBUG    | Pesos de confianza: {'consenso_meritocratico_v2': 0.6931471805599453, 'consenso_v1': 0.7929925155296614, 'delta_tactico_v1': 0.6931471805599453, 'forense_biometrico_v1': 0.6931471805599453, 'gaussiano_tactico_v1': 0.6931471805599453, 'markov_chain_v1': 0.6931471805599453, 'oraculo_neural_v3': 0.8064758658669485, 'oraculo_neural_v4': 0.6931471805599453}
+2026-01-20 08:26:13 | INFO     | Objetivo Crononauta: #5376 | Fecha: 20/01/2026 21:00
+2026-01-20 08:26:13 | INFO     |   forense_biometrico: [11, 12, 18, 24, 29, 37] [Score ADN: 5.95]
+2026-01-20 08:26:13 | INFO     |   gaussiano_inteligente: [13, 17, 18, 26, 29, 34] [Score ADN: 5.95]
+2026-01-20 08:26:13 | INFO     |   delta_dna: [8, 13, 19, 20, 24, 29] [Score ADN: 5.95]
+2026-01-20 08:26:13 | INFO     |   markov_chain: [7, 18, 21, 29, 31, 37] [Score ADN: 18.65]
+2026-01-20 08:27:06 | INFO     |   oraculo_neural_v3 (Pool: 86): [7, 18, 19, 26, 29, 40] [OK] [Confianza: 1.83x]
+2026-01-20 08:27:08 | WARNING  | v4 SILENCIADO. Motivos: {}
+2026-01-20 08:27:08 | INFO     | Consenso Determinista validado (Score ADN: 5.95)
+2026-01-20 08:27:08 | INFO     | TICKET FINAL: [7, 18, 19, 26, 29, 40] | 🔥 ALTA CONFIANZA (42.36%)
+2026-01-20 08:27:08 | INFO     | ----------------------------------------
+2026-01-20 08:27:08 | INFO     | UNIVERSO: LOTO3
+2026-01-20 08:27:08 | INFO     | Activando LOTO3 ULTRA (Ensemble Avanzado)...
+2026-01-20 08:27:09 | INFO     | LOTO3 ULTRA: 10 predicciones generadas
+2026-01-20 08:27:09 | INFO     | ----------------------------------------
+2026-01-20 08:27:09 | INFO     | UNIVERSO: LOTO4
+2026-01-20 08:27:09 | DEBUG    | Pesos de confianza: {'consenso_meritocratico_v2': 0.6931471805599453, 'forense_biometrico_v1': 0.6931471805599453, 'oraculo_neural_v3': 0.8919980393051105, 'oraculo_neural_v4': 0.7929925155296614}
+2026-01-20 08:27:09 | INFO     | Objetivo Crononauta: #11574 | Fecha: 20/01/2026 14:00
+2026-01-20 08:27:09 | INFO     |   forense_biometrico: [5, 13, 15, 16] [Score ADN: 3.25]
+2026-01-20 08:27:10 | WARNING  | v3 SILENCIADO. Motivos: {}
+2026-01-20 08:27:12 | WARNING  | v4 SILENCIADO. Motivos: {}
+2026-01-20 08:27:12 | INFO     | Consenso Determinista validado (Score ADN: 13.45)
+2026-01-20 08:27:12 | INFO     | TICKET FINAL: [2, 5, 10, 17] | 🔥 ALTA CONFIANZA (40.0%)
+2026-01-20 08:27:12 | INFO     | ----------------------------------------
+2026-01-20 08:27:12 | INFO     | UNIVERSO: RACHA
+2026-01-20 08:27:12 | DEBUG    | Pesos de confianza: {'consenso_meritocratico_v2': 2.900871992530031, 'forense_biometrico_v1': 2.8148097376737438, 'oraculo_neural_v3': 2.853015971352396, 'oraculo_neural_v4': 2.7806808921371178}
+2026-01-20 08:27:12 | INFO     | Objetivo Crononauta: #10307 | Fecha: 20/01/2026 15:00
+2026-01-20 08:27:12 | INFO     |   forense_biometrico: [4, 5, 6, 8, 9, 10, 13, 14, 17, 19] [Score ADN: 4.9]
+2026-01-20 08:27:14 | WARNING  | v3 SILENCIADO. Motivos: {}
+2026-01-20 08:27:16 | WARNING  | v4 SILENCIADO. Motivos: {}
+2026-01-20 08:27:16 | DEBUG    | Consenso Top-N rechazado por morfología. Iniciando Muestreo Estocástico...
+2026-01-20 08:27:16 | INFO     | Muestreo exitoso tras 0 intentos (Score ADN: 21.3)
+2026-01-20 08:27:16 | INFO     | TICKET FINAL: [1, 2, 3, 4, 7, 9, 13, 14, 15, 17] | 🔥 ALTA CONFIANZA (66.0%)
+2026-01-20 08:27:16 | INFO     | Forzando sincronización del laboratorio...
+2026-01-20 08:27:16 | INFO     | Dashboard sincronizado correctamente.
+2026-01-20 08:27:16 | INFO     | ============================================================
+2026-01-20 08:27:16 | INFO     | PROCESO DEL SOÑADOR TERMINADO
+2026-01-20 08:27:16 | INFO     | Total predicciones generadas: 15
+2026-01-20 08:27:16 | INFO     | Log guardado en: /home/runner/work/lotus-2026/lotus-2026/engine/models/../../logs/bot_dreamer_20260120_082612.log
+2026-01-20 08:27:16 | INFO     | ============================================================
