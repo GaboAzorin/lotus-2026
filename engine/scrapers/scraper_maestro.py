@@ -403,150 +403,36 @@ def obtener_token_scrapedo(session_id=None):
 async def _run_scraper_cloud_mode(games_to_scrape=None):
     """
     MODO NUBE: Ejecuta el scraping usando Scrape.do como proxy residencial.
-    No requiere navegador local ni Playwright. Ideal para GitHub Actions.
+    Ahora usa Playwright + Proxy Server (Esencia rescatada del scraper funcional).
     """
-    logger.info("☁️  INICIANDO SCRAPER MAESTRO (Modo Nube / Scrape.do)...")
-    sincronizar_jugadas()
+    logger.info("☁️  INICIANDO SCRAPER MAESTRO (Modo Nube / Playwright Proxy)...")
     
-    import urllib.parse
-    
-    # Generar Session ID único para todo el ciclo
-    session_id = str(uuid.uuid4())[:8]
-    logger.info(f"🔗 Session ID: {session_id}")
-
-    # --- A. OBTENCIÓN DE TOKEN ---
-    try:
-        # Ejecutamos síncrono porque requests bloquea, pero en script batch no es grave
-        token, used_api_key, cookies_raw = obtener_token_scrapedo(session_id=session_id)
-        token_timestamp = datetime.now()
-    except Exception as e:
-        logger.error(f"Error fatal Cloud Mode: {e}")
+    if not SCRAPEDO_TOKENS_LIST:
+        logger.error("❌ No hay tokens de Scrape.do configurados.")
         return
 
-    # --- B. BUCLE DE JUEGOS ---
-    # Si games_to_scrape es None, scrapeamos todos (comportamiento default)
-    target_games = GAME_CONFIG
-    if games_to_scrape:
-        target_games = [g for g in GAME_CONFIG if g['name'].lower() in [x.lower() for x in games_to_scrape]]
-        if not target_games:
-            logger.warning(f"No se encontraron juegos para los filtros: {games_to_scrape}. Se usarán todos.")
-            target_games = GAME_CONFIG
+    # Rotación de Token
+    token = random.choice(SCRAPEDO_TOKENS_LIST)
+    
+    # Generar Session ID para mantener IP (Stickiness)
+    session_id = str(uuid.uuid4())[:8]
+    
+    # Construir username con parámetros (token-session=ID-super=true)
+    proxy_username = f"{token}-session={session_id}-super=true"
+    
+    logger.info(f"🔑 API Key: ...{token[-6:]} | Session: {session_id}")
 
-    for game in target_games:
-        current_id = get_start_id(game)
-        logger.info(f"{game['name']} (ID {game['id']}) | Buscando desde #{current_id}")
-        consecutive_errors = 0
-
-        while consecutive_errors < MAX_CONSECUTIVE_ERRORS:
-            try:
-                # Revalidación de Token
-                if datetime.now() - token_timestamp > timedelta(minutes=TOKEN_REFRESH_MINUTES):
-                    logger.info("Token expirado. Renovando vía Scrape.do...")
-                    try:
-                        token, used_api_key, cookies_raw = obtener_token_scrapedo(session_id=session_id)
-                        token_timestamp = datetime.now()
-                    except Exception:
-                        break
-
-                # Construcción de Request Scrape.do
-                # Scrape.do reenvía el POST si nosotros hacemos POST a su API
-                # Usamos la MISMA API Key que obtuvo el token para mantener afinidad de sesión si es posible
-                api_target = f"http://api.scrape.do?token={used_api_key}&url={urllib.parse.quote(API_URL)}&geoCode=cl&super=true&session={session_id}"
-                
-                payload = {
-                    "gameId": game['id'], 
-                    "drawId": current_id, 
-                    "csrfToken": token
-                }
-                
-                # Headers que Scrape.do reenviará
-                headers = {
-                    "User-Agent": USER_AGENT_CLOUD,
-                    "Accept": "application/json, text/javascript, */*; q=0.01",
-                    "Accept-Language": "es-419,es;q=0.9,en;q=0.8",
-                    "x-requested-with": "XMLHttpRequest",
-                    "Content-Type": "application/x-www-form-urlencoded; charset=UTF-8",
-                    "Origin": "https://www.polla.cl",
-                    "Referer": "https://www.polla.cl/es/view/resultados",
-                    "Sec-Fetch-Dest": "empty",
-                    "Sec-Fetch-Mode": "cors",
-                    "Sec-Fetch-Site": "same-origin",
-                    "X-CSRF-TOKEN": token,
-                    "csrf-token": token
-                }
-                
-                # Inyección de Cookies
-                if cookies_raw:
-                    headers["Cookie"] = cookies_raw
-
-                # Rate limiting suave
-                await asyncio.sleep(REQUEST_DELAY_SECONDS)
-
-                # POST Request
-                resp = requests.post(api_target, data=payload, headers=headers, timeout=40)
-
-                if resp.status_code == 200:
-                    try:
-                        json_data = resp.json()
-                    except json.JSONDecodeError:
-                        logger.warning(f"JSON inválido desde Scrape.do. Respuesta raw: {resp.text[:500]}")
-                        consecutive_errors += 1
-                        continue
-
-                    # --- LOGICA COMPARTIDA DE VALIDACIÓN Y GUARDADO ---
-                    # (Copiamos la lógica esencial para no duplicar demasiado código o refactorizamos)
-                    # Por seguridad, duplicamos la lógica mínima necesaria aquí para mantener aislamiento
-                    
-                    if not json_data or not json_data.get('results'):
-                        ts = json_data.get('drawDate')
-                        if ts and datetime.fromtimestamp(ts/1000) > datetime.now():
-                            logger.info(f"Sorteo #{current_id} es futuro. Deteniendo {game['name']}.")
-                            break
-                        current_id += 1
-                        consecutive_errors += 1
-                        continue
-
-                    try:
-                        row = game['parser'](json_data)
-                    except Exception as parse_err:
-                        logger.warning(f"Error parseando #{current_id}: {parse_err}")
-                        consecutive_errors += 1
-                        continue
-
-                    # Guardado (Reutilizamos lógica de archivo)
-                    file_exists = os.path.exists(game['csv'])
-                    fieldnames = list(game['cols'])
-                    for k in row.keys():
-                        if k not in fieldnames: fieldnames.append(k)
-                    
-                    final_headers = fieldnames
-                    if file_exists:
-                        with open(game['csv'], 'r', encoding='utf-8') as f:
-                            existing = csv.DictReader(f).fieldnames or []
-                        final_headers = existing
-                        for k in row.keys():
-                            if k not in final_headers: final_headers.append(k)
-
-                    with open(game['csv'], 'a', encoding='utf-8', newline='') as f:
-                        writer = csv.DictWriter(f, fieldnames=final_headers)
-                        if not file_exists: writer.writeheader()
-                        writer.writerow(row)
-
-                    logger.info(f"#{row['sorteo']} Guardado OK")
-                    current_id += 1
-                    consecutive_errors = 0
-
-                else:
-                    logger.warning(f"Error Scrape.do {resp.status_code}")
-                    consecutive_errors += 1
-                    
-            except Exception as e:
-                logger.error(f"Error en ciclo Cloud: {e}")
-                consecutive_errors += 1
-                await asyncio.sleep(2)
-
-    # Al finalizar el modo nube, ejecutamos el pipeline de IA igual que en local
-    ejecutar_pipeline_ia()
+    # Configuración del Proxy
+    proxy_config = {
+        "server": "http://proxy.scrape.do:8080",
+        "username": proxy_username,
+        "password": "" 
+    }
+    
+    # Delegamos al motor interno (que ahora soporta proxy)
+    # Esto también ejecutará el pipeline de IA al finalizar
+    await _run_scraper_internal(proxy_config=proxy_config, games_to_scrape=games_to_scrape)
+    return
 
 
 def ejecutar_pipeline_ia():
@@ -616,21 +502,28 @@ def ejecutar_pipeline_ia():
     subir_cambios_a_github()
 
 
-async def _run_scraper_internal():
-    logger.info("INICIANDO SCRAPER MAESTRO (Modo Manual/Local)...")
+async def _run_scraper_internal(proxy_config=None, games_to_scrape=None):
+    mode_name = "Modo Nube/Proxy" if proxy_config else "Modo Manual/Local"
+    logger.info(f"INICIANDO SCRAPER MAESTRO ({mode_name})...")
     sincronizar_jugadas()
 
-    from playwright.async_api import async_playwright
     async with async_playwright() as p:
         # Lanzamos navegador headless pero con stealth basics
-        browser = await p.chromium.launch(headless=True)
+        # Si hay proxy_config, se usa. Si es None, Playwright lo ignora.
+        browser = await p.chromium.launch(headless=True, proxy=proxy_config)
+        
         context = await browser.new_context(
-            user_agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
+            user_agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+            ignore_https_errors=True
         )
         page = await context.new_page()
 
         # --- A. OBTENCIÓN DE TOKEN CON TIMESTAMP ---
         try:
+            # Timeout extendido si estamos en proxy
+            timeout_val = 90000 if proxy_config else 30000
+            page.set_default_timeout(timeout_val)
+            
             token = await obtener_token_csrf(page)
             token_timestamp = datetime.now()
         except Exception as e:
@@ -639,7 +532,15 @@ async def _run_scraper_internal():
             return
 
         # --- B. BUCLE DE JUEGOS ---
-        for game in GAME_CONFIG:
+        # Filtrado de juegos
+        target_games = GAME_CONFIG
+        if games_to_scrape:
+            target_games = [g for g in GAME_CONFIG if g['name'].lower() in [x.lower() for x in games_to_scrape]]
+            if not target_games:
+                logger.warning(f"No se encontraron juegos para los filtros: {games_to_scrape}. Se usarán todos.")
+                target_games = GAME_CONFIG
+
+        for game in target_games:
             current_id = get_start_id(game)
             logger.info(f"{game['name']} (ID {game['id']}) | Buscando desde #{current_id}")
             consecutive_errors = 0
@@ -663,7 +564,11 @@ async def _run_scraper_internal():
                     # Petición AJAX emulada
                     response = await page.request.post(API_URL, data={
                         "gameId": game['id'], "drawId": current_id, "csrfToken": token
-                    }, headers={"x-requested-with": "XMLHttpRequest"})
+                    }, headers={
+                        "x-requested-with": "XMLHttpRequest",
+                        "Origin": "https://www.polla.cl",
+                        "Referer": BASE_URL
+                    })
 
                     if response.status == 200:
                         try:

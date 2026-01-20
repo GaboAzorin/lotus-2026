@@ -1,12 +1,10 @@
 import os
-import requests
-import urllib.parse
-import re
+import asyncio
 import json
 import uuid
-from http.cookies import SimpleCookie
-
-import time
+import re
+import urllib.parse
+from playwright.async_api import async_playwright
 
 # --- CONFIGURACIÓN ---
 BASE_URL = "https://www.polla.cl/es/view/resultados"
@@ -22,195 +20,117 @@ if not SCRAPEDO_TOKEN_RAW:
 SCRAPEDO_TOKEN = SCRAPEDO_TOKEN_RAW.split(",")[0].strip()
 print(f"🔑 Usando API Key Scrape.do: {SCRAPEDO_TOKEN[:4]}...{SCRAPEDO_TOKEN[-4:]}")
 
-# Generar un SESSION_ID único para mantener la IP en Scrape.do
-SESSION_ID = str(uuid.uuid4())[:8]
-print(f"🔗 Session ID generado: {SESSION_ID}")
+async def run_test():
+    print("🚀 Iniciando Prueba Unitaria: Loto Sorteo #5375 (Modo Playwright + Proxy Scrape.do)")
+    print("------------------------------------------------")
 
-# Variable global para guardar cookies de la primera petición
-COOKIES_RAW = ""
-
-# User-Agent Fijo para mantener consistencia
-USER_AGENT = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
-
-def get_csrf_token():
-    global COOKIES_RAW
-    print(f"🌍 Paso 1: Visitando Polla.cl para obtener CSRF Token...")
-    encoded_url = urllib.parse.quote(BASE_URL)
+    # Configuración del Proxy Scrape.do
+    # Documentación: http://token:render=false@proxy.scrape.do:8080
+    # Usamos super=true para IPs residenciales de alta calidad
+    proxy_server = "http://proxy.scrape.do:8080"
     
-    # Añadimos session_id para mantener la IP
-    # IMPORTANTE: Quitamos render=true para recibir los headers raw (cookies)
-    target = f"http://api.scrape.do?token={SCRAPEDO_TOKEN}&url={encoded_url}&super=true&geoCode=cl&session={SESSION_ID}"
+    # Generar Session ID para stickiness
+    session_id = str(uuid.uuid4())[:8]
     
-    headers_step1 = {
-        "User-Agent": USER_AGENT
-    }
+    # Construir username con parámetros
+    proxy_username = f"{SCRAPEDO_TOKEN}-session={session_id}-super=true" 
+    
+    print(f"🔑 Configurando Proxy Session: {session_id}")
+    
+    print(f"🌍 Conectando vía Proxy: {proxy_server}")
 
-    try:
-        # Enviamos User-Agent custom también en el paso 1
-        resp = requests.get(target, headers=headers_step1, timeout=90)
-        
-        print("🔍 DEPURACIÓN DE HEADERS (Paso 1):")
-        for k, v in resp.headers.items():
-            # Filtramos headers irrelevantes de Scrape.do/Cloudflare para no ensuciar el log
-            if k.lower() not in ['date', 'content-length', 'connection', 'cf-ray', 'server']:
-                print(f"   🔹 {k}: {v}")
-
-        # Extracción manual de cookies desde headers
-        cookie_parts = []
-        if 'scrape.do-cookies' in resp.headers:
-            raw_cookies = resp.headers['scrape.do-cookies']
-            print(f"🍪 Header Scrape.do-cookies detectado: {raw_cookies[:50]}...")
+    async with async_playwright() as p:
+        try:
+            browser = await p.chromium.launch(
+                headless=True,
+                proxy={
+                    "server": proxy_server,
+                    "username": proxy_username,
+                    "password": "" # Password suele ser vacío o ignorado
+                }
+            )
             
-            # Limpieza de Cookies (eliminar atributos como Path, HttpOnly)
-            try:
-                cookie = SimpleCookie()
-                cookie.load(raw_cookies)
-                cookies_clean = "; ".join([f"{k}={v.value}" for k, v in cookie.items()])
-                print(f"🍪 Cookies limpiadas: {cookies_clean[:50]}...")
-                COOKIES_RAW = cookies_clean
-            except Exception as e:
-                print(f"⚠️ Error limpiando cookies: {e}")
-                COOKIES_RAW = raw_cookies
+            # Crear contexto con User-Agent consistente
+            context = await browser.new_context(
+                user_agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+                ignore_https_errors=True
+            )
+            
+            page = await context.new_page()
+
+            # 1. Navegar a la home para obtener sesión y token
+            print("⏳ Navegando a Polla.cl...")
+            # Timeout generoso por ser proxy
+            await page.goto(BASE_URL, timeout=90000, wait_until="domcontentloaded")
+            
+            print("😴 Esperando 5 segundos para estabilizar sesión...")
+            await asyncio.sleep(5)
+
+            # 2. Extraer Token CSRF
+            print("🔍 Buscando Token CSRF...")
+            token = await page.evaluate("document.querySelector('input[name=\"csrfToken\"]')?.value")
+            
+            if not token:
+                print("⚠️ Token no encontrado en DOM. Intentando regex en el contenido...")
+                content = await page.content()
+                m = re.search(r'csrfToken["\']\s*[:=]\s*["\']([a-zA-Z0-9]+)["\']', content)
+                if m:
+                    token = m.group(1)
+            
+            if not token:
+                raise Exception("No se pudo obtener el token CSRF.")
                 
-        elif 'Set-Cookie' in resp.headers:
-            raw_cookies = resp.headers['Set-Cookie']
-            print(f"🍪 Header Set-Cookie detectado: {raw_cookies[:50]}...")
-            
-            try:
-                cookie = SimpleCookie()
-                cookie.load(raw_cookies)
-                cookies_clean = "; ".join([f"{k}={v.value}" for k, v in cookie.items()])
-                print(f"🍪 Cookies limpiadas: {cookies_clean[:50]}...")
-                COOKIES_RAW = cookies_clean
-            except Exception as e:
-                print(f"⚠️ Error limpiando cookies: {e}")
-                COOKIES_RAW = raw_cookies
-        
-        # Fallback: intentar sacar del CookieJar
-        if not COOKIES_RAW and resp.cookies:
-            c_list = []
-            for c in resp.cookies:
-                c_list.append(f"{c.name}={c.value}")
-            COOKIES_RAW = "; ".join(c_list)
-            print(f"🍪 Cookies extraídas del Jar: {COOKIES_RAW}")
+            print(f"✅ Token obtenido: {token}")
 
-        if not COOKIES_RAW:
-            print("⚠️ No se detectaron cookies en la respuesta (ni headers ni jar).")
-
-        if resp.status_code != 200:
-            print(f"❌ Error HTTP {resp.status_code} al visitar página base.")
-            raise Exception(f"Status {resp.status_code}")
-        
-        content = resp.text
-        token = None
-        
-        m_json = re.search(r'"csrfToken"\s*:\s*"([^"]+)"', content)
-        if m_json: 
-            token = m_json.group(1)
-            print(f"✅ Token encontrado en JSON script: {token[:10]}...{token[-5:]}")
-        
-        if not token:
-            m_input = re.search(r'name="csrfToken"\s+value="([^"]+)"', content)
-            if m_input: 
-                token = m_input.group(1)
-                print(f"✅ Token encontrado en HTML input: {token[:10]}...{token[-5:]}")
+            # 3. Realizar Petición AJAX (usando el contexto del navegador)
+            print(f"📤 Solicitando Sorteo #{DRAW_ID}...")
             
-        if not token:
-            raise Exception("No se pudo extraer el token CSRF del HTML.")
-            
-        return token
-    except Exception as e:
-        print(f"❌ Fallo al obtener token: {e}")
-        raise
+            # Headers adicionales para parecer AJAX legítimo
+            # Nota: Playwright maneja cookies automáticamente
+            response = await page.request.post(
+                API_URL,
+                data={
+                    "gameId": GAME_ID,
+                    "drawId": DRAW_ID,
+                    "csrfToken": token
+                },
+                headers={
+                    "x-requested-with": "XMLHttpRequest",
+                    "Origin": "https://www.polla.cl",
+                    "Referer": BASE_URL
+                }
+            )
 
-def get_specific_draw(csrf_token):
-    time.sleep(2) # Espera para que la sesión se asiente
-    print(f"🔍 Paso 2: Consultando datos del Sorteo #{DRAW_ID} (Juego {GAME_ID})...")
-    encoded_api = urllib.parse.quote(API_URL)
-    
-    # Usamos el mismo session_id para reutilizar el proxy IP
-    target = f"http://api.scrape.do?token={SCRAPEDO_TOKEN}&url={encoded_api}&geoCode=cl&super=true&session={SESSION_ID}"
-    
-    payload = {
-        "gameId": GAME_ID,
-        "drawId": DRAW_ID,
-        "csrfToken": csrf_token
-    }
-    
-    headers = {
-        "User-Agent": USER_AGENT,
-        "Accept": "application/json, text/javascript, */*; q=0.01",
-        "Accept-Language": "es-419,es;q=0.9,en;q=0.8",
-        "x-requested-with": "XMLHttpRequest",
-        "Content-Type": "application/x-www-form-urlencoded; charset=UTF-8",
-        "Origin": "https://www.polla.cl",
-        "Referer": BASE_URL,
-        "Sec-Fetch-Dest": "empty",
-        "Sec-Fetch-Mode": "cors",
-        "Sec-Fetch-Site": "same-origin",
-        "X-CSRF-TOKEN": csrf_token,
-        "csrf-token": csrf_token
-    }
-    
-    # Inyectar cookies manualmente en el header
-    if COOKIES_RAW:
-        # Limpieza básica: si es un string directo de Set-Cookie, a veces funciona reenviarlo,
-        # pero lo ideal es enviar solo key=value.
-        # Intentaremos enviarlo en el header 'Cookie'.
-        headers["Cookie"] = COOKIES_RAW
-        print(f"🍪 Inyectando Cookie header: {COOKIES_RAW[:50]}...")
-    
-    print("📤 Headers enviados en paso 2:")
-    for k, v in headers.items():
-        print(f"   🔹 {k}: {v}")
-
-    try:
-        # Pasamos las cookies capturadas en el paso 1
-        resp = requests.post(target, data=payload, headers=headers, timeout=60)
-        
-        if resp.status_code == 200:
-            try:
-                data = resp.json()
-                print("✅ ¡Datos recibidos exitosamente!")
-                return data
-            except json.JSONDecodeError:
-                print("❌ La respuesta no es un JSON válido.")
-                print(f"Contenido recibido (primeros 2000 chars): {resp.text[:2000]}")
-                return None
-        else:
-            print(f"❌ Error API: Status {resp.status_code}")
-            print(f"Respuesta: {resp.text[:2000]}")
-            return None
+            print(f"📥 Status Respuesta: {response.status}")
             
-    except Exception as e:
-        print(f"❌ Error en la petición POST: {e}")
-        return None
+            if response.status == 200:
+                try:
+                    data = await response.json()
+                    print("✅ ¡JSON Recibido!")
+                    
+                    filename = f"loto_{DRAW_ID}_result_playwright.json"
+                    with open(filename, "w", encoding="utf-8") as f:
+                        json.dump(data, f, indent=4, ensure_ascii=False)
+                    print(f"💾 Guardado en: {filename}")
+                    
+                    if 'results' in data:
+                         print(f"🔢 Resultados: {data['results']}")
+                    else:
+                         print(f"⚠️ JSON recibido pero sin campo 'results': {data}")
+
+                except Exception as e:
+                    text = await response.text()
+                    print(f"❌ Error decodificando JSON: {e}")
+                    print(f"📄 Contenido raw: {text[:500]}...")
+            else:
+                print(f"❌ Error HTTP: {response.status}")
+                text = await response.text()
+                print(f"📄 Respuesta: {text[:500]}...")
+
+            await browser.close()
+
+        except Exception as e:
+            print(f"🔥 Error Fatal en Playwright: {e}")
 
 if __name__ == "__main__":
-    print("🚀 Iniciando Prueba Unitaria: Loto Sorteo #5375 (Modo Persistente)")
-    print("------------------------------------------------")
-    
-    try:
-        token = get_csrf_token()
-        data = get_specific_draw(token)
-        
-        if data:
-            filename = f"loto_{DRAW_ID}_result.json"
-            with open(filename, "w", encoding="utf-8") as f:
-                json.dump(data, f, indent=4, ensure_ascii=False)
-            
-            print("------------------------------------------------")
-            print(f"💾 Archivo guardado: {filename}")
-            if 'drawDate' in data:
-                print(f"📅 Fecha del Sorteo: {data['drawDate']}")
-                print(f"🔢 Números (raw): {data.get('results')}")
-            else:
-                print("⚠️ Estructura JSON inesperada.")
-            print("🎉 Prueba Finalizada con Éxito")
-        else:
-            print("💀 La prueba falló.")
-            exit(1)
-            
-    except Exception as e:
-        print(f"🔥 Error Fatal: {e}")
-        exit(1)
+    asyncio.run(run_test())
