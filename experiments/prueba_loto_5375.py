@@ -26,6 +26,9 @@ print(f"🔗 Session ID generado: {SESSION_ID}")
 # Variable global para guardar cookies de la primera petición
 COOKIES_RAW = ""
 
+# User-Agent Fijo para mantener consistencia
+USER_AGENT = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
+
 def get_csrf_token():
     global COOKIES_RAW
     print(f"🌍 Paso 1: Visitando Polla.cl para obtener CSRF Token...")
@@ -35,25 +38,28 @@ def get_csrf_token():
     # IMPORTANTE: Quitamos render=true para recibir los headers raw (cookies)
     target = f"http://api.scrape.do?token={SCRAPEDO_TOKEN}&url={encoded_url}&super=true&geoCode=cl&session={SESSION_ID}"
     
+    headers_step1 = {
+        "User-Agent": USER_AGENT
+    }
+
     try:
-        resp = requests.get(target, timeout=90)
+        # Enviamos User-Agent custom también en el paso 1
+        resp = requests.get(target, headers=headers_step1, timeout=90)
         
-        # Extracción manual de cookies desde headers (para evitar filtrado por dominio en requests)
-        # Scrape.do a veces devuelve múltiples headers 'Set-Cookie', requests los combina o hay que acceder a ellos.
-        # En requests, resp.headers['Set-Cookie'] suele dar solo la última o combinadas.
-        # Mejor usar resp.cookies pero iterando sin importar el dominio, O inspeccionar headers crudos.
-        
+        print("🔍 DEPURACIÓN DE HEADERS (Paso 1):")
+        for k, v in resp.headers.items():
+            # Filtramos headers irrelevantes de Scrape.do/Cloudflare para no ensuciar el log
+            if k.lower() not in ['date', 'content-length', 'connection', 'cf-ray', 'server']:
+                print(f"   🔹 {k}: {v}")
+
+        # Extracción manual de cookies desde headers
         cookie_parts = []
         if 'Set-Cookie' in resp.headers:
-            # Extraer cookies crudas ignorando atributos como Domain/Path para reenviarlas tal cual
             raw_cookies = resp.headers['Set-Cookie']
-            # Simple parser: tomar clave=valor antes del primer ;
-            # Nota: Si hay múltiples Set-Cookie, requests puede unirlos con coma.
-            # Una estrategia robusta es usar el CookieJar de requests si capturó algo, o forzar la lectura.
             print(f"🍪 Header Set-Cookie detectado: {raw_cookies[:50]}...")
             COOKIES_RAW = raw_cookies
         
-        # Fallback: intentar sacar del CookieJar de requests (aunque el dominio no coincida)
+        # Fallback: intentar sacar del CookieJar
         if not COOKIES_RAW and resp.cookies:
             c_list = []
             for c in resp.cookies:
@@ -106,7 +112,7 @@ def get_specific_draw(csrf_token):
     headers = {
         "x-requested-with": "XMLHttpRequest",
         "Content-Type": "application/x-www-form-urlencoded",
-        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
+        "User-Agent": USER_AGENT
     }
     
     # Inyectar cookies manualmente en el header
