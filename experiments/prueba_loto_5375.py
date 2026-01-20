@@ -4,6 +4,7 @@ import urllib.parse
 import re
 import json
 import uuid
+from http.cookies import SimpleCookie
 
 import time
 
@@ -59,11 +60,31 @@ def get_csrf_token():
         if 'scrape.do-cookies' in resp.headers:
             raw_cookies = resp.headers['scrape.do-cookies']
             print(f"🍪 Header Scrape.do-cookies detectado: {raw_cookies[:50]}...")
-            COOKIES_RAW = raw_cookies
+            
+            # Limpieza de Cookies (eliminar atributos como Path, HttpOnly)
+            try:
+                cookie = SimpleCookie()
+                cookie.load(raw_cookies)
+                cookies_clean = "; ".join([f"{k}={v.value}" for k, v in cookie.items()])
+                print(f"🍪 Cookies limpiadas: {cookies_clean[:50]}...")
+                COOKIES_RAW = cookies_clean
+            except Exception as e:
+                print(f"⚠️ Error limpiando cookies: {e}")
+                COOKIES_RAW = raw_cookies
+                
         elif 'Set-Cookie' in resp.headers:
             raw_cookies = resp.headers['Set-Cookie']
             print(f"🍪 Header Set-Cookie detectado: {raw_cookies[:50]}...")
-            COOKIES_RAW = raw_cookies
+            
+            try:
+                cookie = SimpleCookie()
+                cookie.load(raw_cookies)
+                cookies_clean = "; ".join([f"{k}={v.value}" for k, v in cookie.items()])
+                print(f"🍪 Cookies limpiadas: {cookies_clean[:50]}...")
+                COOKIES_RAW = cookies_clean
+            except Exception as e:
+                print(f"⚠️ Error limpiando cookies: {e}")
+                COOKIES_RAW = raw_cookies
         
         # Fallback: intentar sacar del CookieJar
         if not COOKIES_RAW and resp.cookies:

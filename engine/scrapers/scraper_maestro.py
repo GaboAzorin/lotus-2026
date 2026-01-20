@@ -14,6 +14,7 @@ import argparse
 import pytz
 import uuid
 from datetime import datetime, timedelta
+from http.cookies import SimpleCookie
 
 # Configurar logging
 logger = logging.getLogger(__name__)
@@ -344,11 +345,26 @@ def obtener_token_scrapedo(session_id=None):
         # Extracción de Cookies (Session Stickiness)
         cookies_raw = ""
         if 'scrape.do-cookies' in resp.headers:
-            cookies_raw = resp.headers['scrape.do-cookies']
-            logger.info("🍪 Cookies detectadas en header scrape.do-cookies.")
+            raw = resp.headers['scrape.do-cookies']
+            try:
+                cookie = SimpleCookie()
+                cookie.load(raw)
+                cookies_raw = "; ".join([f"{k}={v.value}" for k, v in cookie.items()])
+                logger.info(f"🍪 Cookies limpiadas y detectadas en scrape.do-cookies: {cookies_raw[:30]}...")
+            except Exception as e:
+                logger.warning(f"Error limpiando cookies scrape.do: {e}")
+                cookies_raw = raw
+
         elif 'Set-Cookie' in resp.headers:
-            cookies_raw = resp.headers['Set-Cookie']
-            logger.info("🍪 Cookies detectadas en header Set-Cookie.")
+            raw = resp.headers['Set-Cookie']
+            try:
+                cookie = SimpleCookie()
+                cookie.load(raw)
+                cookies_raw = "; ".join([f"{k}={v.value}" for k, v in cookie.items()])
+                logger.info(f"🍪 Cookies limpiadas y detectadas en Set-Cookie: {cookies_raw[:30]}...")
+            except Exception as e:
+                logger.warning(f"Error limpiando cookies Set-Cookie: {e}")
+                cookies_raw = raw
         elif resp.cookies:
             # Fallback a jar
             c_list = [f"{c.name}={c.value}" for c in resp.cookies]
