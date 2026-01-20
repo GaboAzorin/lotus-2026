@@ -1,0 +1,32 @@
+﻿2026-01-20T15:47:38.9401148Z Current runner version: '2.331.0'
+2026-01-20T15:47:38.9427088Z ##[group]Runner Image Provisioner
+2026-01-20T15:47:38.9427872Z Hosted Compute Agent
+2026-01-20T15:47:38.9428582Z Version: 20251211.462
+2026-01-20T15:47:38.9429235Z Commit: 6cbad8c2bb55d58165063d031ccabf57e2d2db61
+2026-01-20T15:47:38.9429924Z Build Date: 2025-12-11T16:28:49Z
+2026-01-20T15:47:38.9430691Z Worker ID: {8ecd3e88-a24e-4665-9248-8b16912833d8}
+2026-01-20T15:47:38.9431358Z ##[endgroup]
+2026-01-20T15:47:38.9431878Z ##[group]Operating System
+2026-01-20T15:47:38.9432498Z Ubuntu
+2026-01-20T15:47:38.9432926Z 24.04.3
+2026-01-20T15:47:38.9433370Z LTS
+2026-01-20T15:47:38.9433967Z ##[endgroup]
+2026-01-20T15:47:38.9434475Z ##[group]Runner Image
+2026-01-20T15:47:38.9434999Z Image: ubuntu-24.04
+2026-01-20T15:47:38.9435599Z Version: 20260111.209.1
+2026-01-20T15:47:38.9436564Z Included Software: https://github.com/actions/runner-images/blob/ubuntu24/20260111.209/images/ubuntu/Ubuntu2404-Readme.md
+2026-01-20T15:47:38.9438264Z Image Release: https://github.com/actions/runner-images/releases/tag/ubuntu24%2F20260111.209
+2026-01-20T15:47:38.9439540Z ##[endgroup]
+2026-01-20T15:47:38.9440663Z ##[group]GITHUB_TOKEN Permissions
+2026-01-20T15:47:38.9442496Z Contents: read
+2026-01-20T15:47:38.9443055Z Metadata: read
+2026-01-20T15:47:38.9443661Z Packages: read
+2026-01-20T15:47:38.9444163Z ##[endgroup]
+2026-01-20T15:47:38.9446263Z Secret source: Actions
+2026-01-20T15:47:38.9447645Z Prepare workflow directory
+2026-01-20T15:47:38.9863950Z Prepare all required actions
+2026-01-20T15:47:38.9922020Z Getting action download info
+2026-01-20T15:47:39.3434682Z Download action repository 'actions/checkout@v3' (SHA:f43a0e5ff2bd294095638e18286ca9a3d1956744)
+2026-01-20T15:47:39.4867839Z Download action repository 'actions/setup-python@v4' (SHA:7f4fc3e22c37d6ff65e88745f38bd3157c663f7c)
+2026-01-20T15:47:39.8041759Z Download action repository 'actions/upload-artifact@v4' (SHA:ea165f8d65b6e75b540449e92b4886f43607fa02)
+2026-01-20T15:47:40.1319882Z Complete job name: Verificar Sorteo 5375

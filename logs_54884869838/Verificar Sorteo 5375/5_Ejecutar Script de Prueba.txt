@@ -1,0 +1,49 @@
+﻿2026-01-20T15:47:47.6914789Z ##[group]Run python experiments/prueba_loto_5375.py
+2026-01-20T15:47:47.6915216Z [36;1mpython experiments/prueba_loto_5375.py[0m
+2026-01-20T15:47:47.6947477Z shell: /usr/bin/bash -e {0}
+2026-01-20T15:47:47.6947714Z env:
+2026-01-20T15:47:47.6947968Z   pythonLocation: /opt/hostedtoolcache/Python/3.11.14/x64
+2026-01-20T15:47:47.6948382Z   PKG_CONFIG_PATH: /opt/hostedtoolcache/Python/3.11.14/x64/lib/pkgconfig
+2026-01-20T15:47:47.6948797Z   Python_ROOT_DIR: /opt/hostedtoolcache/Python/3.11.14/x64
+2026-01-20T15:47:47.6949150Z   Python2_ROOT_DIR: /opt/hostedtoolcache/Python/3.11.14/x64
+2026-01-20T15:47:47.6949496Z   Python3_ROOT_DIR: /opt/hostedtoolcache/Python/3.11.14/x64
+2026-01-20T15:47:47.6949856Z   LD_LIBRARY_PATH: /opt/hostedtoolcache/Python/3.11.14/x64/lib
+2026-01-20T15:47:47.6951310Z   SCRAPEDO_TOKEN: ***
+2026-01-20T15:47:47.6951499Z ##[endgroup]
+2026-01-20T15:47:52.5191979Z 🔑 Usando API Key Scrape.do: ad46...c756
+2026-01-20T15:47:52.5192711Z 🔗 Session ID generado: 19be03fb
+2026-01-20T15:47:52.5193519Z 🚀 Iniciando Prueba Unitaria: Loto Sorteo #5375 (Modo Persistente)
+2026-01-20T15:47:52.5194299Z ------------------------------------------------
+2026-01-20T15:47:52.5194914Z 🌍 Paso 1: Visitando Polla.cl para obtener CSRF Token...
+2026-01-20T15:47:52.5195472Z 🔍 DEPURACIÓN DE HEADERS (Paso 1):
+2026-01-20T15:47:52.5196657Z    🔹 access-control-allow-headers: x-requested-with, Content-Type, origin, authorization, accept, client-security-token,Access-Control-Allow-Origin
+2026-01-20T15:47:52.5198182Z    🔹 access-control-allow-methods: POST, GET, OPTIONS, PUT, DELETE
+2026-01-20T15:47:52.5198830Z    🔹 access-control-allow-origin: *.polla.cl
+2026-01-20T15:47:52.5199305Z    🔹 access-control-max-age: 1000
+2026-01-20T15:47:52.5200075Z    🔹 cache-control: no-store, no-cache, must-revalidate, post-check=0, pre-check=0
+2026-01-20T15:47:52.5200839Z    🔹 content-encoding: gzip
+2026-01-20T15:47:52.5201327Z    🔹 content-type: text/html; charset=UTF-8
+2026-01-20T15:47:52.5201868Z    🔹 expires: Thu, 19 Nov 1981 08:52:00 GMT
+2026-01-20T15:47:52.5202323Z    🔹 pragma: no-cache
+2026-01-20T15:47:52.5202685Z    🔹 scrape.do-auth: 0
+2026-01-20T15:47:52.5204881Z    🔹 scrape.do-cookies: edge_production=3687dca3874f4c2a8ffae9ea33fdafbd; visid_incap_1960734=pZ5ViVvaTSiUAU1QHtAcb6Sjb2kAAAAAQUIPAAAAAACSAwZzh6ExsfL66im8wnGT; nlbi_1960734=cGhgNYyuQXUX7EuDM9Qq0gAAAAAQOGfcUgZs5ENBT/6BXfpn; incap_ses_621_1960734=IfjHSgIFsGgDWceApTyeCKWjb2kAAAAAHJbKgvPbQOnzNYDuUf+Beg==
+2026-01-20T15:47:52.5207155Z    🔹 scrape.do-initial-status-code: 200
+2026-01-20T15:47:52.5207620Z    🔹 scrape.do-rate: 0:0
+2026-01-20T15:47:52.5208016Z    🔹 scrape.do-remaining-credits: 805
+2026-01-20T15:47:52.5208450Z    🔹 scrape.do-request-cost: 10
+2026-01-20T15:47:52.5208993Z    🔹 scrape.do-request-id: a9babbc9-2f7c-4723-b60f-bc4888efe38e
+2026-01-20T15:47:52.5209850Z    🔹 scrape.do-resolved-url: https://www.polla.cl/es/view/resultados?session=19be03fb
+2026-01-20T15:47:52.5210654Z    🔹 scrape.do-rid: 487376-70-0-
+2026-01-20T15:47:52.5211332Z    🔹 scrape.do-target-url: https://www.polla.cl/es/view/resultados?session=19be03fb
+2026-01-20T15:47:52.5212016Z    🔹 vary: Accept-Encoding
+2026-01-20T15:47:52.5212362Z    🔹 x-cdn: Imperva
+2026-01-20T15:47:52.5212728Z    🔹 x-content-type-options: nosniff
+2026-01-20T15:47:52.5213418Z    🔹 x-iinfo: 60-57280700-57280801 NNNY CT(4 4 0) RT(1768924068989 616) q(0 0 0 3) r(6 6) U24
+2026-01-20T15:47:52.5214452Z    🔹 transfer-encoding: chunked
+2026-01-20T15:47:52.5214992Z ⚠️ No se detectaron cookies en la respuesta (ni headers ni jar).
+2026-01-20T15:47:52.5215541Z ✅ Token encontrado en JSON script.
+2026-01-20T15:47:52.5216071Z 🔍 Paso 2: Consultando datos del Sorteo #5375 (Juego 5271)...
+2026-01-20T15:47:52.5216603Z ❌ La respuesta no es un JSON válido.
+2026-01-20T15:47:52.5217164Z Contenido recibido (primeros 500 chars): Array
+2026-01-20T15:47:52.5217696Z 💀 La prueba falló.
+2026-01-20T15:47:52.5364862Z ##[error]Process completed with exit code 1.

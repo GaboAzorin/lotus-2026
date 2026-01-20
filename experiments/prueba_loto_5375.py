@@ -123,6 +123,10 @@ def get_specific_draw(csrf_token):
         headers["Cookie"] = COOKIES_RAW
         print(f"🍪 Inyectando Cookie header: {COOKIES_RAW[:50]}...")
     
+    print("📤 Headers enviados en paso 2:")
+    for k, v in headers.items():
+        print(f"   🔹 {k}: {v}")
+
     try:
         # Pasamos las cookies capturadas en el paso 1
         resp = requests.post(target, data=payload, headers=headers, timeout=60)
@@ -134,11 +138,11 @@ def get_specific_draw(csrf_token):
                 return data
             except json.JSONDecodeError:
                 print("❌ La respuesta no es un JSON válido.")
-                print(f"Contenido recibido (primeros 500 chars): {resp.text[:500]}")
+                print(f"Contenido recibido (primeros 2000 chars): {resp.text[:2000]}")
                 return None
         else:
             print(f"❌ Error API: Status {resp.status_code}")
-            print(f"Respuesta: {resp.text[:500]}")
+            print(f"Respuesta: {resp.text[:2000]}")
             return None
             
     except Exception as e:

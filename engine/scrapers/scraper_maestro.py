@@ -456,7 +456,7 @@ async def _run_scraper_cloud_mode(games_to_scrape=None):
                     try:
                         json_data = resp.json()
                     except json.JSONDecodeError:
-                        logger.warning("JSON inválido desde Scrape.do")
+                        logger.warning(f"JSON inválido desde Scrape.do. Respuesta raw: {resp.text[:500]}")
                         consecutive_errors += 1
                         continue
 
