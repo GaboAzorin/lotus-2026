@@ -25,8 +25,8 @@ Este documento detalla la hoja de ruta estratégica para el desarrollo y estabil
 - [x] **[ERR-006] Fix IndexError en Ventanas Pequeñas**: Validar tamaño de dataset en `oraculo_neural.py` antes de acceder a índices negativos.
 
 ### 🟡 Calidad de Datos
-- [ ] **[ERR-007] Robustez de Scraper**: Aumentar timeout en `scraper_maestro.py` y manejar esperas explícitas para conexiones lentas.
-- [ ] **[IMP-DATA-003] Backups Automáticos**: Implementar copia `.bak` antes de que `juez_implacable.py` modifique `SIMULACIONES.csv`.
+- [x] **[ERR-007] Robustez de Scraper**: Aumentar timeout en `scraper_maestro.py` y manejar esperas explícitas para conexiones lentas.
+- [x] **[IMP-DATA-003] Backups Automáticos**: Implementar copia `.bak` antes de que `juez_implacable.py` modifique `SIMULACIONES.csv`.
 
 ---
 
