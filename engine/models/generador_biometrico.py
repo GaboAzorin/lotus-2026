@@ -152,6 +152,78 @@ def _procesar_juego(df, game_name, positions_dict, biometrics_dict):
         }
 
     biometrics_dict["games"][game_name] = game_data
+
+    # --- [IMP-FEAT-003] ANÁLISIS DE CORRELACIÓN POSICIONAL ---
+    # Analizamos si el valor de una bola influye en la siguiente (Paridad y Terminación)
+    if len(sorted_pos) > 1:
+        correlations = {
+            "parity": {},  # Par -> Par, Par -> Impar
+            "ending": {}   # 0->1, 0->2, ...
+        }
+        
+        for i in range(len(sorted_pos) - 1):
+            pos_current = sorted_pos[i]
+            pos_next = sorted_pos[i+1]
+            
+            col_curr_name = positions_dict[pos_current]
+            col_next_name = positions_dict[pos_next]
+            
+            # Extraemos pares válidos
+            pairs = df[[col_curr_name, col_next_name]].dropna()
+            
+            # 1. Correlación de Paridad (0=Par, 1=Impar)
+            # Nota: Asumimos 0 es par (aunque en lotería no hay 0, excepto LOTO3)
+            # En LOTO3 (0-9), 0 es par.
+            parity_counts = {"even_even": 0, "even_odd": 0, "odd_even": 0, "odd_odd": 0}
+            
+            for _, row in pairs.iterrows():
+                try:
+                    val_c = int(row[col_curr_name])
+                    val_n = int(row[col_next_name])
+                    
+                    is_c_even = (val_c % 2 == 0)
+                    is_n_even = (val_n % 2 == 0)
+                    
+                    if is_c_even and is_n_even: parity_counts["even_even"] += 1
+                    elif is_c_even and not is_n_even: parity_counts["even_odd"] += 1
+                    elif not is_c_even and is_n_even: parity_counts["odd_even"] += 1
+                    else: parity_counts["odd_odd"] += 1
+                except: continue
+
+            # Normalizamos Paridad
+            total_pairs = sum(parity_counts.values())
+            if total_pairs > 0:
+                correlations["parity"][f"{pos_current}->{pos_next}"] = {
+                    k: round(v/total_pairs, 4) for k, v in parity_counts.items()
+                }
+
+            # 2. Correlación de Terminación (0-9)
+            ending_counts = {str(d): {str(k): 0 for k in range(10)} for d in range(10)}
+            
+            for _, row in pairs.iterrows():
+                try:
+                    val_c = int(row[col_curr_name])
+                    val_n = int(row[col_next_name])
+                    
+                    digit_c = val_c % 10
+                    digit_n = val_n % 10
+                    
+                    ending_counts[str(digit_c)][str(digit_n)] += 1
+                except: continue
+
+            # Normalizamos (Probabilidad de Y dado X)
+            correlations["ending"][f"{pos_current}->{pos_next}"] = {}
+            for start_digit, target_dict in ending_counts.items():
+                total_starts = sum(target_dict.values())
+                if total_starts > 0:
+                    # Guardamos solo si hay datos para este dígito inicial
+                    correlations["ending"][f"{pos_current}->{pos_next}"][start_digit] = {
+                        k: round(v/total_starts, 4) for k, v in target_dict.items() if v > 0
+                    }
+
+        game_data["correlations"] = correlations
+        print(f"      🔗 Correlaciones calculadas para {game_name}")
+
     print(f"      🔹 {game_name}: {len(sorted_pos)} posiciones con suavizado Laplace.")
 
 if __name__ == "__main__":

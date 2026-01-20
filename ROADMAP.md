@@ -40,10 +40,10 @@ Este documento detalla la hoja de ruta estratégica para el desarrollo y estabil
 
 ### 🔵 Ingeniería de Características (Feature Engineering)
 - [x] **[IMP-FEAT-001] Análisis de Rachas**: Crear features para detectar números "calientes" (frecuentes recientes) y "fríos".
-- [ ] **[IMP-FEAT-003] Correlación Posicional**: Analizar si el valor de una bola influye en la paridad o terminación de la siguiente.
+- [x] **[IMP-FEAT-003] Correlación Posicional**: Analizar si el valor de una bola influye en la paridad o terminación de la siguiente.
 
 ### 🔵 Validación
-- [ ] **[IMP-ML-008] Validación Cruzada Temporal**: Implementar `TimeSeriesSplit` (5 folds) en lugar de un simple split 80/20 para métricas más realistas.
+- [x] **[IMP-ML-008] Validación Cruzada Temporal**: Implementar `TimeSeriesSplit` (5 folds) en lugar de un simple split 80/20 para métricas más realistas.
 
 ---
 

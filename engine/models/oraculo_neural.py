@@ -159,6 +159,38 @@ class OraculoNeural:
                     final_cols.append(simple_c)
         return final_cols
 
+    # --- FEATURE ENGINEERING ---
+
+    def _calcular_mapa_calor(self, X_raw, current_idx, lookback=10):
+        """
+        Calcula la frecuencia normalizada de cada número en los últimos 'lookback' sorteos.
+        Retorna un vector de probabilidades de tamaño (max_val - min_val + 1).
+        """
+        min_val = self.config['min_val']
+        max_val = self.config['max']
+        size = max_val - min_val + 1
+        
+        counts = np.zeros(size)
+        
+        # Tomamos los últimos 'lookback' sorteos ANTERIORES a current_idx
+        start_idx = max(0, current_idx - lookback)
+        history = X_raw[start_idx:current_idx]
+        
+        for draw in history:
+            for num in draw:
+                try:
+                    val = int(float(num))
+                    if min_val <= val <= max_val:
+                        counts[val - min_val] += 1
+                except:
+                    continue
+        
+        # Normalización
+        total = np.sum(counts)
+        if total > 0:
+            return (counts / total).tolist()
+        return counts.tolist()
+
     # --- PREPARACIÓN DE DATOS (EL CORAZÓN DE LA CIRUGÍA) ---
 
     def _preparar_dataset(self, df):
@@ -208,6 +240,12 @@ class OraculoNeural:
                 features.extend(X_raw[i-w])
             
             features.append(dias[i])
+            
+            # [IMP-FEAT-001] Inyección de Rachas (Mapa de Calor)
+            # Analizamos los 10 sorteos previos a 'i'
+            heat_map = self._calcular_mapa_calor(X_raw, i, lookback=10)
+            features.extend(heat_map)
+            
             X.append(features)
             
             if target_type == 'SET':
@@ -245,14 +283,41 @@ class OraculoNeural:
 
         samples = len(X)
 
-        # --- AUDITORÍA v4: TRAIN/TEST SPLIT TEMPORAL ---
-        # Usamos 80% para entrenamiento, 20% para validación
-        # Split TEMPORAL (no aleatorio) para evitar data leakage
+        # --- AUDITORÍA v4: VALIDACIÓN CRUZADA TEMPORAL ---
+        # [IMP-ML-008] Implementación de TimeSeriesSplit (5 folds)
+        logger.info(f"   Iniciando Validación Cruzada Temporal (5 folds)...")
+        tscv = TimeSeriesSplit(n_splits=5)
+        
+        cv_scores_train = []
+        cv_scores_test = []
+        
+        # Iteramos sobre los folds para recolectar métricas robustas
+        for fold, (train_index, test_index) in enumerate(tscv.split(X)):
+            X_fold_train, X_fold_test = X[train_index], X[test_index]
+            y_fold_train, y_fold_test = y[train_index], y[test_index]
+            
+            # Usamos modelo base para evaluación rápida
+            temp_model = self._build_model()
+            temp_model.fit(X_fold_train, y_fold_train)
+            
+            s_train = temp_model.score(X_fold_train, y_fold_train)
+            s_test = temp_model.score(X_fold_test, y_fold_test)
+            
+            cv_scores_train.append(s_train)
+            cv_scores_test.append(s_test)
+            logger.info(f"      Fold {fold+1}: Train={s_train:.3f}, Test={s_test:.3f}")
+
+        avg_train = np.mean(cv_scores_train)
+        avg_test = np.mean(cv_scores_test)
+        logger.info(f"   📊 CV Promedio (5 folds) - Train: {avg_train:.3f}, Test: {avg_test:.3f}")
+
+        # --- ENTRENAMIENTO FINAL ---
+        # Mantenemos el split 80/20 para la fase de optimización y guardado
         split_idx = int(samples * 0.8)
         X_train, X_test = X[:split_idx], X[split_idx:]
         y_train, y_test = y[:split_idx], y[split_idx:]
 
-        logger.info(f"   Split temporal: Train={len(X_train)}, Test={len(X_test)}")
+        logger.info(f"   Split final (Optimización): Train={len(X_train)}, Test={len(X_test)}")
 
         # [IMP-ML-003] Optimización de Hiperparámetros (GridSearchCV)
         # Solo ejecutamos GridSearch si tenemos suficientes datos para validar
@@ -318,28 +383,31 @@ class OraculoNeural:
 
         return {'train_score': train_score, 'test_score': test_score}
 
-    def _entrenar_manual(self, X_train, y_train):
-        """Configuración manual de fallback (la antigua lógica)"""
-        # Hiperparámetros conservadores para lotería (evitar overfitting)
-        # [IMP-ML-001] Ajuste agresivo para reducir varianza
-        depth = 5  # Reducido de 8 para forzar generalización
-        est = 100  # Aumentado ligeramente para estabilidad
-        min_leaf = 20  # Aumentado de 10 para evitar memorizar combinaciones raras
-
-        logger.info(f"   Hiperparámetros Manuales: Depth={depth}, Est={est}, MinLeaf={min_leaf}")
-
-        # Configuración del Bosque con regularización
+    def _build_model(self):
+        """Construye el modelo base con hiperparámetros conservadores"""
+        depth = 5 
+        est = 100 
+        min_leaf = 20
+        
         rf = RandomForestClassifier(
             n_estimators=est,
             max_depth=depth,
             min_samples_leaf=min_leaf,
-            max_features='sqrt',  # Reducir features por árbol
+            max_features='sqrt',
             class_weight='balanced' if (self.version == "v3" and self.config['type'] == 'SET') else None,
             n_jobs=-1,
             random_state=42
         )
+        return MultiOutputClassifier(rf)
 
-        self.model = MultiOutputClassifier(rf)
+    def _entrenar_manual(self, X_train, y_train):
+        """Configuración manual de fallback (la antigua lógica)"""
+        # Hiperparámetros conservadores para lotería (evitar overfitting)
+        # [IMP-ML-001] Ajuste agresivo para reducir varianza
+        
+        logger.info(f"   Hiperparámetros Manuales: Depth=5, Est=100, MinLeaf=20")
+
+        self.model = self._build_model()
         self.model.fit(X_train, y_train)
 
     # --- INFERENCIA Y AUTO-CURACIÓN ---
