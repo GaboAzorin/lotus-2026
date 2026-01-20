@@ -102,7 +102,8 @@ def sincronizar_jugadas():
     """Descarga jugadas manuales/externas desde Google Sheets y las fusiona sin duplicados."""
     print("\n☁️  Sincronizando jugadas desde la nube (Google Sheets)...")
     try:
-        response = requests.get(GOOGLE_SHEET_CSV_URL, timeout=15)
+        # Timeout aumentado para conexiones inestables
+        response = requests.get(GOOGLE_SHEET_CSV_URL, timeout=30)
         if response.status_code != 200:
             logger.warning(f"Google Sheets respondió con código {response.status_code}. Saltando sincronización.")
             print("   ⚠️ No se pudo conectar a Sheets. Saltando sincronización.")
