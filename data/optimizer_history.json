@@ -231,6 +231,22 @@
       "algoritmo": "oraculo_neural_v4",
       "razon": "Rendimiento 0.0% del promedio",
       "metrica": 0.0
+    },
+    {
+      "timestamp": "2026-01-20T19:11:29.539332",
+      "tipo": "PROMOVER",
+      "juego": "LOTO",
+      "algoritmo": "oraculo_neural_v3",
+      "razon": "Rendimiento 170.3% del promedio",
+      "metrica": 1.196
+    },
+    {
+      "timestamp": "2026-01-20T19:11:29.539332",
+      "tipo": "DEGRADAR",
+      "juego": "LOTO",
+      "algoritmo": "oraculo_neural_v4",
+      "razon": "Rendimiento 0.0% del promedio",
+      "metrica": 0.0
     }
   ],
   "drift_alerts": [
@@ -708,6 +724,52 @@
     },
     {
       "timestamp": "2026-01-20T17:20:17.237188",
+      "total_predicciones": 2900,
+      "juegos_activos": [
+        "LOTO",
+        "LOTO3",
+        "RACHA",
+        "LOTO4"
+      ],
+      "algoritmos_activos": [
+        "oraculo_neural_v3",
+        "oraculo_neural_v4",
+        "gaussiano_inteligente_v1",
+        "markov_chain_v1",
+        "consenso_meritocratico_v2",
+        "forense_biometrico_v1",
+        "delta_dna_v1",
+        "loto3_ultra_ensemble"
+      ],
+      "metricas": {
+        "LOTO": {
+          "promedio_aciertos": 0.701,
+          "max_aciertos": 3,
+          "tasa_exito_3plus": 2.68,
+          "n_predicciones": 747
+        },
+        "LOTO3": {
+          "promedio_aciertos": 0.757,
+          "max_aciertos": 3,
+          "tasa_exito_3plus": 0.37,
+          "n_predicciones": 815
+        },
+        "RACHA": {
+          "promedio_aciertos": 5.173,
+          "max_aciertos": 8,
+          "tasa_exito_3plus": 99.11,
+          "n_predicciones": 672
+        },
+        "LOTO4": {
+          "promedio_aciertos": 0.745,
+          "max_aciertos": 3,
+          "tasa_exito_3plus": 0.45,
+          "n_predicciones": 666
+        }
+      }
+    },
+    {
+      "timestamp": "2026-01-20T19:11:29.532798",
       "total_predicciones": 2900,
       "juegos_activos": [
         "LOTO",
