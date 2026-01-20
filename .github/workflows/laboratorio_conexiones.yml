@@ -18,40 +18,18 @@ jobs:
 
     - name: Install dependencies
       run: |
-        pip install requests playwright curl_cffi seleniumbase
-        playwright install chromium
-        sbase install chromedriver
+        pip install requests
 
-    # 1. Requests & Curl_cffi (Huellas múltiples)
-    - name: Diagnóstico de Red
-      run: python experiments/diagnostico_red.py
-      continue-on-error: true
-
-    # 2. Playwright (Modo Stealth)
-    - name: Prueba Playwright Stealth
-      run: python experiments/prueba_playwright.py
-      continue-on-error: true
-      
-    # 3. SeleniumBase (Undetected ChromeDriver)
-    # Requiere configuración de display virtual en Linux si no es headless nativo
-    - name: Prueba SeleniumBase (UC Mode)
-      run: |
-        sudo apt-get install -y xvfb
-        xvfb-run python experiments/prueba_seleniumbase.py
-      continue-on-error: true
-
-    # 4. Scrape.do (API Gateway)
+    # Scrape.do (API Gateway)
     - name: Prueba Scrape.do
       run: python experiments/prueba_scrapedo.py
       continue-on-error: true
 
-    # 5. Guardar Evidencia (Screenshots/HTML)
+    # Guardar Evidencia (HTML)
     - name: Subir Evidencia de Depuración
       uses: actions/upload-artifact@v4
       if: always()
       with:
         name: evidencia-pruebas
         path: |
-          debug_screenshot.png
-          debug_source.html
           experiments/scrapedo_response.html
