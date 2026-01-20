@@ -40,12 +40,18 @@ jobs:
         xvfb-run python experiments/prueba_seleniumbase.py
       continue-on-error: true
 
-    # 4. Guardar Evidencia (Screenshots/HTML)
+    # 4. Scrape.do (API Gateway)
+    - name: Prueba Scrape.do
+      run: python experiments/prueba_scrapedo.py
+      continue-on-error: true
+
+    # 5. Guardar Evidencia (Screenshots/HTML)
     - name: Subir Evidencia de Depuración
       uses: actions/upload-artifact@v4
       if: always()
       with:
-        name: evidencia-seleniumbase
+        name: evidencia-pruebas
         path: |
           debug_screenshot.png
           debug_source.html
+          experiments/scrapedo_response.html
