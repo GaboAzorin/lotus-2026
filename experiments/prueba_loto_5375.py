@@ -147,7 +147,9 @@ def get_specific_draw(csrf_token):
         "Referer": BASE_URL,
         "Sec-Fetch-Dest": "empty",
         "Sec-Fetch-Mode": "cors",
-        "Sec-Fetch-Site": "same-origin"
+        "Sec-Fetch-Site": "same-origin",
+        "X-CSRF-TOKEN": csrf_token,
+        "csrf-token": csrf_token
     }
     
     # Inyectar cookies manualmente en el header

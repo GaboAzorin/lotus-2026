@@ -470,7 +470,9 @@ async def _run_scraper_cloud_mode(games_to_scrape=None):
                     "Referer": "https://www.polla.cl/es/view/resultados",
                     "Sec-Fetch-Dest": "empty",
                     "Sec-Fetch-Mode": "cors",
-                    "Sec-Fetch-Site": "same-origin"
+                    "Sec-Fetch-Site": "same-origin",
+                    "X-CSRF-TOKEN": token,
+                    "csrf-token": token
                 }
                 
                 # Inyección de Cookies
