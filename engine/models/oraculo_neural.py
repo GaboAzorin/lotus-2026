@@ -308,13 +308,17 @@ class OraculoNeural:
         df_valid = df.dropna(subset=input_cols)
         X_raw = df_valid[input_cols].values
         
+        # ERR-006: Validación de tamaño de ventana para evitar IndexError
         if len(X_raw) < self.window_size:
-            print(f"⚠️ Ventana insuficiente ({len(X_raw)} < {self.window_size})")
+            logger.warning(f"Ventana insuficiente para {self.game_id} ({len(X_raw)} < {self.window_size}). Retornando predicción vacía.")
             return []
 
         # Construcción del vector de predicción (últimos sorteos + fecha objetivo)
         input_features = []
         last_idx = len(X_raw)
+        
+        # El loop original asumía implícitamente que last_idx >= window_size
+        # Ahora está protegido por el if anterior.
         for w in range(self.window_size):
             input_features.extend(X_raw[last_idx - self.window_size + w])
             

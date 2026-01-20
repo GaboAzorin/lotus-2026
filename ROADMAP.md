@@ -22,7 +22,7 @@ Este documento detalla la hoja de ruta estratégica para el desarrollo y estabil
 ### 🔴 Lógica de Negocio Core
 - [x] **[IMP-AUD-001] Corregir Scoring RACHA**: Eliminar la curva en V invertida que asigna 100% de éxito a 0 aciertos. Implementar curva monótona.
 - [x] **[ERR-005] Consenso Robusto**: Asegurar que el loop de consenso en `bot_dreamer.py` no termine prematuramente con muestras insuficientes (<5).
-- [ ] **[ERR-006] Fix IndexError en Ventanas Pequeñas**: Validar tamaño de dataset en `oraculo_neural.py` antes de acceder a índices negativos.
+- [x] **[ERR-006] Fix IndexError en Ventanas Pequeñas**: Validar tamaño de dataset en `oraculo_neural.py` antes de acceder a índices negativos.
 
 ### 🟡 Calidad de Datos
 - [ ] **[ERR-007] Robustez de Scraper**: Aumentar timeout en `scraper_maestro.py` y manejar esperas explícitas para conexiones lentas.
