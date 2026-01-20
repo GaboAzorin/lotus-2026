@@ -1,0 +1,50 @@
+name: Scraper Automático (Loto & Polla)
+
+on:
+  workflow_dispatch: # Ejecución manual
+  schedule:
+    # Ejecutar todos los días a las 23:30 UTC (20:30 Chile aprox)
+    - cron: '30 23 * * *'
+
+jobs:
+  run_scraper:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write  # Para git push
+      actions: write   # Para habilitar/deshabilitar workflows (soñador.yml)
+    
+    steps:
+    - name: Checkout repo
+      uses: actions/checkout@v3
+
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.11'
+
+    - name: Install dependencies
+      run: |
+        pip install requests pandas numpy scikit-learn
+        # Playwright es opcional en modo nube, pero lo dejamos por si acaso
+        # pip install playwright 
+        # playwright install chromium
+
+    - name: Configurar Git User
+      run: |
+        git config --global user.email "bot@lotus2026.com"
+        git config --global user.name "Lotus Bot 🤖"
+
+    - name: Ejecutar Scraper Maestro (Modo Nube)
+      env:
+        USE_SCRAPEDO: "true"
+        SCRAPEDO_TOKEN: ${{ secrets.SCRAPEDO_TOKEN || 'ad46a71c504242c5b2f8b97f761965e74ca7b86c756' }}
+        GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      run: python engine/scrapers/scraper_maestro.py
+
+    - name: Subir Logs de Ejecución
+      if: always()
+      uses: actions/upload-artifact@v4
+      with:
+        name: logs-scraper
+        path: |
+          *.log

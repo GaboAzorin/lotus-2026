@@ -10,7 +10,6 @@ import sys
 import importlib
 import logging
 from datetime import datetime, timedelta
-from playwright.async_api import async_playwright
 
 # Configurar logging
 logger = logging.getLogger(__name__)
@@ -56,6 +55,11 @@ JUGADAS_CSV = os.path.join(DATA_DIR, "LOTO_JUGADAS.csv")
 # Endpoints de Polla Chilena
 API_URL = "https://www.polla.cl/es/get/draw/results"
 BASE_URL = "https://www.polla.cl/es/view/resultados"
+
+# Configuración Scrape.do (Modo Nube)
+# Se intenta leer de variable de entorno, si no, se usa la key proporcionada (fallback)
+SCRAPEDO_TOKEN = os.environ.get("SCRAPEDO_TOKEN", "ad46a71c504242c5b2f8b97f761965e74ca7b86c756")
+USE_SCRAPEDO = os.environ.get("USE_SCRAPEDO", "false").lower() == "true"
 
 # --- AUDITORÍA v4: RATE LIMITING Y TOKEN REFRESH ---
 REQUEST_DELAY_SECONDS = 0.5  # Delay entre requests para evitar bloqueo IP
@@ -275,6 +279,7 @@ async def obtener_token_csrf(page):
     if not token:
         logger.warning("Token no encontrado en DOM. Intentando extracción profunda...")
         content = await page.content()
+        # Regex mejorada para capturar formato JSON también
         m = re.search(r'csrfToken["\']\s*[:=]\s*["\']([a-zA-Z0-9]+)["\']', content)
         if m:
             token = m.group(1)
@@ -287,10 +292,240 @@ async def obtener_token_csrf(page):
     return token
 
 
+def obtener_token_scrapedo():
+    """Versión síncrona para obtener token vía Scrape.do (evita Playwright)."""
+    import urllib.parse
+    logger.info("☁️  Obteniendo token vía Scrape.do...")
+    
+    encoded_url = urllib.parse.quote(BASE_URL)
+    # geoCode=cl es vital para Polla.cl
+    target = f"http://api.scrape.do?token={SCRAPEDO_TOKEN}&url={encoded_url}&render=true&super=true&geoCode=cl"
+    
+    try:
+        resp = requests.get(target, timeout=60)
+        if resp.status_code != 200:
+            raise Exception(f"Scrape.do error {resp.status_code}")
+            
+        # Búsqueda Regex Robusta (incluye JSON)
+        content = resp.text
+        token = None
+        
+        # 1. Patrón JSON (común en Polla)
+        m_json = re.search(r'"csrfToken"\s*:\s*"([a-zA-Z0-9]+)"', content)
+        if m_json:
+            token = m_json.group(1)
+        
+        # 2. Patrón Input Hidden (fallback)
+        if not token:
+            m_input = re.search(r'name="csrfToken"\s+value="([^"]+)"', content)
+            if m_input:
+                token = m_input.group(1)
+                
+        if not token:
+            raise Exception("HTML descargado pero sin token visible.")
+            
+        logger.info(f"☁️  Token Scrape.do obtenido: {token[:10]}...")
+        return token
+        
+    except Exception as e:
+        logger.error(f"❌ Error Scrape.do Token: {e}")
+        raise
+
+
+async def _run_scraper_cloud_mode():
+    """
+    MODO NUBE: Ejecuta el scraping usando Scrape.do como proxy residencial.
+    No requiere navegador local ni Playwright. Ideal para GitHub Actions.
+    """
+    logger.info("☁️  INICIANDO SCRAPER MAESTRO (Modo Nube / Scrape.do)...")
+    sincronizar_jugadas()
+    
+    import urllib.parse
+    
+    # --- A. OBTENCIÓN DE TOKEN ---
+    try:
+        # Ejecutamos síncrono porque requests bloquea, pero en script batch no es grave
+        token = obtener_token_scrapedo()
+        token_timestamp = datetime.now()
+    except Exception as e:
+        logger.error(f"Error fatal Cloud Mode: {e}")
+        return
+
+    # --- B. BUCLE DE JUEGOS ---
+    for game in GAME_CONFIG:
+        current_id = get_start_id(game)
+        logger.info(f"{game['name']} (ID {game['id']}) | Buscando desde #{current_id}")
+        consecutive_errors = 0
+
+        while consecutive_errors < MAX_CONSECUTIVE_ERRORS:
+            try:
+                # Revalidación de Token
+                if datetime.now() - token_timestamp > timedelta(minutes=TOKEN_REFRESH_MINUTES):
+                    logger.info("Token expirado. Renovando vía Scrape.do...")
+                    try:
+                        token = obtener_token_scrapedo()
+                        token_timestamp = datetime.now()
+                    except Exception:
+                        break
+
+                # Construcción de Request Scrape.do
+                # Scrape.do reenvía el POST si nosotros hacemos POST a su API
+                api_target = f"http://api.scrape.do?token={SCRAPEDO_TOKEN}&url={urllib.parse.quote(API_URL)}&geoCode=cl&super=true"
+                
+                payload = {
+                    "gameId": game['id'], 
+                    "drawId": current_id, 
+                    "csrfToken": token
+                }
+                
+                # Headers que Scrape.do reenviará
+                headers = {
+                    "x-requested-with": "XMLHttpRequest",
+                    "Content-Type": "application/x-www-form-urlencoded" 
+                }
+
+                # Rate limiting suave
+                await asyncio.sleep(REQUEST_DELAY_SECONDS)
+
+                # POST Request
+                resp = requests.post(api_target, data=payload, headers=headers, timeout=40)
+
+                if resp.status_code == 200:
+                    try:
+                        json_data = resp.json()
+                    except json.JSONDecodeError:
+                        logger.warning("JSON inválido desde Scrape.do")
+                        consecutive_errors += 1
+                        continue
+
+                    # --- LOGICA COMPARTIDA DE VALIDACIÓN Y GUARDADO ---
+                    # (Copiamos la lógica esencial para no duplicar demasiado código o refactorizamos)
+                    # Por seguridad, duplicamos la lógica mínima necesaria aquí para mantener aislamiento
+                    
+                    if not json_data or not json_data.get('results'):
+                        ts = json_data.get('drawDate')
+                        if ts and datetime.fromtimestamp(ts/1000) > datetime.now():
+                            logger.info(f"Sorteo #{current_id} es futuro. Deteniendo {game['name']}.")
+                            break
+                        current_id += 1
+                        consecutive_errors += 1
+                        continue
+
+                    try:
+                        row = game['parser'](json_data)
+                    except Exception as parse_err:
+                        logger.warning(f"Error parseando #{current_id}: {parse_err}")
+                        consecutive_errors += 1
+                        continue
+
+                    # Guardado (Reutilizamos lógica de archivo)
+                    file_exists = os.path.exists(game['csv'])
+                    fieldnames = list(game['cols'])
+                    for k in row.keys():
+                        if k not in fieldnames: fieldnames.append(k)
+                    
+                    final_headers = fieldnames
+                    if file_exists:
+                        with open(game['csv'], 'r', encoding='utf-8') as f:
+                            existing = csv.DictReader(f).fieldnames or []
+                        final_headers = existing
+                        for k in row.keys():
+                            if k not in final_headers: final_headers.append(k)
+
+                    with open(game['csv'], 'a', encoding='utf-8', newline='') as f:
+                        writer = csv.DictWriter(f, fieldnames=final_headers)
+                        if not file_exists: writer.writeheader()
+                        writer.writerow(row)
+
+                    logger.info(f"#{row['sorteo']} Guardado OK")
+                    current_id += 1
+                    consecutive_errors = 0
+
+                else:
+                    logger.warning(f"Error Scrape.do {resp.status_code}")
+                    consecutive_errors += 1
+                    
+            except Exception as e:
+                logger.error(f"Error en ciclo Cloud: {e}")
+                consecutive_errors += 1
+                await asyncio.sleep(2)
+
+    # Al finalizar el modo nube, ejecutamos el pipeline de IA igual que en local
+    ejecutar_pipeline_ia()
+
+
+def ejecutar_pipeline_ia():
+    """Ejecuta el pipeline de IA (lógica compartida)."""
+    print("\n" + "="*60)
+    print("🧠 PIPELINE DE INTELIGENCIA ARTIFICIAL v2.0")
+    print("="*60)
+
+    # --- PASO 1: JUEZ IMPLACABLE ---
+    print("\n⚖️  PASO 1/5: JUEZ IMPLACABLE...")
+    try:
+        from juez_implacable import juzgar
+        importlib.reload(sys.modules.get('juez_implacable', sys.modules[__name__]))
+        juzgar()
+    except ImportError: print("   ⚠️ juez_implacable.py no encontrado.")
+    except Exception as e: print(f"   ❌ Error: {e}")
+
+    # --- PASO 2: ENTRENADOR COGNITIVO ---
+    print("\n🧬 PASO 2/5: ENTRENADOR COGNITIVO...")
+    try:
+        from entrenador_cognitivo import analizar_adn_ganador
+        importlib.reload(sys.modules.get('entrenador_cognitivo', sys.modules[__name__]))
+        analizar_adn_ganador()
+    except ImportError: print("   ⚠️ entrenador_cognitivo.py no encontrado.")
+    except Exception as e: print(f"   ❌ Error: {e}")
+
+    # --- PASO 3: GENERADOR BIOMÉTRICO ---
+    print("\n📊 PASO 3/5: GENERADOR BIOMÉTRICO...")
+    try:
+        from generador_biometrico import generar_biometria
+        importlib.reload(sys.modules.get('generador_biometrico', sys.modules[__name__]))
+        generar_biometria()
+    except ImportError: print("   ⚠️ generador_biometrico.py no encontrado.")
+    except Exception as e: print(f"   ❌ Error: {e}")
+
+    # --- PASO 4: AUTO-OPTIMIZER ---
+    print("\n🔄 PASO 4/5: AUTO-OPTIMIZER...")
+    try:
+        from auto_optimizer import ejecutar_optimizacion
+        importlib.reload(sys.modules.get('auto_optimizer', sys.modules[__name__]))
+        ejecutar_optimizacion()
+    except ImportError: print("   ⚠️ auto_optimizer.py no encontrado.")
+    except Exception as e: print(f"   ❌ Error: {e}")
+
+    # --- PASO 5: REENTRENAMIENTO PROFUNDO ---
+    print("\n🧠 PASO 5/6: REENTRENAMIENTO PROFUNDO...")
+    try:
+        from reentrenar_todo import reentrenar_modelos_profundos
+        importlib.reload(sys.modules.get('reentrenar_todo', sys.modules[__name__]))
+        reentrenar_modelos_profundos()
+    except ImportError: print("   ⚠️ reentrenar_todo.py no encontrado.")
+    except Exception as e: print(f"   ❌ Error: {e}")
+
+    # --- PASO 6: CONSOLIDAR LABORATORIO ---
+    print("\n📈 PASO 6/6: CONSOLIDAR LABORATORIO...")
+    try:
+        from consolidar_laboratorio import ejecutar_consolidacion_hibrida
+        importlib.reload(sys.modules.get('consolidar_laboratorio', sys.modules[__name__]))
+        ejecutar_consolidacion_hibrida()
+    except ImportError: print("   ⚠️ consolidar_laboratorio.py no encontrado.")
+    except Exception as e: print(f"   ❌ Error: {e}")
+
+    print("\n" + "="*60)
+    print("✨ PIPELINE COMPLETO - Sistema actualizado")
+    print("="*60)
+    
+    subir_cambios_a_github()
+
+
 async def _run_scraper_internal():
     logger.info("INICIANDO SCRAPER MAESTRO (Modo Manual/Local)...")
     sincronizar_jugadas()
 
+    from playwright.async_api import async_playwright
     async with async_playwright() as p:
         # Lanzamos navegador headless pero con stealth basics
         browser = await p.chromium.launch(headless=True)
@@ -509,7 +744,11 @@ async def run_scraper():
     """Wrapper que maneja el bloqueo/desbloqueo de GitHub Actions."""
     bloquear_sonador()
     try:
-        await _run_scraper_internal()
+        # Selección de MODO (Local vs Nube)
+        if USE_SCRAPEDO:
+            await _run_scraper_cloud_mode()
+        else:
+            await _run_scraper_internal()
     finally:
         desbloquear_sonador()
 
