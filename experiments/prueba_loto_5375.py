@@ -5,6 +5,8 @@ import re
 import json
 import uuid
 
+import time
+
 # --- CONFIGURACIÓN ---
 BASE_URL = "https://www.polla.cl/es/view/resultados"
 API_URL = "https://www.polla.cl/es/get/draw/results"
@@ -54,7 +56,11 @@ def get_csrf_token():
 
         # Extracción manual de cookies desde headers
         cookie_parts = []
-        if 'Set-Cookie' in resp.headers:
+        if 'scrape.do-cookies' in resp.headers:
+            raw_cookies = resp.headers['scrape.do-cookies']
+            print(f"🍪 Header Scrape.do-cookies detectado: {raw_cookies[:50]}...")
+            COOKIES_RAW = raw_cookies
+        elif 'Set-Cookie' in resp.headers:
             raw_cookies = resp.headers['Set-Cookie']
             print(f"🍪 Header Set-Cookie detectado: {raw_cookies[:50]}...")
             COOKIES_RAW = raw_cookies
@@ -97,6 +103,7 @@ def get_csrf_token():
         raise
 
 def get_specific_draw(csrf_token):
+    time.sleep(2) # Espera para que la sesión se asiente
     print(f"🔍 Paso 2: Consultando datos del Sorteo #{DRAW_ID} (Juego {GAME_ID})...")
     encoded_api = urllib.parse.quote(API_URL)
     
@@ -112,7 +119,8 @@ def get_specific_draw(csrf_token):
     headers = {
         "x-requested-with": "XMLHttpRequest",
         "Content-Type": "application/x-www-form-urlencoded",
-        "User-Agent": USER_AGENT
+        "Origin": "https://www.polla.cl",
+        "Referer": BASE_URL
     }
     
     # Inyectar cookies manualmente en el header
