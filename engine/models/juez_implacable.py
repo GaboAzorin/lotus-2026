@@ -90,22 +90,52 @@ def calcular_afinidad(prediccion, realidad_obj, juego):
         # Menos de 4 aciertos es irrelevante para afinidad predictiva positiva
         return 0.0 
 
-    # --- REGLAS LOTO 3 (Precisión Posicional Estricta) ---
+    # --- REGLAS LOTO 3 (Basada en Premios Polla) ---
     elif juego == "LOTO3":
-        match_posicional = 0
-        match_numerico = 0 
-        real_temp = list(realidad)
-        for i in range(min(len(prediccion), len(realidad))):
-            if prediccion[i] == realidad[i]:
-                match_posicional += 1
+        # 1. EXACTA (400x): Coincidencia exacta
+        if prediccion == realidad:
+            return 100.0
+        
+        # 2. TRIO (65x - 130x): Mismos números, distinto orden
+        # Nota: Cubre Trío Par y Trío Azar
+        if sorted(prediccion) == sorted(realidad):
+            return 60.0
+            
+        # 3. PAR (20x): Primeros 2 o Últimos 2 en orden exacto
+        # Par Inicial: [A, B, x] vs [A, B, y]
+        par_ini = (prediccion[0] == realidad[0] and prediccion[1] == realidad[1])
+        # Par Final: [x, A, B] vs [y, A, B]
+        par_fin = (prediccion[1] == realidad[1] and prediccion[2] == realidad[2])
+        
+        if par_ini or par_fin:
+            return 40.0
+            
+        # 4. TERMINACIÓN (4x): Último dígito exacto
+        if prediccion[2] == realidad[2]:
+            return 15.0
+            
+        # 5. COINCIDENCIAS "INÚTILES" (Score bajo < 10.0)
+        # Se otorga un puntaje marginal para diferenciar el "casi" del "nada",
+        # pero significativamente menor que cualquier premio real.
+        score_residual = 0.0
+        
+        # Acierto posicional no premiado (ej: Solo el 1er dígito)
+        if prediccion[0] == realidad[0]: score_residual += 3.0
+        if prediccion[1] == realidad[1]: score_residual += 3.0
+        
+        # Aciertos numéricos fuera de posición (muy débiles)
+        # Calculamos intersección simple
+        r_temp = list(realidad)
+        matches_num = 0
         for n in prediccion:
-            if n in real_temp:
-                match_numerico += 1
-                real_temp.remove(n)
-        if match_posicional == 3: return 100.0
-        score_pos = (match_posicional / 3) * 70
-        score_num = (match_numerico / 3) * 30
-        return score_pos + score_num
+            if n in r_temp:
+                matches_num += 1
+                r_temp.remove(n)
+        
+        score_residual += matches_num * 1.0
+        
+        # Tope máximo para basura (nunca superar a la Terminación)
+        return min(score_residual, 10.0)
 
     # --- REGLAS LOTO / LOTO 4 (Escala de Mérito Normalizada) ---
     else: 
