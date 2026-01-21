@@ -1,0 +1,19 @@
+{
+  "id": 1768997153,
+  "fecha_generacion": "2026-01-21 08:45:53",
+  "fecha_lanzamiento": "21/01/2026 14:00",
+  "juego": "LOTO4",
+  "numeros": [
+    3,
+    9,
+    16,
+    17
+  ],
+  "sorteo_objetivo": 11576,
+  "estado": "PENDIENTE",
+  "aciertos": 0,
+  "score_afinidad": 0.0,
+  "hora_dia": 8,
+  "algoritmo": "forense_biometrico_v1",
+  "nota_especial": "NORMAL"
+}
