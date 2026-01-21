@@ -21,10 +21,9 @@ jobs:
       with:
         python-version: '3.11'
 
-    - name: Install dependencies
-      # Las dependencias son las mismas para ambos scripts, así que no hay que agregar nada extra.
+    - name: Instalar dependencias
       run: |
-        pip install pandas numpy scikit-learn scipy
+        pip install pandas numpy scikit-learn scipy pytz
 
     # --- MOTOR 1: LOTO CLÁSICO / RACHA ---
     - name: Ejecutar Bot Dreamer
