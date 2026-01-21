@@ -28,7 +28,7 @@ def reentrenar_modelos_profundos(target_games=None):
     all_games = ["LOTO", "LOTO3", "LOTO4", "RACHA"]
     
     # Si se especifican juegos, filtramos. Si no, usamos todos (comportamiento legacy/manual)
-    if target_games:
+    if target_games is not None:
         juegos = [g for g in all_games if g in target_games]
         if not juegos:
             print("   ℹ️  No hay juegos nuevos para reentrenar. Saltando.")

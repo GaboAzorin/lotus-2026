@@ -79,7 +79,7 @@ class AutoOptimizer:
         df_audit = df[df['estado'] == 'AUDITADO'].copy()
 
         # Filtrar solo juegos objetivo si se especifican
-        if target_games:
+        if target_games is not None:
             print(f"   🎯 Optimizando solo: {target_games}")
             df_audit = df_audit[df_audit['juego'].isin(target_games)]
 

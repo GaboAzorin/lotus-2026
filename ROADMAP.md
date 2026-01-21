@@ -27,6 +27,7 @@ Este documento detalla la hoja de ruta estratégica para el desarrollo y estabil
 ### 🟡 Calidad de Datos
 - [x] **[ERR-007] Robustez de Scraper**: Aumentar timeout en `scraper_maestro.py` y manejar esperas explícitas para conexiones lentas.
 - [x] **[IMP-DATA-003] Backups Automáticos**: Implementar copia `.bak` antes de que `juez_implacable.py` modifique `SIMULACIONES.csv`.
+- [x] **[FIX-PIPE-001] Filtrado de Pipeline IA**: Asegurar que solo los juegos con nuevos sorteos activen el reentrenamiento y optimización.
 
 ---
 

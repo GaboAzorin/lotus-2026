@@ -184,6 +184,11 @@ def juzgar(target_games=None):
     # 3. Iterar y Juzgar
     for index, row in df_sim.iterrows():
         juego = row['juego']
+        
+        # Filtrado optimizado: Si nos dieron target_games, ignoramos el resto
+        if target_games is not None and juego not in target_games:
+            continue
+
         try:
             target_id = str(int(float(row['sorteo_objetivo'])))
         except (ValueError, TypeError):
