@@ -20,12 +20,22 @@ except ImportError:
     sys.path.append(os.path.join(os.path.dirname(__file__), '..', 'models'))
     from oraculo_neural import OraculoNeural
 
-def reentrenar_modelos_profundos():
+def reentrenar_modelos_profundos(target_games=None):
     print("\n" + "="*60)
     print("🧠 REENTRENAMIENTO PROFUNDO: Actualizando Redes Neuronales")
     print("="*60)
     
-    juegos = ["LOTO", "LOTO3", "LOTO4", "RACHA"]
+    all_games = ["LOTO", "LOTO3", "LOTO4", "RACHA"]
+    
+    # Si se especifican juegos, filtramos. Si no, usamos todos (comportamiento legacy/manual)
+    if target_games:
+        juegos = [g for g in all_games if g in target_games]
+        if not juegos:
+            print("   ℹ️  No hay juegos nuevos para reentrenar. Saltando.")
+            return
+    else:
+        juegos = all_games
+        
     versiones = ["v3", "v4"]
     
     total_reentrenados = 0

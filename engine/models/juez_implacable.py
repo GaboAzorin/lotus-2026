@@ -133,7 +133,7 @@ def calcular_afinidad(prediccion, realidad_obj, juego):
         # Pequeño mérito basal para orientar a la IA (máx 5%)
         return (aciertos / 6) * 5
 
-def juzgar():
+def juzgar(target_games=None):
     print("⚖️ JUEZ MULTIVERSO EN SESIÓN...")
     
     if not os.path.exists(FILE_SIMULACIONES):

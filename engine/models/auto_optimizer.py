@@ -65,7 +65,7 @@ class AutoOptimizer:
         with open(OPTIMIZER_LOG, 'w', encoding='utf-8') as f:
             json.dump(self.historial, f, indent=2, ensure_ascii=False)
 
-    def ejecutar_ciclo_completo(self):
+    def ejecutar_ciclo_completo(self, target_games=None):
         """Ejecuta un ciclo completo de optimización."""
         print("\n" + "="*60)
         print("🔄 AUTO-OPTIMIZER v1.0: INICIANDO CICLO DE MEJORA CONTINUA")
@@ -77,6 +77,11 @@ class AutoOptimizer:
 
         df = pd.read_csv(SIMULACIONES_FILE)
         df_audit = df[df['estado'] == 'AUDITADO'].copy()
+
+        # Filtrar solo juegos objetivo si se especifican
+        if target_games:
+            print(f"   🎯 Optimizando solo: {target_games}")
+            df_audit = df_audit[df_audit['juego'].isin(target_games)]
 
         if len(df_audit) < MIN_SAMPLES_DECISION:
             print(f"   ⏳ Insuficientes muestras ({len(df_audit)} < {MIN_SAMPLES_DECISION}). Esperando más datos...")
@@ -280,10 +285,10 @@ class AutoOptimizer:
             print(f"\n   💾 Genoma actualizado con {cambios} ajustes automáticos.")
 
 
-def ejecutar_optimizacion():
+def ejecutar_optimizacion(target_games=None):
     """Función principal para ejecutar desde línea de comandos o cron."""
     optimizer = AutoOptimizer()
-    optimizer.ejecutar_ciclo_completo()
+    optimizer.ejecutar_ciclo_completo(target_games=target_games)
 
 
 if __name__ == "__main__":

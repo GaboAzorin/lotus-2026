@@ -555,6 +555,7 @@ async def _run_scraper_internal(proxy_config=None, games_to_scrape=None):
                 logger.warning(f"No se encontraron juegos para los filtros: {games_to_scrape}. Se usarán todos.")
                 target_games = GAME_CONFIG
 
+        games_updated = set()
         for game in target_games:
             current_id = get_start_id(game)
             logger.info(f"{game['name']} (ID {game['id']}) | Buscando desde #{current_id}")
@@ -679,7 +680,7 @@ async def _run_scraper_internal(proxy_config=None, games_to_scrape=None):
         try:
             from juez_implacable import juzgar
             importlib.reload(sys.modules.get('juez_implacable', sys.modules[__name__]))
-            juzgar()
+            juzgar(target_games=list(games_updated))
             print("   ✅ Auditoría completada.")
         except ImportError:
             print("   ⚠️ juez_implacable.py no encontrado. Saltando auditoría.")
@@ -715,7 +716,7 @@ async def _run_scraper_internal(proxy_config=None, games_to_scrape=None):
         try:
             from auto_optimizer import ejecutar_optimizacion
             importlib.reload(sys.modules.get('auto_optimizer', sys.modules[__name__]))
-            ejecutar_optimizacion()
+            ejecutar_optimizacion(target_games=list(games_updated))
             print("   ✅ Optimización completada.")
         except ImportError:
             print("   ⚠️ auto_optimizer.py no encontrado. Saltando optimización.")
@@ -727,7 +728,7 @@ async def _run_scraper_internal(proxy_config=None, games_to_scrape=None):
         try:
             from reentrenar_todo import reentrenar_modelos_profundos
             importlib.reload(sys.modules.get('reentrenar_todo', sys.modules[__name__]))
-            reentrenar_modelos_profundos()
+            reentrenar_modelos_profundos(target_games=list(games_updated))
             print("   ✅ Modelos reentrenados.")
         except ImportError:
             print("   ⚠️ reentrenar_todo.py no encontrado. Saltando reentrenamiento.")
