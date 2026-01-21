@@ -13,7 +13,7 @@ FILE_SIMULACIONES = os.path.join(DATA_DIR, "LOTO_SIMULACIONES.csv")
 # Mapeo de archivos maestros (Añadimos referencia al Comodín para LOTO)
 MAESTROS_CONFIG = {
     "LOTO":   {"file": "LOTO_HISTORIAL_MAESTRO.csv", "cols": ["LOTO_n1","LOTO_n2","LOTO_n3","LOTO_n4","LOTO_n5","LOTO_n6"], "comodin": "LOTO_comodin"},
-    "LOTO3":  {"file": "LOTO3_MAESTRO.csv",          "cols": ["n1","n2","n3"]},
+    "LOTO3":  {"file": "LOTO3_MAESTRO.csv",          "cols": ["n1","n2","n3"], "orden_importa": True},
     "LOTO4":  {"file": "LOTO4_MAESTRO.csv",          "cols": ["n1","n2","n3","n4"]},
     "RACHA":  {"file": "RACHA_MAESTRO.csv",          "cols": ["n1","n2","n3","n4","n5","n6","n7","n8","n9","n10"]}
 }
@@ -47,9 +47,13 @@ def cargar_maestros():
 
                     if numeros:
                         sorteo_id = str(int(float(row['sorteo'])))
+                        
+                        # Determinar si ordenamos o no
+                        lista_final = numeros if config.get("orden_importa") else sorted(numeros)
+                        
                         # Ahora guardamos un diccionario con números y comodín
                         mapa_sorteos[sorteo_id] = {
-                            "numeros": sorted(numeros),
+                            "numeros": lista_final,
                             "comodin": comodin
                         }
                 except (ValueError, TypeError, KeyError):
