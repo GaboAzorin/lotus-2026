@@ -1,0 +1,16 @@
+2026-01-21 14:47:13,002 - __main__ - INFO - 📝 Log iniciado en: c:\Users\gazorinp\OneDrive - Chileatiende\Documentos\Python\lotus-2026\engine\scrapers\..\..\logs\scraper_20260121_144713.log
+2026-01-21 14:47:13,012 - __main__ - INFO - INICIANDO SCRAPER MAESTRO (Modo Manual/Local)...
+2026-01-21 14:47:16,683 - __main__ - INFO - Obteniendo token de sesión Polla.cl...
+2026-01-21 14:47:20,964 - __main__ - WARNING - Token no encontrado en DOM. Intentando extracción profunda...
+2026-01-21 14:47:20,977 - __main__ - INFO - Token recuperado vía Regex (Formato 1).
+2026-01-21 14:47:20,978 - __main__ - INFO - Token validado.
+2026-01-21 14:47:20,996 - __main__ - INFO - LOTO (ID 5271) | Buscando desde #5377
+2026-01-21 14:47:21,731 - __main__ - INFO - Sorteo #5377 es futuro. Deteniendo LOTO.
+2026-01-21 14:47:21,758 - __main__ - INFO - LOTO 3 (ID 2181) | Buscando desde #24010
+2026-01-21 14:47:22,365 - __main__ - INFO - #24010 Guardado OK
+2026-01-21 14:47:23,002 - __main__ - INFO - Sorteo #24011 es futuro. Deteniendo LOTO 3.
+2026-01-21 14:47:23,022 - __main__ - INFO - LOTO 4 (ID 5270) | Buscando desde #11576
+2026-01-21 14:47:23,654 - __main__ - INFO - #11576 Guardado OK
+2026-01-21 14:47:24,279 - __main__ - INFO - Sorteo #11577 es futuro. Deteniendo LOTO 4.
+2026-01-21 14:47:24,309 - __main__ - INFO - RACHA (ID 5272) | Buscando desde #10309
+2026-01-21 14:47:24,921 - __main__ - INFO - Sorteo #10309 es futuro. Deteniendo RACHA.
