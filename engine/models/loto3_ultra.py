@@ -363,7 +363,7 @@ class ModeloFranjaHoraria:
                 max_depth=12,
                 min_samples_leaf=5,
                 max_features='sqrt',
-                n_jobs=None,  # Delegamos al contexto paralelo (Best Practice 2026)
+                n_jobs=None, # [FIX-2026] Delegado al contexto paralelo
                 random_state=42
             )
 
@@ -373,10 +373,9 @@ class ModeloFranjaHoraria:
             else:
                 model = base_model
 
-            # Entrenamiento con contexto paralelo explícito
+            # [FIX-2026] Uso explícito de backend para evitar warnings de sklearn
             with joblib.parallel_backend('loky', n_jobs=-1):
                 model.fit(X_train_scaled, y_train)
-            
             self.modelos[pos] = model
 
             # Evaluar

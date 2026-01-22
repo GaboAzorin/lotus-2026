@@ -299,9 +299,7 @@ class OraculoNeural:
             
             # Usamos modelo base para evaluación rápida
             temp_model = self._build_model()
-            
-            with joblib.parallel_backend('loky', n_jobs=-1):
-                temp_model.fit(X_fold_train, y_fold_train)
+            temp_model.fit(X_fold_train, y_fold_train)
             
             s_train = temp_model.score(X_fold_train, y_fold_train)
             s_test = temp_model.score(X_fold_test, y_fold_test)
@@ -341,7 +339,7 @@ class OraculoNeural:
                 random_state=42, 
                 max_features='sqrt',
                 class_weight='balanced' if (self.version == "v3" and self.config['type'] == 'SET') else None,
-                n_jobs=None
+                n_jobs=-1
             )
             
             model_wrapper = MultiOutputClassifier(base_rf)
@@ -398,7 +396,7 @@ class OraculoNeural:
             min_samples_leaf=min_leaf,
             max_features='sqrt',
             class_weight='balanced' if (self.version == "v3" and self.config['type'] == 'SET') else None,
-            n_jobs=None, # [FIX-2026] Delegado al contexto paralelo
+            n_jobs=-1,
             random_state=42
         )
         return MultiOutputClassifier(rf)
@@ -411,10 +409,7 @@ class OraculoNeural:
         logger.info(f"   Hiperparámetros Manuales: Depth=5, Est=100, MinLeaf=20")
 
         self.model = self._build_model()
-        
-        # [FIX-2026] Uso explícito de backend para evitar warnings de sklearn
-        with joblib.parallel_backend('loky', n_jobs=-1):
-            self.model.fit(X_train, y_train)
+        self.model.fit(X_train, y_train)
 
     # --- INFERENCIA Y AUTO-CURACIÓN ---
 

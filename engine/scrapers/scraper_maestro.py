@@ -13,8 +13,6 @@ import random
 import argparse
 import pytz
 import uuid
-import warnings
-
 from datetime import datetime, timedelta
 from http.cookies import SimpleCookie
 from playwright.async_api import async_playwright
