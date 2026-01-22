@@ -1,11 +1,11 @@
 {
-  "id": 1769105159,
-  "fecha_generacion": "2026-01-22 14:48:00",
+  "id": 1769108402,
+  "fecha_generacion": "2026-01-22 15:42:03",
   "fecha_lanzamiento": "22/01/2026 21:00",
   "juego": "LOTO4",
   "numeros": [
-    13,
-    18,
+    5,
+    6,
     19,
     21
   ],
@@ -13,7 +13,7 @@
   "estado": "PENDIENTE",
   "aciertos": 0,
   "score_afinidad": 3.25,
-  "hora_dia": 14,
+  "hora_dia": 15,
   "algoritmo": "oraculo_neural_v3",
   "nota_especial": "NORMAL"
 }

@@ -1,6 +1,6 @@
 {
-  "id": 1769104383,
-  "fecha_generacion": "2026-01-22 14:48:00",
+  "id": 1769107626,
+  "fecha_generacion": "2026-01-22 15:42:03",
   "fecha_lanzamiento": "22/01/2026 21:00",
   "juego": "LOTO",
   "numeros": [
@@ -15,7 +15,7 @@
   "estado": "PENDIENTE",
   "aciertos": 0,
   "score_afinidad": 0.0,
-  "hora_dia": 14,
+  "hora_dia": 15,
   "algoritmo": "markov_chain_v1",
   "nota_especial": "NORMAL"
 }
