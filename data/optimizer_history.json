@@ -973,6 +973,27 @@
           "n_predicciones": 756
         }
       }
+    },
+    {
+      "timestamp": "2026-01-21T22:08:30.465947",
+      "total_predicciones": 772,
+      "juegos_activos": [
+        "RACHA"
+      ],
+      "algoritmos_activos": [
+        "oraculo_neural_v3",
+        "oraculo_neural_v4",
+        "forense_biometrico_v1",
+        "consenso_meritocratico_v2"
+      ],
+      "metricas": {
+        "RACHA": {
+          "promedio_aciertos": 5.14,
+          "max_aciertos": 8,
+          "tasa_exito_3plus": 99.22,
+          "n_predicciones": 772
+        }
+      }
     }
   ]
 }
