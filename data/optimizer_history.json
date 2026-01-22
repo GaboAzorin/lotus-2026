@@ -287,6 +287,14 @@
       "algoritmo": "TODOS",
       "razon": "Concept drift detectado (z=-4.11)",
       "metrica": -4.111415253439399
+    },
+    {
+      "timestamp": "2026-01-22T14:19:30.881999",
+      "tipo": "REENTRENAR",
+      "juego": "LOTO4",
+      "algoritmo": "TODOS",
+      "razon": "Concept drift detectado (z=2.14)",
+      "metrica": 2.139028163064766
     }
   ],
   "drift_alerts": [
@@ -394,6 +402,13 @@
       "z_score": -4.11,
       "mean_reciente": 0.28,
       "mean_historico": 0.74
+    },
+    {
+      "timestamp": "2026-01-22T14:19:30.879240",
+      "juego": "LOTO4",
+      "z_score": 2.14,
+      "mean_reciente": 0.94,
+      "mean_historico": 0.704
     }
   ],
   "health_checks": [
@@ -992,6 +1007,46 @@
           "max_aciertos": 8,
           "tasa_exito_3plus": 99.22,
           "n_predicciones": 772
+        }
+      }
+    },
+    {
+      "timestamp": "2026-01-22T14:19:30.879741",
+      "total_predicciones": 1790,
+      "juegos_activos": [
+        "LOTO3",
+        "LOTO4"
+      ],
+      "algoritmos_activos": [
+        "oraculo_neural_v4",
+        "forense_biometrico_v1",
+        "consenso_meritocratico_v2",
+        "oraculo_neural_v3",
+        "loto3_ultra_ensemble",
+        "Tri-Core (RF Independiente)",
+        "Ultra-Ensemble (Rank #1)",
+        "Ultra-Ensemble (Rank #2)",
+        "Ultra-Ensemble (Rank #3)",
+        "Ultra-Ensemble (Rank #4)",
+        "Ultra-Ensemble (Rank #5)",
+        "Ultra-Ensemble (Rank #6)",
+        "Ultra-Ensemble (Rank #7)",
+        "Ultra-Ensemble (Rank #8)",
+        "Ultra-Ensemble (Rank #9)",
+        "Ultra-Ensemble (Rank #10)"
+      ],
+      "metricas": {
+        "LOTO3": {
+          "promedio_aciertos": 0.738,
+          "max_aciertos": 3,
+          "tasa_exito_3plus": 0.4,
+          "n_predicciones": 1000
+        },
+        "LOTO4": {
+          "promedio_aciertos": 0.719,
+          "max_aciertos": 3,
+          "tasa_exito_3plus": 0.51,
+          "n_predicciones": 790
         }
       }
     }

@@ -682,12 +682,15 @@ async def _run_scraper_internal(proxy_config=None, games_to_scrape=None):
             print("🧠 PIPELINE DE INTELIGENCIA ARTIFICIAL v2.0")
             print("="*60)
 
+            # Normalizar nombres para coincidir con claves internas (LOTO 3 -> LOTO3)
+            normalized_games = [g.replace(" ", "") for g in games_updated]
+            
             # --- PASO 1: JUEZ IMPLACABLE (Auditoría) ---
             print("\n⚖️  PASO 1/5: JUEZ IMPLACABLE (Auditando predicciones)...")
             try:
                 from juez_implacable import juzgar
                 importlib.reload(sys.modules.get('juez_implacable', sys.modules[__name__]))
-                juzgar(target_games=list(games_updated))
+                juzgar(target_games=normalized_games)
                 print("   ✅ Auditoría completada.")
             except ImportError:
                 print("   ⚠️ juez_implacable.py no encontrado. Saltando auditoría.")
@@ -699,6 +702,7 @@ async def _run_scraper_internal(proxy_config=None, games_to_scrape=None):
             try:
                 from entrenador_cognitivo import analizar_adn_ganador
                 importlib.reload(sys.modules.get('entrenador_cognitivo', sys.modules[__name__]))
+                # El entrenador cognitivo procesa todo el historial, no filtra por juego
                 analizar_adn_ganador()
                 print("   ✅ Genoma actualizado.")
             except ImportError:
@@ -723,7 +727,7 @@ async def _run_scraper_internal(proxy_config=None, games_to_scrape=None):
             try:
                 from auto_optimizer import ejecutar_optimizacion
                 importlib.reload(sys.modules.get('auto_optimizer', sys.modules[__name__]))
-                ejecutar_optimizacion(target_games=list(games_updated))
+                ejecutar_optimizacion(target_games=normalized_games)
                 print("   ✅ Optimización completada.")
             except ImportError:
                 print("   ⚠️ auto_optimizer.py no encontrado. Saltando optimización.")
@@ -735,7 +739,7 @@ async def _run_scraper_internal(proxy_config=None, games_to_scrape=None):
             try:
                 from reentrenar_todo import reentrenar_modelos_profundos
                 importlib.reload(sys.modules.get('reentrenar_todo', sys.modules[__name__]))
-                reentrenar_modelos_profundos(target_games=list(games_updated))
+                reentrenar_modelos_profundos(target_games=normalized_games)
                 print("   ✅ Modelos reentrenados.")
             except ImportError:
                 print("   ⚠️ reentrenar_todo.py no encontrado. Saltando reentrenamiento.")
