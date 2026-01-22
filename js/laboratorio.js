@@ -714,15 +714,41 @@ function formatFechaLanzamiento(fechaStr) {
         return '';
     }
 }
+function parseTargetDate(str) {
+    if (!str) return null;
+    try {
+        const [dPart, tPart] = str.split(' ');
+        const [d, m, y] = dPart.split('/').map(Number);
+        const [h, min] = tPart.split(':').map(Number);
+        return new Date(y, m - 1, d, h, min);
+    } catch(e) { return null; }
+}
+
 function updateKPIs(data) {
     document.getElementById('total-sims').textContent = data.length;
     if (data.length) {
-        const sorteoInfo = "#" + data[0].objetivo;
-        const fechaInfo = formatFechaLanzamiento(data[0].fechaLanzamiento);
-        document.getElementById('target-draw').textContent = sorteoInfo + " " + fechaInfo;
+        const item = data[0];
+        const sorteoInfo = "#" + item.objetivo;
+        const fechaInfo = formatFechaLanzamiento(item.fechaLanzamiento);
+        
+        const targetDate = parseTargetDate(item.fechaLanzamiento);
+        const now = new Date();
+        // Si ya pasaron 10 minutos del sorteo, lo marcamos como finalizado
+        const isPast = targetDate && (now > new Date(targetDate.getTime() + 10*60*1000));
+        
+        const targetEl = document.getElementById('target-draw');
+        targetEl.innerHTML = sorteoInfo + " " + fechaInfo;
+        
+        if (isPast) {
+            targetEl.innerHTML += ` <span style="font-size:0.5em; background:var(--danger); color:white; padding:2px 5px; border-radius:4px; vertical-align:middle; margin-left:5px;">CERRADO</span>`;
+            targetEl.style.opacity = "0.7";
+        } else {
+            targetEl.style.opacity = "1";
+        }
     } else {
         document.getElementById('target-draw').textContent = "--";
     }
+
     document.getElementById('last-update').textContent = data.length ? data[0].fechaStr.split(' ')[1] : "--";
     const auditados = data.filter(d => d.estado === 'AUDITADO');
     const avg = auditados.length ? (auditados.reduce((a,b)=>a+b.score,0)/auditados.length).toFixed(1) : 0;
