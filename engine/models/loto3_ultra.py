@@ -15,6 +15,7 @@ Autor: LotoAI System
 Fecha: 2026-01-17
 """
 
+import time
 import pandas as pd
 import numpy as np
 import os
@@ -50,6 +51,7 @@ DATA_DIR = os.path.join(PROJECT_ROOT, "data")
 
 RUTA_CSV = os.path.join(DATA_DIR, "LOTO3_MAESTRO.csv")
 RUTA_DASHBOARD = os.path.join(PROJECT_ROOT, "dashboard_data.json")
+RUTA_SIMULACIONES = os.path.join(DATA_DIR, "LOTO_SIMULACIONES.csv")
 RUTA_MODELOS = os.path.join(DATA_DIR, "loto3_ultra_models")
 
 # Crear directorio de modelos si no existe
@@ -787,6 +789,41 @@ def guardar_en_dashboard(jugadas: List[Dict]):
             os.remove(tmp_path)
 
 
+def guardar_en_simulaciones(jugadas: List[Dict]):
+    """Guarda las predicciones en LOTO_SIMULACIONES.csv para el juez"""
+    columnas = ['id', 'fecha_generacion', 'juego', 'numeros', 'sorteo_objetivo', 
+                'estado', 'aciertos', 'score_afinidad', 'hora_dia', 
+                'algoritmo', 'nota_especial', 'fecha_lanzamiento']
+    
+    nuevas_filas = []
+    for j in jugadas:
+        fila = {
+            'id': j['id'],
+            'fecha_generacion': j['fecha_generacion'],
+            'juego': j['juego'],
+            'numeros': str(j['numeros']), # Convertir lista a string
+            'sorteo_objetivo': j['sorteo_objetivo'],
+            'estado': j['estado'],
+            'aciertos': j['aciertos'],
+            'score_afinidad': j['score_afinidad'],
+            'hora_dia': datetime.strptime(j['fecha_generacion'], "%Y-%m-%d %H:%M:%S").hour,
+            'algoritmo': j['algoritmo'],
+            'nota_especial': j['nota_especial'],
+            'fecha_lanzamiento': j['fecha_lanzamiento']
+        }
+        nuevas_filas.append(fila)
+    
+    df_new = pd.DataFrame(nuevas_filas, columns=columnas)
+    
+    # Append to CSV
+    if os.path.exists(RUTA_SIMULACIONES):
+        df_new.to_csv(RUTA_SIMULACIONES, mode='a', header=False, index=False)
+    else:
+        df_new.to_csv(RUTA_SIMULACIONES, mode='w', header=True, index=False)
+    
+    logger.info(f"Guardadas {len(jugadas)} predicciones en LOTO_SIMULACIONES.csv")
+
+
 def ejecutar_loto3_ultra(guardar: bool = True) -> List[Dict]:
     """
     Funcion principal: Ejecuta el sistema LOTO3 Ultra completo.
@@ -823,13 +860,17 @@ def ejecutar_loto3_ultra(guardar: bool = True) -> List[Dict]:
 
     # Formatear para dashboard
     jugadas = []
+    base_id = int(time.time())
     for i, pred in enumerate(predicciones):
         jugada = {
+            "id": base_id + i,  # ID unico para tracking
             "fecha_generacion": ahora.strftime("%Y-%m-%d %H:%M:%S"),
             "fecha_lanzamiento": fecha_sorteo.strftime("%d/%m/%Y %H:%M"),
             "sorteo_objetivo": sorteo_objetivo,
             "juego": "LOTO3",
             "numeros": pred['numeros'],
+            "estado": "PENDIENTE", # Estado inicial explícito
+            "aciertos": 0,
             "algoritmo": f"Ultra-Ensemble (Rank #{i+1})",
             "score_afinidad": pred['score'],
             "nota_especial": f"Franja:{franja}|Markov:{pred['confianza_markov']:.0f}%|RF:{pred['confianza_franja']:.0f}%"
@@ -839,6 +880,7 @@ def ejecutar_loto3_ultra(guardar: bool = True) -> List[Dict]:
 
     if guardar and jugadas:
         guardar_en_dashboard(jugadas)
+        guardar_en_simulaciones(jugadas)
 
     return jugadas
 

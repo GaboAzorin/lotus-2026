@@ -24,6 +24,7 @@ CURRENT_DIR = os.path.dirname(os.path.abspath(__file__))
 PROJECT_ROOT = os.path.dirname(os.path.dirname(CURRENT_DIR))
 
 RUTA_DATA = os.path.join(PROJECT_ROOT, "data", "LOTO3_MAESTRO.csv")
+RUTA_SIMULACIONES = os.path.join(PROJECT_ROOT, "data", "LOTO_SIMULACIONES.csv")
 RUTA_DASHBOARD = os.path.join(PROJECT_ROOT, "dashboard_data.json")
 
 # Timezone Chile
@@ -168,23 +169,60 @@ def ejecutar_sistema_tricore():
     if 'sorteo' in df.columns:
         ultimo_sorteo = int(df['sorteo'].iloc[-1])
 
+    import time
+    
     # Calcular fecha/hora del próximo sorteo y hora actual de Chile
     ahora_chile = datetime.now(TZ_CHILE)
     proximo_sorteo = calcular_proximo_sorteo_loto3()
 
     nueva_jugada = {
+        "id": int(time.time()), # ID unico
         "fecha_generacion": ahora_chile.strftime("%Y-%m-%d %H:%M:%S"),
         "fecha_lanzamiento": proximo_sorteo.strftime("%d/%m/%Y %H:%M"),
         "sorteo_objetivo": ultimo_sorteo + 1,
         "juego": "LOTO3",
         "numeros": prediccion_final,
+        "estado": "PENDIENTE",
+        "aciertos": 0,
         "algoritmo": "Tri-Core (RF Independiente)",
         "score_afinidad": min(score_final, 99),  # AUDITORÍA v4: Eliminado +25 artificial
         "nota_especial": "ESTRUCTURA_POSICIONAL"
     }
     
-    # 4. Inyectar en Dashboard
+    # 4. Inyectar en Dashboard y Simulaciones
     guardar_en_dashboard(nueva_jugada)
+    guardar_en_simulaciones(nueva_jugada)
+
+def guardar_en_simulaciones(jugada):
+    """Guarda la prediccion en LOTO_SIMULACIONES.csv"""
+    columnas = ['id', 'fecha_generacion', 'juego', 'numeros', 'sorteo_objetivo', 
+                'estado', 'aciertos', 'score_afinidad', 'hora_dia', 
+                'algoritmo', 'nota_especial', 'fecha_lanzamiento']
+    
+    fila = {
+        'id': jugada['id'],
+        'fecha_generacion': jugada['fecha_generacion'],
+        'juego': jugada['juego'],
+        'numeros': str(jugada['numeros']),
+        'sorteo_objetivo': jugada['sorteo_objetivo'],
+        'estado': jugada['estado'],
+        'aciertos': jugada['aciertos'],
+        'score_afinidad': jugada['score_afinidad'],
+        'hora_dia': datetime.strptime(jugada['fecha_generacion'], "%Y-%m-%d %H:%M:%S").hour,
+        'algoritmo': jugada['algoritmo'],
+        'nota_especial': jugada['nota_especial'],
+        'fecha_lanzamiento': jugada['fecha_lanzamiento']
+    }
+    
+    df_new = pd.DataFrame([fila], columns=columnas)
+    
+    # Append to CSV
+    if os.path.exists(RUTA_SIMULACIONES):
+        df_new.to_csv(RUTA_SIMULACIONES, mode='a', header=False, index=False)
+    else:
+        df_new.to_csv(RUTA_SIMULACIONES, mode='w', header=True, index=False)
+    
+    print(f"✅ Predicción Tri-Core guardada en LOTO_SIMULACIONES.csv")
 
 def guardar_en_dashboard(jugada):
     """

@@ -24,8 +24,14 @@ def ejecutar_consolidacion_hibrida():
                 # Reemplazamos NaN por None (Python None -> JSON null)
                 df = df.where(pd.notnull(df), None)
                 
-                pendientes = df[df['estado'] == 'PENDIENTE'].to_dict(orient='records')
-                for p in pendientes:
+                # Cargamos PENDIENTES y AUDITADOS recientes para mantener historial
+                # Si el usuario quiere ver "cómo nos fue", necesitamos los auditados.
+                registros = df[df['estado'].isin(['PENDIENTE', 'AUDITADO'])].to_dict(orient='records')
+                
+                # Opcional: Limitar historial de auditados para no explotar el JSON
+                # Por ahora traemos todo lo del CSV (asumiendo que Juez limpia o rota logs antiguos si crece mucho)
+                
+                for p in registros:
                     todas_las_predicciones.append(p)
                     ids_vistos.add(str(p['id']))
         except Exception as e:

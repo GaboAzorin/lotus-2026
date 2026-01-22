@@ -3,12 +3,14 @@ import ast
 import numpy as np
 import os
 import json
+import shutil
 
 # --- CONFIGURACIÓN DE RUTAS ---
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 DATA_DIR = os.path.join(BASE_DIR, '..', '..', 'data')
 
 FILE_SIMULACIONES = os.path.join(DATA_DIR, "LOTO_SIMULACIONES.csv")
+FILE_DASHBOARD = os.path.join(BASE_DIR, '..', '..', 'dashboard_data.json')
 
 # Mapeo de archivos maestros (Añadimos referencia al Comodín para LOTO)
 MAESTROS_CONFIG = {
@@ -184,6 +186,22 @@ def juzgar(target_games=None):
         df_sim['juego'] = 'LOTO'
     
     cambios = 0
+    cambios_dashboard = 0
+
+    # 2.1 Cargar Dashboard para Sincronización
+    dashboard_data = []
+    dashboard_map = {}
+    if os.path.exists(FILE_DASHBOARD):
+        try:
+            with open(FILE_DASHBOARD, 'r', encoding='utf-8') as f:
+                dashboard_data = json.load(f)
+                # Crear mapa para acceso rápido por ID
+                for item in dashboard_data:
+                    if 'id' in item:
+                        dashboard_map[int(item['id'])] = item
+            print(f"📊 Dashboard cargado: {len(dashboard_data)} registros.")
+        except Exception as e:
+            print(f"⚠️ Error cargando dashboard: {e}")
     
     # 3. Iterar y Juzgar
     for index, row in df_sim.iterrows():
@@ -248,6 +266,25 @@ def juzgar(target_games=None):
                 df_sim.at[index, 'estado'] = 'AUDITADO'
                 cambios += 1
                 
+                # Sincronizar con Dashboard
+                try:
+                    if 'id' in row and not pd.isna(row['id']):
+                        sim_id = int(row['id'])
+                        if sim_id in dashboard_map:
+                            dash_item = dashboard_map[sim_id]
+                            
+                            dash_score = float(dash_item.get('score_afinidad', 0))
+                            
+                            if (dash_item.get('estado') != 'AUDITADO' or 
+                                abs(dash_score - score_final) > 0.01):
+                                
+                                dash_item['aciertos'] = int(aciertos_display)
+                                dash_item['score_afinidad'] = round(score_final, 2)
+                                dash_item['estado'] = 'AUDITADO'
+                                cambios_dashboard += 1
+                except Exception:
+                    pass
+
                 if cambios % 10 == 0:
                     print(f"    🔨 Sentencia dictada para {juego} #{target_id}. Score: {score_final:.1f}%")
 
@@ -263,6 +300,15 @@ def juzgar(target_games=None):
         print(f"✅ {cambios} veredictos actualizados y normalizados.")
     else:
         print("💤 La corte no encontró casos nuevos para juzgar.")
+
+    # 6. Guardar Dashboard si hubo cambios
+    if cambios_dashboard > 0:
+        try:
+            with open(FILE_DASHBOARD, 'w', encoding='utf-8') as f:
+                json.dump(dashboard_data, f, indent=2, ensure_ascii=False)
+            print(f"✅ Dashboard sincronizado: {cambios_dashboard} registros actualizados.")
+        except Exception as e:
+            print(f"❌ Error guardando dashboard: {e}")
 
 if __name__ == "__main__":
     juzgar()
