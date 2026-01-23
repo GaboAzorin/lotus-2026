@@ -1,5 +1,5 @@
 # 📊 Auditoría de Modelos: v3 vs v4
-Actualizado el: 2026-01-23 18:26:41
+Actualizado el: 2026-01-23 21:15:39
 
 ## 🌡️ Alerta de Silenciamiento (Salud del Filtro)
 - ✅ **LOTO**: v4 tiene una tasa de aceptación saludable.
@@ -13,21 +13,21 @@ Actualizado el: 2026-01-23 18:26:41
 | ('LOTO', 'oraculo_neural_v3')  |                        2.006 |                          15 |                           218 |                  1.17  |
 | ('LOTO', 'oraculo_neural_v4')  |                        0     |                           0 |                           199 |                  0     |
 | ('LOTO3', 'oraculo_neural_v4') |                        4.088 |                           5 |                            34 |                  1.088 |
-| ('LOTO4', 'oraculo_neural_v3') |                        3.015 |                          20 |                           199 |                  0.724 |
-| ('LOTO4', 'oraculo_neural_v4') |                        7.839 |                          20 |                           199 |                  0.814 |
-| ('RACHA', 'oraculo_neural_v3') |                       18.49  |                          75 |                           192 |                  5.01  |
-| ('RACHA', 'oraculo_neural_v4') |                       22.422 |                          50 |                           192 |                  5.417 |
+| ('LOTO4', 'oraculo_neural_v3') |                        2.768 |                          20 |                           224 |                  0.701 |
+| ('LOTO4', 'oraculo_neural_v4') |                        6.964 |                          20 |                           224 |                  0.723 |
+| ('RACHA', 'oraculo_neural_v3') |                       18.7   |                          75 |                           227 |                  5.026 |
+| ('RACHA', 'oraculo_neural_v4') |                       20.088 |                          50 |                           227 |                  5.233 |
 
 ## 🏆 Top 5 Mejores Aciertos (Histórico)
 | juego   | algoritmo         |   sorteo_objetivo |   score_afinidad |   aciertos |
 |:--------|:------------------|------------------:|-----------------:|-----------:|
 | RACHA   | oraculo_neural_v3 |             10303 |               75 |          8 |
+| RACHA   | oraculo_neural_v3 |             10313 |               75 |          8 |
+| RACHA   | oraculo_neural_v3 |             10310 |               50 |          7 |
+| RACHA   | oraculo_neural_v3 |             10304 |               50 |          7 |
+| RACHA   | oraculo_neural_v3 |             10304 |               50 |          7 |
 | RACHA   | oraculo_neural_v3 |             10301 |               50 |          7 |
 | RACHA   | oraculo_neural_v3 |             10311 |               50 |          7 |
-| RACHA   | oraculo_neural_v4 |             10307 |               50 |          7 |
-| RACHA   | oraculo_neural_v3 |             10306 |               50 |          7 |
 | RACHA   | oraculo_neural_v3 |             10301 |               50 |          7 |
 | RACHA   | oraculo_neural_v3 |             10305 |               50 |          7 |
-| RACHA   | oraculo_neural_v4 |             10307 |               50 |          7 |
-| RACHA   | oraculo_neural_v4 |             10307 |               50 |          7 |
 | RACHA   | oraculo_neural_v4 |             10307 |               50 |          7 |
