@@ -1,0 +1,19 @@
+{
+  "id": 1769183225,
+  "fecha_generacion": "2026-01-23 12:28:56",
+  "fecha_lanzamiento": "23/01/2026 14:00",
+  "juego": "LOTO4",
+  "numeros": [
+    1,
+    9,
+    16,
+    23
+  ],
+  "sorteo_objetivo": 11580,
+  "estado": "PENDIENTE",
+  "aciertos": 0,
+  "score_afinidad": 10.45,
+  "hora_dia": 12,
+  "algoritmo": "oraculo_neural_v4",
+  "nota_especial": "NORMAL"
+}
