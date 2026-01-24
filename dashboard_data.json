@@ -1,19 +1,19 @@
 [
     {
-        "id": 1769244672,
-        "fecha_generacion": "2026-01-24 05:51:12",
+        "id": 1769246388,
+        "fecha_generacion": "2026-01-24 06:19:48",
         "fecha_lanzamiento": "24/01/2026 14:00",
         "sorteo_objetivo": 24017,
         "juego": "LOTO3",
         "numeros": [
-            1,
+            0,
             0,
             4
         ],
         "estado": "PENDIENTE",
         "aciertos": 0,
         "algoritmo": "Tri-Core (RF Independiente)",
-        "score_afinidad": 13,
+        "score_afinidad": 14,
         "nota_especial": "ESTRUCTURA_POSICIONAL"
     },
     {
