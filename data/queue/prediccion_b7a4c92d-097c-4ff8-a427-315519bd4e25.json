@@ -1,0 +1,25 @@
+{
+  "id": 1769295807,
+  "fecha_generacion": "2026-01-24 19:44:48",
+  "fecha_lanzamiento": "24/01/2026 22:00",
+  "juego": "RACHA",
+  "numeros": [
+    3,
+    4,
+    5,
+    8,
+    10,
+    11,
+    12,
+    15,
+    18,
+    19
+  ],
+  "sorteo_objetivo": 10316,
+  "estado": "PENDIENTE",
+  "aciertos": 0,
+  "score_afinidad": 4.9,
+  "hora_dia": 19,
+  "algoritmo": "oraculo_neural_v3",
+  "nota_especial": "NORMAL"
+}
