@@ -1,12 +1,12 @@
 [
     {
-        "id": 1769289931,
-        "fecha_generacion": "2026-01-24 18:25:31",
+        "id": 1769291041,
+        "fecha_generacion": "2026-01-24 18:44:01",
         "fecha_lanzamiento": "24/01/2026 21:00",
         "sorteo_objetivo": 24019,
         "juego": "LOTO3",
         "numeros": [
-            5,
+            6,
             3,
             5
         ],
