@@ -1,0 +1,19 @@
+{
+  "id": 1769335878,
+  "fecha_generacion": "2026-01-25 06:52:59",
+  "fecha_lanzamiento": "25/01/2026 14:00",
+  "juego": "LOTO4",
+  "numeros": [
+    3,
+    15,
+    17,
+    18
+  ],
+  "sorteo_objetivo": 11584,
+  "estado": "PENDIENTE",
+  "aciertos": 0,
+  "score_afinidad": 54.5,
+  "hora_dia": 6,
+  "algoritmo": "consenso_meritocratico_v2",
+  "nota_especial": "🔥 ALTA CONFIANZA"
+}
