@@ -1,0 +1,21 @@
+{
+  "id": 1769356747,
+  "fecha_generacion": "2026-01-25 12:55:45",
+  "fecha_lanzamiento": "25/01/2026 21:00",
+  "juego": "LOTO",
+  "numeros": [
+    13,
+    19,
+    24,
+    34,
+    36,
+    37
+  ],
+  "sorteo_objetivo": 5378,
+  "estado": "PENDIENTE",
+  "aciertos": 0,
+  "score_afinidad": 0.0,
+  "hora_dia": 12,
+  "algoritmo": "delta_dna_v1",
+  "nota_especial": "NORMAL"
+}
