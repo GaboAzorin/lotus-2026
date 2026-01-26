@@ -1,0 +1,21 @@
+{
+  "id": 1769419347,
+  "fecha_generacion": "2026-01-26 06:05:08",
+  "fecha_lanzamiento": "27/01/2026 21:00",
+  "juego": "LOTO",
+  "numeros": [
+    3,
+    8,
+    11,
+    14,
+    39,
+    40
+  ],
+  "sorteo_objetivo": 5379,
+  "estado": "PENDIENTE",
+  "aciertos": 0,
+  "score_afinidad": 6.35,
+  "hora_dia": 6,
+  "algoritmo": "oraculo_neural_v3",
+  "nota_especial": "NORMAL"
+}
