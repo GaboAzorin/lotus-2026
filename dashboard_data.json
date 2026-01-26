@@ -1,14 +1,14 @@
 [
     {
-        "id": 1769447134,
-        "fecha_generacion": "2026-01-26 14:05:34",
+        "id": 1769449726,
+        "fecha_generacion": "2026-01-26 14:48:46",
         "fecha_lanzamiento": "26/01/2026 18:00",
         "sorteo_objetivo": 24025,
         "juego": "LOTO3",
         "numeros": [
-            1,
+            2,
             4,
-            8
+            9
         ],
         "estado": "PENDIENTE",
         "aciertos": 0,
