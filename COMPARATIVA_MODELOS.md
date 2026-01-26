@@ -1,5 +1,5 @@
 # 📊 Auditoría de Modelos: v3 vs v4
-Actualizado el: 2026-01-26 12:37:43
+Actualizado el: 2026-01-26 13:43:46
 
 ## 🌡️ Alerta de Silenciamiento (Salud del Filtro)
 - ✅ **LOTO**: v4 tiene una tasa de aceptación saludable.
@@ -10,24 +10,24 @@ Actualizado el: 2026-01-26 12:37:43
 ## 📈 Resumen de Rendimiento
 |                                |   ('score_afinidad', 'mean') |   ('score_afinidad', 'max') |   ('score_afinidad', 'count') |   ('aciertos', 'mean') |
 |:-------------------------------|-----------------------------:|----------------------------:|------------------------------:|-----------------------:|
-| ('LOTO', 'oraculo_neural_v3')  |                        2.006 |                          15 |                           218 |                  1.17  |
-| ('LOTO', 'oraculo_neural_v4')  |                        0     |                           0 |                           199 |                  0     |
-| ('LOTO3', 'oraculo_neural_v4') |                        4.088 |                           5 |                            34 |                  1.088 |
-| ('LOTO4', 'oraculo_neural_v3') |                        2.75  |                          20 |                           240 |                  0.7   |
-| ('LOTO4', 'oraculo_neural_v4') |                        6.5   |                          20 |                           240 |                  0.708 |
-| ('RACHA', 'oraculo_neural_v3') |                       18.527 |                          75 |                           241 |                  5.017 |
-| ('RACHA', 'oraculo_neural_v4') |                       18.921 |                          50 |                           241 |                  5.104 |
+| ('LOTO', 'oraculo_neural_v3')  |                        1.95  |                       40    |                           358 |                  1.109 |
+| ('LOTO', 'oraculo_neural_v4')  |                        0.69  |                        1.67 |                           339 |                  0.826 |
+| ('LOTO3', 'oraculo_neural_v4') |                        4.088 |                        5    |                            34 |                  1.088 |
+| ('LOTO4', 'oraculo_neural_v3') |                        3.776 |                       50    |                           339 |                  0.785 |
+| ('LOTO4', 'oraculo_neural_v4') |                        6.509 |                       20    |                           338 |                  0.834 |
+| ('RACHA', 'oraculo_neural_v3') |                       18.5   |                       75    |                           340 |                  5.024 |
+| ('RACHA', 'oraculo_neural_v4') |                       16.897 |                       50    |                           340 |                  4.906 |
 
 ## 🏆 Top 5 Mejores Aciertos (Histórico)
 | juego   | algoritmo         |   sorteo_objetivo |   score_afinidad |   aciertos |
 |:--------|:------------------|------------------:|-----------------:|-----------:|
-| RACHA   | oraculo_neural_v3 |             10313 |               75 |          8 |
+| RACHA   | oraculo_neural_v3 |             10317 |               75 |          8 |
 | RACHA   | oraculo_neural_v3 |             10303 |               75 |          8 |
-| RACHA   | oraculo_neural_v3 |             10301 |               50 |          7 |
-| RACHA   | oraculo_neural_v3 |             10304 |               50 |          7 |
-| RACHA   | oraculo_neural_v3 |             10313 |               50 |          7 |
+| RACHA   | oraculo_neural_v3 |             10313 |               75 |          8 |
+| RACHA   | oraculo_neural_v3 |             10305 |               50 |          7 |
+| RACHA   | oraculo_neural_v3 |             10318 |               50 |          7 |
 | RACHA   | oraculo_neural_v3 |             10306 |               50 |          7 |
-| RACHA   | oraculo_neural_v3 |             10303 |               50 |          7 |
+| RACHA   | oraculo_neural_v4 |             10307 |               50 |          7 |
 | RACHA   | oraculo_neural_v4 |             10307 |               50 |          7 |
 | RACHA   | oraculo_neural_v4 |             10307 |               50 |          7 |
 | RACHA   | oraculo_neural_v4 |             10307 |               50 |          7 |
