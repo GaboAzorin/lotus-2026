@@ -415,6 +415,22 @@
       "algoritmo": "TODOS",
       "razon": "Concept drift detectado (z=-3.12)",
       "metrica": -3.119286389459488
+    },
+    {
+      "timestamp": "2026-01-27T15:16:02.416456",
+      "tipo": "PROMOVER",
+      "juego": "LOTO3",
+      "algoritmo": "consenso_meritocratico_v2",
+      "razon": "Rendimiento 152.1% del promedio",
+      "metrica": 1.088
+    },
+    {
+      "timestamp": "2026-01-27T15:16:02.416600",
+      "tipo": "PROMOVER",
+      "juego": "LOTO3",
+      "algoritmo": "oraculo_neural_v4",
+      "razon": "Rendimiento 152.1% del promedio",
+      "metrica": 1.088
     }
   ],
   "drift_alerts": [
@@ -1471,6 +1487,53 @@
           "max_aciertos": 3,
           "tasa_exito_3plus": 0.68,
           "n_predicciones": 1473
+        }
+      }
+    },
+    {
+      "timestamp": "2026-01-27T15:16:02.410002",
+      "total_predicciones": 6528,
+      "juegos_activos": [
+        "LOTO3",
+        "RACHA",
+        "LOTO4"
+      ],
+      "algoritmos_activos": [
+        "oraculo_neural_v4",
+        "oraculo_neural_v3",
+        "forense_biometrico_v1",
+        "consenso_meritocratico_v2",
+        "loto3_ultra_ensemble",
+        "Tri-Core (RF Independiente)",
+        "Ultra-Ensemble (Rank #1)",
+        "Ultra-Ensemble (Rank #2)",
+        "Ultra-Ensemble (Rank #3)",
+        "Ultra-Ensemble (Rank #4)",
+        "Ultra-Ensemble (Rank #5)",
+        "Ultra-Ensemble (Rank #6)",
+        "Ultra-Ensemble (Rank #7)",
+        "Ultra-Ensemble (Rank #8)",
+        "Ultra-Ensemble (Rank #9)",
+        "Ultra-Ensemble (Rank #10)"
+      ],
+      "metricas": {
+        "LOTO3": {
+          "promedio_aciertos": 0.67,
+          "max_aciertos": 3,
+          "tasa_exito_3plus": 0.3,
+          "n_predicciones": 3315
+        },
+        "RACHA": {
+          "promedio_aciertos": 4.975,
+          "max_aciertos": 8,
+          "tasa_exito_3plus": 99.07,
+          "n_predicciones": 1608
+        },
+        "LOTO4": {
+          "promedio_aciertos": 0.748,
+          "max_aciertos": 3,
+          "tasa_exito_3plus": 0.69,
+          "n_predicciones": 1605
         }
       }
     }
