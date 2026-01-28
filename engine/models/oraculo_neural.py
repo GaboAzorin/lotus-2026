@@ -379,15 +379,15 @@ class OraculoNeural:
         if test_score > 0.3:
             logger.warning(f"   SOSPECHA: Test accuracy demasiado alta ({test_score:.3f}). Revisar data leakage.")
 
+        # Guardado con alta compresión (ANTES de métricas para no perder el modelo)
+        joblib.dump(self.model, self.model_file, compress=9)
+        logger.info(f"Modelo {self.version} guardado en {os.path.basename(self.model_file)}")
+
         # --- MÉTRICAS ML EXTENDIDAS ---
         metrics = self._calcular_metricas_ml(X_train, y_train, X_test, y_test)
         logger.info(f"   📊 ML Metrics Report ({self.game_id} {self.version}):")
         logger.info(f"      [TRAIN] Accuracy: {metrics['train_accuracy']:.4f} | Precision: {metrics['train_precision']:.4f} | Recall: {metrics['train_recall']:.4f} | F1-Score: {metrics['train_f1']:.4f}")
         logger.info(f"      [TEST]  Accuracy: {metrics['test_accuracy']:.4f} | Precision: {metrics['test_precision']:.4f} | Recall: {metrics['test_recall']:.4f} | F1-Score: {metrics['test_f1']:.4f}")
-
-        # Guardado con alta compresión
-        joblib.dump(self.model, self.model_file, compress=9)
-        logger.info(f"Modelo {self.version} guardado en {os.path.basename(self.model_file)}")
 
         return {
             'train_score': train_score,
@@ -398,43 +398,74 @@ class OraculoNeural:
     def _calcular_metricas_ml(self, X_train, y_train, X_test, y_test):
         """
         Calcula métricas ML extendidas: Accuracy, Precision, Recall, F1-Score.
-        Usa 'samples' averaging para MultiOutput y maneja casos edge.
+        Soporta binary-multioutput (SET/one-hot) y multiclass-multioutput (POSITIONAL/v4).
         """
         y_pred_train = self.model.predict(X_train)
         y_pred_test = self.model.predict(X_test)
 
-        # Para MultiOutputClassifier necesitamos average='samples' o 'macro'
-        # 'samples' considera cada muestra individualmente
-        # 'macro' promedia métricas por clase sin ponderar
-        avg_method = 'samples'
-        zero_div = 0  # Retorna 0 cuando hay división por cero
+        zero_div = 0
 
+        # Intento 1: average='samples' (funciona para binary-multioutput)
         try:
             metrics = {
                 'train_accuracy': accuracy_score(y_train, y_pred_train),
-                'train_precision': precision_score(y_train, y_pred_train, average=avg_method, zero_division=zero_div),
-                'train_recall': recall_score(y_train, y_pred_train, average=avg_method, zero_division=zero_div),
-                'train_f1': f1_score(y_train, y_pred_train, average=avg_method, zero_division=zero_div),
+                'train_precision': precision_score(y_train, y_pred_train, average='samples', zero_division=zero_div),
+                'train_recall': recall_score(y_train, y_pred_train, average='samples', zero_division=zero_div),
+                'train_f1': f1_score(y_train, y_pred_train, average='samples', zero_division=zero_div),
                 'test_accuracy': accuracy_score(y_test, y_pred_test),
-                'test_precision': precision_score(y_test, y_pred_test, average=avg_method, zero_division=zero_div),
-                'test_recall': recall_score(y_test, y_pred_test, average=avg_method, zero_division=zero_div),
-                'test_f1': f1_score(y_test, y_pred_test, average=avg_method, zero_division=zero_div),
+                'test_precision': precision_score(y_test, y_pred_test, average='samples', zero_division=zero_div),
+                'test_recall': recall_score(y_test, y_pred_test, average='samples', zero_division=zero_div),
+                'test_f1': f1_score(y_test, y_pred_test, average='samples', zero_division=zero_div),
             }
-        except ValueError as e:
-            # Fallback para casos donde 'samples' no funciona (ej: predicciones constantes)
-            logger.debug(f"Fallback to macro averaging due to: {e}")
-            metrics = {
-                'train_accuracy': accuracy_score(y_train, y_pred_train),
-                'train_precision': precision_score(y_train, y_pred_train, average='macro', zero_division=zero_div),
-                'train_recall': recall_score(y_train, y_pred_train, average='macro', zero_division=zero_div),
-                'train_f1': f1_score(y_train, y_pred_train, average='macro', zero_division=zero_div),
-                'test_accuracy': accuracy_score(y_test, y_pred_test),
-                'test_precision': precision_score(y_test, y_pred_test, average='macro', zero_division=zero_div),
-                'test_recall': recall_score(y_test, y_pred_test, average='macro', zero_division=zero_div),
-                'test_f1': f1_score(y_test, y_pred_test, average='macro', zero_division=zero_div),
-            }
+            return metrics
+        except ValueError:
+            pass
 
-        return metrics
+        # Intento 2: Per-column metrics (para multiclass-multioutput)
+        try:
+            n_outputs = y_train.shape[1]
+
+            # accuracy_score tampoco soporta multiclass-multioutput, calcular por columna
+            train_acc = float(np.mean([
+                accuracy_score(y_train[:, col], y_pred_train[:, col]) for col in range(n_outputs)]))
+            test_acc = float(np.mean([
+                accuracy_score(y_test[:, col], y_pred_test[:, col]) for col in range(n_outputs)]))
+
+            col_metrics = {'precision': [], 'recall': [], 'f1': []}
+            for col in range(n_outputs):
+                col_metrics['precision'].append(
+                    precision_score(y_train[:, col], y_pred_train[:, col], average='macro', zero_division=zero_div))
+                col_metrics['recall'].append(
+                    recall_score(y_train[:, col], y_pred_train[:, col], average='macro', zero_division=zero_div))
+                col_metrics['f1'].append(
+                    f1_score(y_train[:, col], y_pred_train[:, col], average='macro', zero_division=zero_div))
+
+            col_metrics_test = {'precision': [], 'recall': [], 'f1': []}
+            for col in range(n_outputs):
+                col_metrics_test['precision'].append(
+                    precision_score(y_test[:, col], y_pred_test[:, col], average='macro', zero_division=zero_div))
+                col_metrics_test['recall'].append(
+                    recall_score(y_test[:, col], y_pred_test[:, col], average='macro', zero_division=zero_div))
+                col_metrics_test['f1'].append(
+                    f1_score(y_test[:, col], y_pred_test[:, col], average='macro', zero_division=zero_div))
+
+            metrics = {
+                'train_accuracy': train_acc,
+                'train_precision': float(np.mean(col_metrics['precision'])),
+                'train_recall': float(np.mean(col_metrics['recall'])),
+                'train_f1': float(np.mean(col_metrics['f1'])),
+                'test_accuracy': test_acc,
+                'test_precision': float(np.mean(col_metrics_test['precision'])),
+                'test_recall': float(np.mean(col_metrics_test['recall'])),
+                'test_f1': float(np.mean(col_metrics_test['f1'])),
+            }
+            return metrics
+        except Exception as e:
+            logger.warning(f"   ⚠️ No se pudieron calcular métricas extendidas: {e}")
+            return {
+                'train_accuracy': 0.0, 'train_precision': 0.0, 'train_recall': 0.0, 'train_f1': 0.0,
+                'test_accuracy': 0.0, 'test_precision': 0.0, 'test_recall': 0.0, 'test_f1': 0.0,
+            }
 
     def _build_model(self):
         """Construye el modelo base con hiperparámetros conservadores"""

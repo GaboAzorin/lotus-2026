@@ -1,26 +1,28 @@
-PS C:\Users\gazorinp\OneDrive - Chileatiende\Documentos\Python\lotus-2026> & c:/Users/gazorinp/AppData/Local/Programs/Python/Python313/python.exe "c:/Users/gazorinp/OneDrive - Chileatiende/Documentos/Python/lotus-2026/engine/scrapers/scraper_maestro.py"
-2026-01-22 14:08:16,479 - __main__ - INFO - 📝 Log iniciado en: c:\Users\gazorinp\OneDrive - Chileatiende\Documentos\Python\lotus-2026\engine\scrapers\..\..\logs\scraper_20260122_140816.log
+PS C:\Users\Gabriel\Documents\Python\lotus-2026> & C:/Users/Gabriel/AppData/Local/Programs/Python/Python311/python.exe c:/Users/Gabriel/Documents/Python/lotus-2026/engine/scrapers/scraper_maestro.py
+2026-01-28 19:02:22,246 - __main__ - INFO - 📝 Log iniciado en: c:\Users\Gabriel\Documents\Python\lotus-2026\engine\scrapers\..\..\logs\scraper_20260128_190222.log
 
 🔒 Bloqueando Soñador en GitHub (evitando conflictos)...
    ⚠️ No se pudo bloquear Soñador (¿gh cli instalado?): [WinError 2] El sistema no puede encontrar el archivo especificado
-2026-01-22 14:08:16,491 - __main__ - INFO - INICIANDO SCRAPER MAESTRO (Modo Manual/Local)...
+2026-01-28 19:02:22,256 - __main__ - INFO - INICIANDO SCRAPER MAESTRO (Modo Manual/Local)...
 
 ☁️  Sincronizando jugadas desde la nube (Google Sheets)...
    ✅ Sincronización al día (0 duplicados).
-2026-01-22 14:08:19,987 - __main__ - INFO - Obteniendo token de sesión Polla.cl...
-2026-01-22 14:08:24,987 - __main__ - WARNING - Token no encontrado en DOM. Intentando extracción profunda...
-2026-01-22 14:08:25,020 - __main__ - INFO - Token recuperado vía Regex (Formato 1).
-2026-01-22 14:08:25,021 - __main__ - INFO - Token validado.
-2026-01-22 14:08:25,073 - __main__ - INFO - LOTO (ID 5271) | Buscando desde #5377
-2026-01-22 14:08:26,026 - __main__ - INFO - Sorteo #5377 es futuro. Deteniendo LOTO.
-2026-01-22 14:08:26,131 - __main__ - INFO - LOTO 3 (ID 2181) | Buscando desde #24013
-2026-01-22 14:08:26,753 - __main__ - INFO - #24013 Guardado OK
-2026-01-22 14:08:27,361 - __main__ - INFO - Sorteo #24014 es futuro. Deteniendo LOTO 3.
-2026-01-22 14:08:27,418 - __main__ - INFO - LOTO 4 (ID 5270) | Buscando desde #11578
-2026-01-22 14:08:28,045 - __main__ - INFO - #11578 Guardado OK
-2026-01-22 14:08:28,663 - __main__ - INFO - Sorteo #11579 es futuro. Deteniendo LOTO 4.
-2026-01-22 14:08:28,722 - __main__ - INFO - RACHA (ID 5272) | Buscando desde #10311
-2026-01-22 14:08:29,330 - __main__ - INFO - Sorteo #10311 es futuro. Deteniendo RACHA.
+2026-01-28 19:02:24,878 - __main__ - INFO - Obteniendo token de sesión Polla.cl...
+2026-01-28 19:02:31,866 - __main__ - WARNING - Token no encontrado en DOM. Intentando extracción profunda...
+2026-01-28 19:02:31,887 - __main__ - INFO - Token recuperado vía Regex (Formato 1).
+2026-01-28 19:02:31,887 - __main__ - INFO - Token validado.
+2026-01-28 19:02:31,908 - __main__ - INFO - LOTO (ID 5271) | Buscando desde #5380
+2026-01-28 19:02:32,671 - __main__ - INFO - Sorteo #5380 es futuro. Deteniendo LOTO.
+2026-01-28 19:02:32,706 - __main__ - INFO - LOTO 3 (ID 2181) | Buscando desde #24031
+2026-01-28 19:02:33,423 - __main__ - INFO - #24031 Guardado OK
+2026-01-28 19:02:34,063 - __main__ - INFO - #24032 Guardado OK
+2026-01-28 19:02:34,672 - __main__ - INFO - Sorteo #24033 es futuro. Deteniendo LOTO 3.
+2026-01-28 19:02:34,694 - __main__ - INFO - LOTO 4 (ID 5270) | Buscando desde #11590
+2026-01-28 19:02:35,349 - __main__ - INFO - #11590 Guardado OK
+2026-01-28 19:02:35,980 - __main__ - INFO - Sorteo #11591 es futuro. Deteniendo LOTO 4.
+2026-01-28 19:02:36,022 - __main__ - INFO - RACHA (ID 5272) | Buscando desde #10323
+2026-01-28 19:02:36,649 - __main__ - INFO - #10323 Guardado OK
+2026-01-28 19:02:37,282 - __main__ - INFO - Sorteo #10324 es futuro. Deteniendo RACHA.
 
 ============================================================
 🧠 PIPELINE DE INTELIGENCIA ARTIFICIAL v2.0
@@ -28,12 +30,67 @@ PS C:\Users\gazorinp\OneDrive - Chileatiende\Documentos\Python\lotus-2026> & c:/
 
 ⚖️  PASO 1/5: JUEZ IMPLACABLE (Auditando predicciones)...
 ⚖️ JUEZ MULTIVERSO EN SESIÓN...
-📚 LOTO: 1574 sorteos cargados en memoria.
-📚 LOTO3: 11023 sorteos cargados en memoria.
-📚 LOTO4: 7349 sorteos cargados en memoria.
-📚 RACHA: 7348 sorteos cargados en memoria.
+📚 LOTO: 1577 sorteos cargados en memoria.
+📚 LOTO3: 11042 sorteos cargados en memoria.
+📚 LOTO4: 7361 sorteos cargados en memoria.
+📚 RACHA: 7361 sorteos cargados en memoria.
 📊 Dashboard cargado: 200 registros.
-💤 La corte no encontró casos nuevos para juzgar.
+    🔨 Sentencia dictada para LOTO3 #24031. Score: 0.0%
+    🔨 Sentencia dictada para LOTO3 #24031. Score: 0.0%
+    🔨 Sentencia dictada para LOTO3 #24031. Score: 0.0%
+    🔨 Sentencia dictada para LOTO3 #24031. Score: 1.0%
+    🔨 Sentencia dictada para LOTO3 #24031. Score: 0.0%
+    🔨 Sentencia dictada para RACHA #10323. Score: 0.0%
+    🔨 Sentencia dictada para LOTO4 #11590. Score: 0.0%
+    🔨 Sentencia dictada para LOTO4 #11590. Score: 0.0%
+    🔨 Sentencia dictada para LOTO3 #24031. Score: 1.0%
+    🔨 Sentencia dictada para LOTO3 #24031. Score: 4.0%
+    🔨 Sentencia dictada para LOTO3 #24031. Score: 0.0%
+    🔨 Sentencia dictada para LOTO3 #24031. Score: 0.0%
+    🔨 Sentencia dictada para LOTO3 #24031. Score: 0.0%
+    🔨 Sentencia dictada para LOTO3 #24031. Score: 0.0%
+    🔨 Sentencia dictada para LOTO3 #24031. Score: 0.0%
+    🔨 Sentencia dictada para LOTO3 #24031. Score: 1.0%
+    🔨 Sentencia dictada para LOTO3 #24031. Score: 1.0%
+    🔨 Sentencia dictada para LOTO3 #24031. Score: 1.0%
+    🔨 Sentencia dictada para LOTO3 #24031. Score: 0.0%
+    🔨 Sentencia dictada para LOTO3 #24031. Score: 1.0%
+    🔨 Sentencia dictada para LOTO3 #24031. Score: 0.0%
+    🔨 Sentencia dictada para LOTO4 #11590. Score: 0.0%
+    🔨 Sentencia dictada para RACHA #10323. Score: 15.0%
+    🔨 Sentencia dictada para LOTO4 #11590. Score: 0.0%
+    🔨 Sentencia dictada para RACHA #10323. Score: 15.0%
+    🔨 Sentencia dictada para RACHA #10323. Score: 50.0%
+    🔨 Sentencia dictada para RACHA #10323. Score: 50.0%
+    🔨 Sentencia dictada para RACHA #10323. Score: 5.0%
+    🔨 Sentencia dictada para RACHA #10323. Score: 50.0%
+    🔨 Sentencia dictada para LOTO4 #11590. Score: 0.0%
+    🔨 Sentencia dictada para RACHA #10323. Score: 15.0%
+    🔨 Sentencia dictada para LOTO3 #24031. Score: 5.0%
+    🔨 Sentencia dictada para LOTO3 #24031. Score: 0.0%
+    🔨 Sentencia dictada para LOTO3 #24031. Score: 0.0%
+    🔨 Sentencia dictada para LOTO3 #24031. Score: 1.0%
+    🔨 Sentencia dictada para LOTO3 #24031. Score: 15.0%
+    🔨 Sentencia dictada para LOTO3 #24031. Score: 0.0%
+    🔨 Sentencia dictada para LOTO3 #24031. Score: 0.0%
+    🔨 Sentencia dictada para LOTO3 #24031. Score: 0.0%
+    🔨 Sentencia dictada para LOTO3 #24031. Score: 0.0%
+    🔨 Sentencia dictada para LOTO3 #24031. Score: 0.0%
+    🔨 Sentencia dictada para LOTO4 #11590. Score: 0.0%
+    🔨 Sentencia dictada para LOTO4 #11590. Score: 0.0%
+    🔨 Sentencia dictada para RACHA #10323. Score: 30.0%
+    🔨 Sentencia dictada para LOTO4 #11590. Score: 0.0%
+    🔨 Sentencia dictada para LOTO4 #11590. Score: 0.0%
+    🔨 Sentencia dictada para RACHA #10323. Score: 30.0%
+    🔨 Sentencia dictada para LOTO3 #24031. Score: 40.0%
+    🔨 Sentencia dictada para LOTO3 #24031. Score: 1.0%
+    🔨 Sentencia dictada para LOTO3 #24031. Score: 1.0%
+    🔨 Sentencia dictada para LOTO3 #24031. Score: 1.0%
+    🔨 Sentencia dictada para LOTO3 #24031. Score: 1.0%
+    🔨 Sentencia dictada para LOTO3 #24031. Score: 0.0%
+    🔨 Sentencia dictada para LOTO3 #24031. Score: 15.0%
+✅ 548 veredictos actualizados y normalizados.
+✅ Dashboard sincronizado: 1 registros actualizados.
    ✅ Auditoría completada.
 
 🧬 PASO 2/5: ENTRENADOR COGNITIVO (Aprendiendo de resultados)...
@@ -73,7 +130,7 @@ PS C:\Users\gazorinp\OneDrive - Chileatiende\Documentos\Python\lotus-2026> & c:/
       🔗 Correlaciones calculadas para RACHA
       🔹 RACHA: 10 posiciones con suavizado Laplace.
 
-✅ CEREBRO SINCRONIZADO. Archivo guardado en: c:\Users\gazorinp\OneDrive - Chileatiende\Documentos\Python\lotus-2026\engine\models\..\..\data\loto_biometrics.json
+✅ CEREBRO SINCRONIZADO. Archivo guardado en: c:\Users\Gabriel\Documents\Python\lotus-2026\engine\models\..\..\data\loto_biometrics.json
    ✅ Biometría actualizada con suavizado Laplace.
 
 🔄 PASO 4/5: AUTO-OPTIMIZER (Optimización automática)...
@@ -81,8 +138,60 @@ PS C:\Users\gazorinp\OneDrive - Chileatiende\Documentos\Python\lotus-2026> & c:/
 ============================================================
 🔄 AUTO-OPTIMIZER v1.0: INICIANDO CICLO DE MEJORA CONTINUA
 ============================================================
-   🎯 Optimizando solo: ['LOTO 4', 'LOTO 3']
-   ⏳ Insuficientes muestras (0 < 20). Esperando más datos...
+   🎯 Optimizando solo: ['LOTO4', 'LOTO3', 'RACHA']
+
+📊 ANÁLISIS DE RENDIMIENTO:
+
+   🎮 LOTO3:
+      Tri-Core (RF Independiente): 0.83 aciertos (n=262) ✓ NORMAL
+      Ultra-Ensemble (Rank #1): 0.51 aciertos (n=261) ✓ NORMAL
+      Ultra-Ensemble (Rank #10): 0.69 aciertos (n=261) ✓ NORMAL
+      Ultra-Ensemble (Rank #2): 0.53 aciertos (n=261) ✓ NORMAL
+      Ultra-Ensemble (Rank #3): 0.58 aciertos (n=260) ✓ NORMAL
+      Ultra-Ensemble (Rank #4): 0.61 aciertos (n=261) ✓ NORMAL
+      Ultra-Ensemble (Rank #5): 0.59 aciertos (n=260) ✓ NORMAL
+      Ultra-Ensemble (Rank #6): 0.59 aciertos (n=260) ✓ NORMAL
+      Ultra-Ensemble (Rank #7): 0.64 aciertos (n=259) ✓ NORMAL
+      Ultra-Ensemble (Rank #8): 0.61 aciertos (n=260) ✓ NORMAL
+      Ultra-Ensemble (Rank #9): 0.66 aciertos (n=261) ✓ NORMAL
+      consenso_meritocratico_v2: 1.09 aciertos (n=34) 🔺 ALTO
+      forense_biometrico_v1: 0.79 aciertos (n=34) ✓ NORMAL
+      loto3_ultra_ensemble: 0.71 aciertos (n=863) ✓ NORMAL
+      oraculo_neural_v4: 1.09 aciertos (n=34) 🔺 ALTO
+
+   🎮 RACHA:
+      consenso_meritocratico_v2: 5.01 aciertos (n=450) ✓ NORMAL
+      forense_biometrico_v1: 4.94 aciertos (n=450) ✓ NORMAL
+      oraculo_neural_v3: 5.01 aciertos (n=432) ✓ NORMAL
+      oraculo_neural_v4: 5.04 aciertos (n=432) ✓ NORMAL
+
+   🎮 LOTO4:
+      consenso_meritocratico_v2: 0.77 aciertos (n=449) ✓ NORMAL
+      forense_biometrico_v1: 0.71 aciertos (n=449) ✓ NORMAL
+      oraculo_neural_v3: 0.75 aciertos (n=430) ✓ NORMAL
+      oraculo_neural_v4: 0.81 aciertos (n=429) ✓ NORMAL
+
+🌊 DETECCIÓN DE CONCEPT DRIFT:
+   ✓ LOTO3: Sin drift significativo (z=-1.20)
+   ⚠️ RACHA: DRIFT DETECTADO (z=2.76) - Sistema mejorando
+   ⚠️ LOTO4: DRIFT DETECTADO (z=3.43) - Sistema mejorando
+
+🏥 ANÁLISIS DE SALUD DEL SISTEMA:
+   LOTO3: avg=0.651, max=3, tasa_3+=0.29%
+   RACHA: avg=5.0, max=8, tasa_3+=99.15%
+   LOTO4: avg=0.759, max=3, tasa_3+=0.68%
+
+📋 RECOMENDACIONES (4):
+   🔺 PROMOVER: LOTO3/consenso_meritocratico_v2 - Rendimiento 155.3% del promedio
+   🔺 PROMOVER: LOTO3/oraculo_neural_v4 - Rendimiento 155.3% del promedio
+   🔄 REENTRENAR: RACHA/TODOS - Concept drift detectado (z=2.76)
+   🔄 REENTRENAR: LOTO4/TODOS - Concept drift detectado (z=3.43)
+2026-01-28 19:02:46,337 - INFO - Promovido consenso_meritocratico_v2 en LOTO3: 44.94 → 51.68
+2026-01-28 19:02:46,338 - INFO - Promovido oraculo_neural_v4 en LOTO3: 48.74 → 56.05
+
+   💾 Genoma actualizado con 2 ajustes automáticos.
+
+✅ Ciclo de optimización completado.
    ✅ Optimización completada.
 
 🧠 PASO 5/6: REENTRENAMIENTO PROFUNDO (Actualizando redes neuronales)...
@@ -90,12 +199,135 @@ PS C:\Users\gazorinp\OneDrive - Chileatiende\Documentos\Python\lotus-2026> & c:/
 ============================================================
 🧠 REENTRENAMIENTO PROFUNDO: Actualizando Redes Neuronales
 ============================================================
-   ℹ️  No hay juegos nuevos para reentrenar. Saltando.
+
+   ⚙️  Entrenando LOTO3 (v3)...
+🧠 MODO REGLAMENTO v3 ACTIVADO (Window: 3)
+✅ Modelo v3 cargado exitosamente.
+2026-01-28 19:02:47,854 - oraculo_neural - INFO - ORÁCULO v3: Iniciando entrenamiento para LOTO3 (Toda la historia)
+📜 v3: Entrenando Reglamento (3 cols)
+2026-01-28 19:02:48,154 - oraculo_neural - INFO -    Iniciando Validación Cruzada Temporal (5 folds)...
+2026-01-28 19:02:48,677 - oraculo_neural - INFO -       Fold 1: Train=0.076, Test=0.001
+2026-01-28 19:02:49,234 - oraculo_neural - INFO -       Fold 2: Train=0.054, Test=0.003
+2026-01-28 19:02:49,789 - oraculo_neural - INFO -       Fold 3: Train=0.038, Test=0.001
+2026-01-28 19:02:50,382 - oraculo_neural - INFO -       Fold 4: Train=0.029, Test=0.002
+2026-01-28 19:02:51,088 - oraculo_neural - INFO -       Fold 5: Train=0.021, Test=0.000
+2026-01-28 19:02:51,088 - oraculo_neural - INFO -    📊 CV Promedio (5 folds) - Train: 0.044, Test: 0.001
+2026-01-28 19:02:51,088 - oraculo_neural - INFO -    Split final (Optimización): Train=8831, Test=2208
+2026-01-28 19:02:51,088 - oraculo_neural - INFO -    🔍 Iniciando GridSearchCV para encontrar hiperparámetros óptimos...
+Fitting 3 folds for each of 27 candidates, totalling 81 fits
+2026-01-28 19:03:11,225 - oraculo_neural - INFO -    🏆 Mejores parámetros: {'estimator__max_depth': 5, 'estimator__min_samples_leaf': 20, 'estimator__n_estimators': 50}
+2026-01-28 19:03:11,375 - oraculo_neural - INFO -    Metrics - Train: 0.016, Test: 0.000
+      ❌ Error crítico en LOTO3 v3: multiclass-multioutput is not supported
+
+   ⚙️  Entrenando LOTO3 (v4)...
+🔬 MODO FÍSICO v4 ACTIVADO (Window: 12)
+✅ Modelo v4 cargado exitosamente.
+2026-01-28 19:03:11,576 - oraculo_neural - INFO - ORÁCULO v4: Iniciando entrenamiento para LOTO3 (Toda la historia)
+🧪 v4: Entrenando Trayectoria Física (3 cols)
+2026-01-28 19:03:12,157 - oraculo_neural - INFO -    Iniciando Validación Cruzada Temporal (5 folds)...
+2026-01-28 19:03:12,818 - oraculo_neural - INFO -       Fold 1: Train=0.159, Test=0.001
+2026-01-28 19:03:13,476 - oraculo_neural - INFO -       Fold 2: Train=0.138, Test=0.000
+2026-01-28 19:03:14,088 - oraculo_neural - INFO -       Fold 3: Train=0.085, Test=0.001
+2026-01-28 19:03:14,805 - oraculo_neural - INFO -       Fold 4: Train=0.059, Test=0.002
+2026-01-28 19:03:15,626 - oraculo_neural - INFO -       Fold 5: Train=0.044, Test=0.002
+2026-01-28 19:03:15,626 - oraculo_neural - INFO -    📊 CV Promedio (5 folds) - Train: 0.097, Test: 0.001
+2026-01-28 19:03:15,626 - oraculo_neural - INFO -    Split final (Optimización): Train=8824, Test=2206
+2026-01-28 19:03:15,626 - oraculo_neural - INFO -    🔍 Iniciando GridSearchCV para encontrar hiperparámetros óptimos...
+Fitting 3 folds for each of 27 candidates, totalling 81 fits
+2026-01-28 19:03:34,691 - oraculo_neural - INFO -    🏆 Mejores parámetros: {'estimator__max_depth': 5, 'estimator__min_samples_leaf': 20, 'estimator__n_estimators': 50}
+2026-01-28 19:03:34,831 - oraculo_neural - INFO -    Metrics - Train: 0.031, Test: 0.001
+      ❌ Error crítico en LOTO3 v4: multiclass-multioutput is not supported
+
+   ⚙️  Entrenando LOTO4 (v3)...
+🧠 MODO REGLAMENTO v3 ACTIVADO (Window: 3)
+✅ Modelo v3 cargado exitosamente.
+2026-01-28 19:03:35,324 - oraculo_neural - INFO - ORÁCULO v3: Iniciando entrenamiento para LOTO4 (Toda la historia)
+📜 v3: Entrenando Reglamento (4 cols)
+2026-01-28 19:03:35,570 - oraculo_neural - INFO -    Iniciando Validación Cruzada Temporal (5 folds)...
+2026-01-28 19:03:39,996 - oraculo_neural - INFO -       Fold 1: Train=0.058, Test=0.000
+2026-01-28 19:03:44,289 - oraculo_neural - INFO -       Fold 2: Train=0.024, Test=0.000
+2026-01-28 19:03:48,449 - oraculo_neural - INFO -       Fold 3: Train=0.012, Test=0.000
+2026-01-28 19:03:52,841 - oraculo_neural - INFO -       Fold 4: Train=0.006, Test=0.000
+2026-01-28 19:03:57,440 - oraculo_neural - INFO -       Fold 5: Train=0.005, Test=0.000
+2026-01-28 19:03:57,440 - oraculo_neural - INFO -    📊 CV Promedio (5 folds) - Train: 0.021, Test: 0.000
+2026-01-28 19:03:57,440 - oraculo_neural - INFO -    Split final (Optimización): Train=5886, Test=1472
+2026-01-28 19:03:57,440 - oraculo_neural - INFO -    🔍 Iniciando GridSearchCV para encontrar hiperparámetros óptimos...
+Fitting 3 folds for each of 27 candidates, totalling 81 fits
+2026-01-28 19:05:56,518 - oraculo_neural - INFO -    🏆 Mejores parámetros: {'estimator__max_depth': 3, 'estimator__min_samples_leaf': 10, 'estimator__n_estimators': 150}
+2026-01-28 19:05:57,965 - oraculo_neural - INFO -    Metrics - Train: 0.000, Test: 0.000
+2026-01-28 19:05:59,463 - oraculo_neural - INFO -    📊 ML Metrics Report (LOTO4 v3):
+2026-01-28 19:05:59,463 - oraculo_neural - INFO -       [TRAIN] Accuracy: 0.0000 | Precision: 0.2972 | Recall: 0.5731 | F1-Score: 0.3865
+2026-01-28 19:05:59,463 - oraculo_neural - INFO -       [TEST]  Accuracy: 0.0000 | Precision: 0.1769 | Recall: 0.3371 | F1-Score: 0.2287
+2026-01-28 19:06:01,313 - oraculo_neural - INFO - Modelo v3 guardado en loto4_rf_v3.pkl
+      ✅ Éxito: Train=0.000, Test=0.000
+
+   ⚙️  Entrenando LOTO4 (v4)...
+🔬 MODO FÍSICO v4 ACTIVADO (Window: 12)
+✅ Modelo v4 cargado exitosamente.
+2026-01-28 19:06:01,374 - oraculo_neural - INFO - ORÁCULO v4: Iniciando entrenamiento para LOTO4 (Toda la historia)
+🧪 v4: Entrenando Trayectoria Física (4 cols)
+2026-01-28 19:06:01,666 - oraculo_neural - INFO -    Iniciando Validación Cruzada Temporal (5 folds)...
+2026-01-28 19:06:02,359 - oraculo_neural - INFO -       Fold 1: Train=0.038, Test=0.000
+2026-01-28 19:06:03,094 - oraculo_neural - INFO -       Fold 2: Train=0.060, Test=0.000
+2026-01-28 19:06:03,880 - oraculo_neural - INFO -       Fold 3: Train=0.038, Test=0.000
+2026-01-28 19:06:04,788 - oraculo_neural - INFO -       Fold 4: Train=0.022, Test=0.000
+2026-01-28 19:06:05,813 - oraculo_neural - INFO -       Fold 5: Train=0.018, Test=0.000
+2026-01-28 19:06:05,813 - oraculo_neural - INFO -    📊 CV Promedio (5 folds) - Train: 0.035, Test: 0.000
+2026-01-28 19:06:05,813 - oraculo_neural - INFO -    Split final (Optimización): Train=5879, Test=1470
+2026-01-28 19:06:05,813 - oraculo_neural - INFO -    🔍 Iniciando GridSearchCV para encontrar hiperparámetros óptimos...
+Fitting 3 folds for each of 27 candidates, totalling 81 fits
+2026-01-28 19:06:32,817 - oraculo_neural - INFO -    🏆 Mejores parámetros: {'estimator__max_depth': 3, 'estimator__min_samples_leaf': 10, 'estimator__n_estimators': 50}
+2026-01-28 19:06:32,982 - oraculo_neural - INFO -    Metrics - Train: 0.000, Test: 0.000
+      ❌ Error crítico en LOTO4 v4: multiclass-multioutput is not supported
+
+   ⚙️  Entrenando RACHA (v3)...
+🧠 MODO REGLAMENTO v3 ACTIVADO (Window: 3)
+✅ Modelo v3 cargado exitosamente.
+2026-01-28 19:06:33,337 - oraculo_neural - INFO - ORÁCULO v3: Iniciando entrenamiento para RACHA (Toda la historia)
+📜 v3: Entrenando Reglamento (10 cols)
+2026-01-28 19:06:33,729 - oraculo_neural - INFO -    Iniciando Validación Cruzada Temporal (5 folds)...
+2026-01-28 19:06:37,114 - oraculo_neural - INFO -       Fold 1: Train=0.012, Test=0.000
+2026-01-28 19:06:40,672 - oraculo_neural - INFO -       Fold 2: Train=0.012, Test=0.000
+2026-01-28 19:06:44,537 - oraculo_neural - INFO -       Fold 3: Train=0.005, Test=0.000
+2026-01-28 19:06:48,621 - oraculo_neural - INFO -       Fold 4: Train=0.004, Test=0.000
+2026-01-28 19:06:52,895 - oraculo_neural - INFO -       Fold 5: Train=0.001, Test=0.000
+2026-01-28 19:06:52,895 - oraculo_neural - INFO -    📊 CV Promedio (5 folds) - Train: 0.007, Test: 0.000
+2026-01-28 19:06:52,895 - oraculo_neural - INFO -    Split final (Optimización): Train=5886, Test=1472
+2026-01-28 19:06:52,895 - oraculo_neural - INFO -    🔍 Iniciando GridSearchCV para encontrar hiperparámetros óptimos...
+Fitting 3 folds for each of 27 candidates, totalling 81 fits
+2026-01-28 19:08:54,930 - oraculo_neural - INFO -    🏆 Mejores parámetros: {'estimator__max_depth': 3, 'estimator__min_samples_leaf': 10, 'estimator__n_estimators': 50}
+2026-01-28 19:08:55,609 - oraculo_neural - INFO -    Metrics - Train: 0.000, Test: 0.000
+2026-01-28 19:08:56,290 - oraculo_neural - INFO -    📊 ML Metrics Report (RACHA v3):
+2026-01-28 19:08:56,290 - oraculo_neural - INFO -       [TRAIN] Accuracy: 0.0000 | Precision: 0.6120 | Recall: 0.6110 | F1-Score: 0.6065
+2026-01-28 19:08:56,290 - oraculo_neural - INFO -       [TEST]  Accuracy: 0.0000 | Precision: 0.4945 | Recall: 0.4934 | F1-Score: 0.4898
+2026-01-28 19:08:56,851 - oraculo_neural - INFO - Modelo v3 guardado en racha_rf_v3.pkl
+      ✅ Éxito: Train=0.000, Test=0.000
+
+   ⚙️  Entrenando RACHA (v4)...
+🔬 MODO FÍSICO v4 ACTIVADO (Window: 12)
+✅ Modelo v4 cargado exitosamente.
+2026-01-28 19:08:56,939 - oraculo_neural - INFO - ORÁCULO v4: Iniciando entrenamiento para RACHA (Toda la historia)
+🧪 v4: Entrenando Trayectoria Física (10 cols)
+2026-01-28 19:08:57,449 - oraculo_neural - INFO -    Iniciando Validación Cruzada Temporal (5 folds)...
+2026-01-28 19:08:59,262 - oraculo_neural - INFO -       Fold 1: Train=0.018, Test=0.000
+2026-01-28 19:09:01,143 - oraculo_neural - INFO -       Fold 2: Train=0.005, Test=0.000
+2026-01-28 19:09:03,312 - oraculo_neural - INFO -       Fold 3: Train=0.001, Test=0.000
+2026-01-28 19:09:05,771 - oraculo_neural - INFO -       Fold 4: Train=0.000, Test=0.000
+2026-01-28 19:09:08,550 - oraculo_neural - INFO -       Fold 5: Train=0.000, Test=0.000
+2026-01-28 19:09:08,550 - oraculo_neural - INFO -    📊 CV Promedio (5 folds) - Train: 0.005, Test: 0.000
+2026-01-28 19:09:08,550 - oraculo_neural - INFO -    Split final (Optimización): Train=5879, Test=1470
+2026-01-28 19:09:08,550 - oraculo_neural - INFO -    🔍 Iniciando GridSearchCV para encontrar hiperparámetros óptimos...
+Fitting 3 folds for each of 27 candidates, totalling 81 fits
+2026-01-28 19:10:35,139 - oraculo_neural - INFO -    🏆 Mejores parámetros: {'estimator__max_depth': 3, 'estimator__min_samples_leaf': 10, 'estimator__n_estimators': 50}
+2026-01-28 19:10:35,559 - oraculo_neural - INFO -    Metrics - Train: 0.000, Test: 0.000
+      ❌ Error crítico en RACHA v4: multiclass-multioutput is not supported
+
+   🏁 Resumen: 2 modelos actualizados, 4 fallos.
    ✅ Modelos reentrenados.
 
 📈 PASO 6/6: CONSOLIDAR LABORATORIO (Actualizando dashboard)...
 🔄 Limpiando y Actualizando Dashboard...
-✅ Dashboard saneado con 4039 registros.
+✅ Dashboard saneado con 10604 registros.
    ✅ Dashboard actualizado.
 
 ============================================================
@@ -103,19 +335,10 @@ PS C:\Users\gazorinp\OneDrive - Chileatiende\Documentos\Python\lotus-2026> & c:/
 ============================================================
 
 📦 SUBIENDO DATOS A GITHUB...
-[main 6a72a80] 🤖 Update local: 2026-01-22 14:08
- 10 files changed, 56949 insertions(+), 2962 deletions(-)
- create mode 100644 logs/scraper_20260122_140816.log
-Enumerating objects: 28, done.
-Counting objects: 100% (28/28), done.
-Delta compression using up to 22 threads
-Compressing objects: 100% (17/17), done.
-Writing objects: 100% (17/17), 97.01 KiB | 2.55 MiB/s, done.
-Total 17 (delta 10), reused 0 (delta 0), pack-reused 0 (from 0)
-remote: Resolving deltas: 100% (10/10), completed with 10 local objects.
-To https://github.com/GaboAzorin/lotus-2026.git
-   5a3c269..6a72a80  main -> main
-   🚀 ¡Listo! Los datos ya están en la web.
+[main 4538e45] 🤖 Update local: 2026-01-28 19:10
+ 13 files changed, 151808 insertions(+), 4540 deletions(-)
+fatal: unable to access 'https://github.com/GaboAzorin/lotus-2026.git/': Could not resolve host: github.com
+   ⚠️ No se pudo subir a GitHub (¿Sin internet?): Command '['git', 'push']' returned non-zero exit status 128.
 
 🔓 Desbloqueando Soñador en GitHub...
-   ⚠️ No se pudo desbloquear Soñador: [WinError 2] El sistema no puede encontrar el archivo especificado 
+   ⚠️ No se pudo desbloquear Soñador: [WinError 2] El sistema no puede encontrar el archivo especificado
