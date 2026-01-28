@@ -1,0 +1,21 @@
+{
+  "id": 1769608211,
+  "fecha_generacion": "2026-01-28 10:46:49",
+  "fecha_lanzamiento": "29/01/2026 21:00",
+  "juego": "LOTO",
+  "numeros": [
+    3,
+    4,
+    13,
+    19,
+    28,
+    34
+  ],
+  "sorteo_objetivo": 5380,
+  "estado": "PENDIENTE",
+  "aciertos": 0,
+  "score_afinidad": 0.0,
+  "hora_dia": 10,
+  "algoritmo": "delta_dna_v1",
+  "nota_especial": "NORMAL"
+}
