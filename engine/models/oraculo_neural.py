@@ -6,6 +6,7 @@ import sys
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.multioutput import MultiOutputClassifier
 from sklearn.model_selection import TimeSeriesSplit, GridSearchCV
+from sklearn.metrics import accuracy_score, precision_score, recall_score, f1_score
 from datetime import datetime
 import logging
 import warnings
@@ -372,17 +373,68 @@ class OraculoNeural:
         if train_score > 0.5 and test_score < 0.15:
             logger.warning(f"   ALERTA CRÍTICA: Overfitting severo detectado - Train: {train_score:.3f}, Test: {test_score:.3f}. El modelo puede estar memorizando ruido.")
         else:
-            logger.info(f"   Métricas - Train: {train_score:.3f}, Test: {test_score:.3f}")
+            logger.info(f"   Metrics - Train: {train_score:.3f}, Test: {test_score:.3f}")
 
         # Para lotería, esperamos accuracy muy baja (<10% es realista)
         if test_score > 0.3:
             logger.warning(f"   SOSPECHA: Test accuracy demasiado alta ({test_score:.3f}). Revisar data leakage.")
 
+        # --- MÉTRICAS ML EXTENDIDAS ---
+        metrics = self._calcular_metricas_ml(X_train, y_train, X_test, y_test)
+        logger.info(f"   📊 ML Metrics Report ({self.game_id} {self.version}):")
+        logger.info(f"      [TRAIN] Accuracy: {metrics['train_accuracy']:.4f} | Precision: {metrics['train_precision']:.4f} | Recall: {metrics['train_recall']:.4f} | F1-Score: {metrics['train_f1']:.4f}")
+        logger.info(f"      [TEST]  Accuracy: {metrics['test_accuracy']:.4f} | Precision: {metrics['test_precision']:.4f} | Recall: {metrics['test_recall']:.4f} | F1-Score: {metrics['test_f1']:.4f}")
+
         # Guardado con alta compresión
         joblib.dump(self.model, self.model_file, compress=9)
         logger.info(f"Modelo {self.version} guardado en {os.path.basename(self.model_file)}")
 
-        return {'train_score': train_score, 'test_score': test_score}
+        return {
+            'train_score': train_score,
+            'test_score': test_score,
+            **metrics  # Include all extended ML metrics
+        }
+
+    def _calcular_metricas_ml(self, X_train, y_train, X_test, y_test):
+        """
+        Calcula métricas ML extendidas: Accuracy, Precision, Recall, F1-Score.
+        Usa 'samples' averaging para MultiOutput y maneja casos edge.
+        """
+        y_pred_train = self.model.predict(X_train)
+        y_pred_test = self.model.predict(X_test)
+
+        # Para MultiOutputClassifier necesitamos average='samples' o 'macro'
+        # 'samples' considera cada muestra individualmente
+        # 'macro' promedia métricas por clase sin ponderar
+        avg_method = 'samples'
+        zero_div = 0  # Retorna 0 cuando hay división por cero
+
+        try:
+            metrics = {
+                'train_accuracy': accuracy_score(y_train, y_pred_train),
+                'train_precision': precision_score(y_train, y_pred_train, average=avg_method, zero_division=zero_div),
+                'train_recall': recall_score(y_train, y_pred_train, average=avg_method, zero_division=zero_div),
+                'train_f1': f1_score(y_train, y_pred_train, average=avg_method, zero_division=zero_div),
+                'test_accuracy': accuracy_score(y_test, y_pred_test),
+                'test_precision': precision_score(y_test, y_pred_test, average=avg_method, zero_division=zero_div),
+                'test_recall': recall_score(y_test, y_pred_test, average=avg_method, zero_division=zero_div),
+                'test_f1': f1_score(y_test, y_pred_test, average=avg_method, zero_division=zero_div),
+            }
+        except ValueError as e:
+            # Fallback para casos donde 'samples' no funciona (ej: predicciones constantes)
+            logger.debug(f"Fallback to macro averaging due to: {e}")
+            metrics = {
+                'train_accuracy': accuracy_score(y_train, y_pred_train),
+                'train_precision': precision_score(y_train, y_pred_train, average='macro', zero_division=zero_div),
+                'train_recall': recall_score(y_train, y_pred_train, average='macro', zero_division=zero_div),
+                'train_f1': f1_score(y_train, y_pred_train, average='macro', zero_division=zero_div),
+                'test_accuracy': accuracy_score(y_test, y_pred_test),
+                'test_precision': precision_score(y_test, y_pred_test, average='macro', zero_division=zero_div),
+                'test_recall': recall_score(y_test, y_pred_test, average='macro', zero_division=zero_div),
+                'test_f1': f1_score(y_test, y_pred_test, average='macro', zero_division=zero_div),
+            }
+
+        return metrics
 
     def _build_model(self):
         """Construye el modelo base con hiperparámetros conservadores"""
