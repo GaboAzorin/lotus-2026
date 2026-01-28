@@ -455,6 +455,38 @@
       "algoritmo": "TODOS",
       "razon": "Concept drift detectado (z=-4.14)",
       "metrica": -4.138865798048975
+    },
+    {
+      "timestamp": "2026-01-28T19:02:46.337178",
+      "tipo": "PROMOVER",
+      "juego": "LOTO3",
+      "algoritmo": "consenso_meritocratico_v2",
+      "razon": "Rendimiento 155.3% del promedio",
+      "metrica": 1.088
+    },
+    {
+      "timestamp": "2026-01-28T19:02:46.337178",
+      "tipo": "PROMOVER",
+      "juego": "LOTO3",
+      "algoritmo": "oraculo_neural_v4",
+      "razon": "Rendimiento 155.3% del promedio",
+      "metrica": 1.088
+    },
+    {
+      "timestamp": "2026-01-28T19:02:46.337178",
+      "tipo": "REENTRENAR",
+      "juego": "RACHA",
+      "algoritmo": "TODOS",
+      "razon": "Concept drift detectado (z=2.76)",
+      "metrica": 2.760754517531914
+    },
+    {
+      "timestamp": "2026-01-28T19:02:46.337178",
+      "tipo": "REENTRENAR",
+      "juego": "LOTO4",
+      "algoritmo": "TODOS",
+      "razon": "Concept drift detectado (z=3.43)",
+      "metrica": 3.429529994912008
     }
   ],
   "drift_alerts": [
@@ -624,6 +656,20 @@
       "juego": "LOTO4",
       "z_score": -4.14,
       "mean_reciente": 0.3,
+      "mean_historico": 0.748
+    },
+    {
+      "timestamp": "2026-01-28T19:02:46.329881",
+      "juego": "RACHA",
+      "z_score": 2.76,
+      "mean_reciente": 5.44,
+      "mean_historico": 4.987
+    },
+    {
+      "timestamp": "2026-01-28T19:02:46.331067",
+      "juego": "LOTO4",
+      "z_score": 3.43,
+      "mean_reciente": 1.12,
       "mean_historico": 0.748
     }
   ],
@@ -1622,6 +1668,53 @@
           "max_aciertos": 3,
           "tasa_exito_3plus": 0.66,
           "n_predicciones": 1661
+        }
+      }
+    },
+    {
+      "timestamp": "2026-01-28T19:02:46.331067",
+      "total_predicciones": 7352,
+      "juegos_activos": [
+        "LOTO3",
+        "RACHA",
+        "LOTO4"
+      ],
+      "algoritmos_activos": [
+        "oraculo_neural_v4",
+        "oraculo_neural_v3",
+        "forense_biometrico_v1",
+        "consenso_meritocratico_v2",
+        "loto3_ultra_ensemble",
+        "Tri-Core (RF Independiente)",
+        "Ultra-Ensemble (Rank #1)",
+        "Ultra-Ensemble (Rank #2)",
+        "Ultra-Ensemble (Rank #3)",
+        "Ultra-Ensemble (Rank #4)",
+        "Ultra-Ensemble (Rank #5)",
+        "Ultra-Ensemble (Rank #6)",
+        "Ultra-Ensemble (Rank #7)",
+        "Ultra-Ensemble (Rank #8)",
+        "Ultra-Ensemble (Rank #9)",
+        "Ultra-Ensemble (Rank #10)"
+      ],
+      "metricas": {
+        "LOTO3": {
+          "promedio_aciertos": 0.651,
+          "max_aciertos": 3,
+          "tasa_exito_3plus": 0.29,
+          "n_predicciones": 3831
+        },
+        "RACHA": {
+          "promedio_aciertos": 5.0,
+          "max_aciertos": 8,
+          "tasa_exito_3plus": 99.15,
+          "n_predicciones": 1764
+        },
+        "LOTO4": {
+          "promedio_aciertos": 0.759,
+          "max_aciertos": 3,
+          "tasa_exito_3plus": 0.68,
+          "n_predicciones": 1757
         }
       }
     }
