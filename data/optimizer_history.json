@@ -431,6 +431,30 @@
       "algoritmo": "oraculo_neural_v4",
       "razon": "Rendimiento 152.1% del promedio",
       "metrica": 1.088
+    },
+    {
+      "timestamp": "2026-01-27T23:19:25.802258",
+      "tipo": "PROMOVER",
+      "juego": "LOTO3",
+      "algoritmo": "consenso_meritocratico_v2",
+      "razon": "Rendimiento 153.6% del promedio",
+      "metrica": 1.088
+    },
+    {
+      "timestamp": "2026-01-27T23:19:25.802258",
+      "tipo": "PROMOVER",
+      "juego": "LOTO3",
+      "algoritmo": "oraculo_neural_v4",
+      "razon": "Rendimiento 153.6% del promedio",
+      "metrica": 1.088
+    },
+    {
+      "timestamp": "2026-01-27T23:19:25.802258",
+      "tipo": "REENTRENAR",
+      "juego": "LOTO4",
+      "algoritmo": "TODOS",
+      "razon": "Concept drift detectado (z=-4.14)",
+      "metrica": -4.138865798048975
     }
   ],
   "drift_alerts": [
@@ -594,6 +618,13 @@
       "z_score": -3.12,
       "mean_reciente": 0.42,
       "mean_historico": 0.763
+    },
+    {
+      "timestamp": "2026-01-27T23:19:25.792798",
+      "juego": "LOTO4",
+      "z_score": -4.14,
+      "mean_reciente": 0.3,
+      "mean_historico": 0.748
     }
   ],
   "health_checks": [
@@ -1534,6 +1565,63 @@
           "max_aciertos": 3,
           "tasa_exito_3plus": 0.69,
           "n_predicciones": 1605
+        }
+      }
+    },
+    {
+      "timestamp": "2026-01-27T23:19:25.792798",
+      "total_predicciones": 9757,
+      "juegos_activos": [
+        "LOTO",
+        "LOTO3",
+        "RACHA",
+        "LOTO4"
+      ],
+      "algoritmos_activos": [
+        "oraculo_neural_v3",
+        "oraculo_neural_v4",
+        "gaussiano_inteligente_v1",
+        "markov_chain_v1",
+        "consenso_meritocratico_v2",
+        "forense_biometrico_v1",
+        "delta_dna_v1",
+        "loto3_ultra_ensemble",
+        "Tri-Core (RF Independiente)",
+        "Ultra-Ensemble (Rank #1)",
+        "Ultra-Ensemble (Rank #2)",
+        "Ultra-Ensemble (Rank #3)",
+        "Ultra-Ensemble (Rank #4)",
+        "Ultra-Ensemble (Rank #5)",
+        "Ultra-Ensemble (Rank #6)",
+        "Ultra-Ensemble (Rank #7)",
+        "Ultra-Ensemble (Rank #8)",
+        "Ultra-Ensemble (Rank #9)",
+        "Ultra-Ensemble (Rank #10)"
+      ],
+      "metricas": {
+        "LOTO": {
+          "promedio_aciertos": 0.952,
+          "max_aciertos": 4,
+          "tasa_exito_3plus": 3.73,
+          "n_predicciones": 2953
+        },
+        "LOTO3": {
+          "promedio_aciertos": 0.661,
+          "max_aciertos": 3,
+          "tasa_exito_3plus": 0.32,
+          "n_predicciones": 3479
+        },
+        "RACHA": {
+          "promedio_aciertos": 4.984,
+          "max_aciertos": 8,
+          "tasa_exito_3plus": 99.1,
+          "n_predicciones": 1664
+        },
+        "LOTO4": {
+          "promedio_aciertos": 0.734,
+          "max_aciertos": 3,
+          "tasa_exito_3plus": 0.66,
+          "n_predicciones": 1661
         }
       }
     }

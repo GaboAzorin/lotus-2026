@@ -11,10 +11,10 @@
       "oraculo_neural_v4": 0.09
     },
     "LOTO3": {
-      "consenso_meritocratico_v2": 39.08,
+      "consenso_meritocratico_v2": 44.94,
       "forense_biometrico_v1": 18.9,
       "oraculo_neural_v3": 17.82,
-      "oraculo_neural_v4": 42.38
+      "oraculo_neural_v4": 48.74
     },
     "LOTO4": {
       "consenso_meritocratico_v2": 0.04,
@@ -39,7 +39,7 @@
       "sum_range_corrected",
       "hourly_keys_normalized"
     ],
-    "last_optimization": "2026-01-27T15:16:02.417101",
+    "last_optimization": "2026-01-27T23:19:25.802258",
     "optimization_changes": 2
   },
   "morphology": {
