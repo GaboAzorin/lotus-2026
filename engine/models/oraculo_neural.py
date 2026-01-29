@@ -71,12 +71,19 @@ class OraculoNeural:
             print(f"🧠 MODO REGLAMENTO v3 ACTIVADO (Window: {self.window_size})")
 
         self.model = None
+        self._racha_binary_mode = False  # Flag para RACHA con clasificación binaria
+
         if os.path.exists(self.model_file):
             try:
                 self.model = joblib.load(self.model_file)
                 # Validación de compatibilidad inmediata
                 if hasattr(self.model, "estimators_"):
                     print(f"✅ Modelo {version} cargado exitosamente.")
+                # [IMP-RACHA-001] Detectar si es modelo binario de RACHA
+                # (no es MultiOutputClassifier, es clasificador simple)
+                elif self.game_id == "RACHA" and hasattr(self.model, "predict_proba"):
+                    print(f"✅ Modelo RACHA binario {version} cargado exitosamente.")
+                    self._racha_binary_mode = True
             except Exception as e:
                 print(f"⚠️ Error cargando {self.model_file}: {e}. Se requiere re-entrenamiento.")
                 self.model = None
@@ -163,6 +170,425 @@ class OraculoNeural:
 
     # --- FEATURE ENGINEERING ---
 
+    def _calcular_gaps(self, X_raw, current_idx):
+        """
+        [IMP-FEAT-004] Vector de Gaps (Recencia)
+        Crea un vector donde cada posición representa cuántos sorteos han pasado
+        desde que ese número salió por última vez.
+        Esta es la variable más predictiva en sistemas mecánicos (ley del retorno a la media).
+        """
+        min_val = self.config['min_val']
+        max_val = self.config['max']
+        size = max_val - min_val + 1
+
+        # Inicializamos con valor alto (nunca ha salido en la ventana analizada)
+        gaps = np.full(size, current_idx, dtype=np.float32)
+
+        # Recorremos el historial hacia atrás buscando la última aparición de cada número
+        for sorteo_offset in range(current_idx):
+            idx = current_idx - 1 - sorteo_offset
+            if idx < 0:
+                break
+
+            draw = X_raw[idx]
+            for num in draw:
+                try:
+                    val = int(float(num))
+                    if min_val <= val <= max_val:
+                        num_idx = val - min_val
+                        # Solo actualizamos si aún no hemos encontrado este número
+                        if gaps[num_idx] == current_idx:
+                            gaps[num_idx] = sorteo_offset + 1  # +1 porque 0 significaría "salió en el último"
+                except (ValueError, TypeError):
+                    continue
+
+        # Normalización: dividimos por el máximo gap posible para obtener valores entre 0 y 1
+        max_gap = max(current_idx, 1)
+        return (gaps / max_gap).tolist()
+
+    def _calcular_deltas_promedio(self, X_raw, current_idx, lookback=3):
+        """
+        [IMP-FEAT-006] Deltas y Velocidad
+        Calcula la diferencia promedio entre los números de los últimos 'lookback' sorteos.
+        Captura la "velocidad" de cambio en los patrones numéricos.
+        """
+        if current_idx < lookback:
+            return [0.0] * 3  # delta_min, delta_max, delta_avg
+
+        deltas = []
+        for i in range(current_idx - lookback, current_idx):
+            if i < 0:
+                continue
+            draw = sorted([int(float(x)) for x in X_raw[i] if str(x).replace('.','').replace('-','').isdigit()])
+            if len(draw) >= 2:
+                # Diferencias consecutivas dentro de cada sorteo
+                for j in range(len(draw) - 1):
+                    deltas.append(draw[j+1] - draw[j])
+
+        if not deltas:
+            return [0.0, 0.0, 0.0]
+
+        # Normalizamos por el rango máximo posible
+        max_range = self.config['max'] - self.config['min_val']
+        return [
+            min(deltas) / max_range,  # delta_min
+            max(deltas) / max_range,  # delta_max
+            np.mean(deltas) / max_range  # delta_avg
+        ]
+
+    def _calcular_meta_features(self, X_raw, current_idx, lookback=5):
+        """
+        [IMP-FEAT-007] Meta-Features del Biométrico
+        Calcula características de alto nivel que el generador_biometrico.py ya computa
+        pero que no se pasaban al modelo: paridad_promedio, suma_total, terminacion_mas_frecuente.
+        """
+        if current_idx < 1:
+            return [0.5, 0.5, 0]  # paridad, suma_normalizada, terminacion
+
+        start_idx = max(0, current_idx - lookback)
+
+        paridades = []
+        sumas = []
+        terminaciones = []
+
+        for i in range(start_idx, current_idx):
+            draw = [int(float(x)) for x in X_raw[i] if str(x).replace('.','').replace('-','').isdigit()]
+            if not draw:
+                continue
+
+            # Paridad: proporción de números pares
+            pares = sum(1 for n in draw if n % 2 == 0)
+            paridades.append(pares / len(draw))
+
+            # Suma total normalizada
+            suma = sum(draw)
+            max_suma = self.config['max'] * len(draw)
+            sumas.append(suma / max_suma if max_suma > 0 else 0)
+
+            # Terminaciones (dígito final)
+            for n in draw:
+                terminaciones.append(n % 10)
+
+        paridad_promedio = np.mean(paridades) if paridades else 0.5
+        suma_promedio = np.mean(sumas) if sumas else 0.5
+
+        # Terminación más frecuente (one-hot simplificado: valor / 10)
+        if terminaciones:
+            from collections import Counter
+            terminacion_freq = Counter(terminaciones).most_common(1)[0][0] / 10.0
+        else:
+            terminacion_freq = 0
+
+        return [paridad_promedio, suma_promedio, terminacion_freq]
+
+    # --- [IMP-RACHA-001] CLASIFICACIÓN BINARIA POR NÚMERO (NEGATIVE SELECTION) ---
+
+    def _preparar_dataset_racha_binario(self, df):
+        """
+        [IMP-RACHA-001] Transformación del dataset para RACHA.
+        En lugar de 1 fila por sorteo, creamos 20 filas (una por cada bola posible 1-20).
+
+        Features por bola:
+        - Recencia: cuántos sorteos han pasado desde que salió
+        - Frecuencia en últimos 10/50/100 sorteos
+        - ¿Salió en el sorteo anterior? (binario)
+        - Día de la semana
+        - Posición promedio cuando sale
+
+        Target: 1 (Salió) o 0 (No salió)
+
+        Esta arquitectura permite usar clasificación binaria para identificar
+        los números que NO saldrán (Negative Selection).
+        """
+        n_balls = self.config['n_balls']  # 10 para RACHA
+        max_num = self.config['max']       # 20 para RACHA
+        min_num = self.config['min_val']   # 1 para RACHA
+
+        target_cols = [f"n{i}" for i in range(1, n_balls + 1)]
+
+        # Verificar que las columnas existen
+        available = [c for c in target_cols if c in df.columns]
+        if len(available) < n_balls:
+            logger.warning(f"RACHA: Columnas insuficientes. Disponibles: {available}")
+            return None, None
+
+        df = df.sort_values('sorteo', ascending=True).reset_index(drop=True)
+        df = df.dropna(subset=available)
+
+        # Día de la semana
+        if 'fecha' in df.columns:
+            dias = pd.to_datetime(df['fecha'], errors='coerce').dt.dayofweek.fillna(0).astype(int).values
+        else:
+            dias = np.zeros(len(df), dtype=int)
+
+        # Construir historial de apariciones por número
+        X_all = []
+        y_all = []
+
+        lookback_min = 10  # Necesitamos al menos 10 sorteos de historia
+
+        for i in range(lookback_min, len(df)):
+            # Números que salieron en este sorteo
+            sorteo_actual = set()
+            for col in available:
+                try:
+                    val = int(float(df.iloc[i][col]))
+                    sorteo_actual.add(val)
+                except:
+                    continue
+
+            # Sorteo anterior
+            sorteo_anterior = set()
+            for col in available:
+                try:
+                    val = int(float(df.iloc[i-1][col]))
+                    sorteo_anterior.add(val)
+                except:
+                    continue
+
+            # Para cada número posible (1-20), crear una fila
+            for num in range(min_num, max_num + 1):
+                features = []
+
+                # 1. Recencia: cuántos sorteos desde que salió por última vez
+                recencia = 0
+                for j in range(i-1, -1, -1):
+                    found = False
+                    for col in available:
+                        try:
+                            if int(float(df.iloc[j][col])) == num:
+                                found = True
+                                break
+                        except:
+                            continue
+                    if found:
+                        recencia = i - j - 1
+                        break
+                    recencia += 1
+                features.append(recencia / max(i, 1))  # Normalizado
+
+                # 2. Frecuencia en últimos 10 sorteos
+                freq_10 = 0
+                for j in range(max(0, i-10), i):
+                    for col in available:
+                        try:
+                            if int(float(df.iloc[j][col])) == num:
+                                freq_10 += 1
+                                break
+                        except:
+                            continue
+                features.append(freq_10 / 10)
+
+                # 3. Frecuencia en últimos 50 sorteos
+                freq_50 = 0
+                for j in range(max(0, i-50), i):
+                    for col in available:
+                        try:
+                            if int(float(df.iloc[j][col])) == num:
+                                freq_50 += 1
+                                break
+                        except:
+                            continue
+                features.append(freq_50 / 50)
+
+                # 4. Frecuencia en últimos 100 sorteos
+                freq_100 = 0
+                for j in range(max(0, i-100), i):
+                    for col in available:
+                        try:
+                            if int(float(df.iloc[j][col])) == num:
+                                freq_100 += 1
+                                break
+                        except:
+                            continue
+                features.append(freq_100 / 100)
+
+                # 5. ¿Salió en el sorteo anterior? (binario)
+                features.append(1 if num in sorteo_anterior else 0)
+
+                # 6. Día de la semana (normalizado)
+                features.append(dias[i] / 6)
+
+                # 7. Número normalizado (posición en el rango)
+                features.append((num - min_num) / (max_num - min_num))
+
+                # 8. Paridad del número
+                features.append(num % 2)
+
+                X_all.append(features)
+
+                # Target: ¿Salió este número en el sorteo actual?
+                y_all.append(1 if num in sorteo_actual else 0)
+
+        return np.array(X_all), np.array(y_all)
+
+    def _entrenar_racha_binario(self, df):
+        """
+        [IMP-RACHA-002] Entrena modelo de clasificación binaria para RACHA.
+        Estrategia: Identificar los números que NO saldrán (Negative Selection).
+        """
+        logger.info("🎯 RACHA: Usando estrategia de Clasificación Binaria (Negative Selection)")
+
+        X, y = self._preparar_dataset_racha_binario(df)
+        if X is None:
+            return None
+
+        logger.info(f"   Dataset transformado: {len(X)} muestras ({len(X)//20} sorteos x 20 números)")
+
+        # Balance de clases: ~50% (10 salen de 20)
+        positivos = np.sum(y)
+        logger.info(f"   Balance: {positivos} positivos ({positivos/len(y):.1%}), {len(y)-positivos} negativos")
+
+        # Split temporal
+        split_idx = int(len(X) * 0.8)
+        X_train, X_test = X[:split_idx], X[split_idx:]
+        y_train, y_test = y[:split_idx], y[split_idx:]
+
+        # Modelo binario (no MultiOutput)
+        if XGB_AVAILABLE:
+            logger.info("   🚀 Usando XGBoost para clasificación binaria")
+            self.model = XGBClassifier(
+                n_estimators=100,
+                max_depth=6,
+                learning_rate=0.1,
+                min_child_weight=10,
+                subsample=0.8,
+                colsample_bytree=0.8,
+                objective='binary:logistic',
+                eval_metric='logloss',
+                use_label_encoder=False,
+                n_jobs=-1,
+                random_state=42,
+                verbosity=0
+            )
+        else:
+            self.model = RandomForestClassifier(
+                n_estimators=100,
+                max_depth=6,
+                min_samples_leaf=20,
+                class_weight='balanced',
+                n_jobs=-1,
+                random_state=42
+            )
+
+        self.model.fit(X_train, y_train)
+
+        # Métricas
+        train_acc = self.model.score(X_train, y_train)
+        test_acc = self.model.score(X_test, y_test)
+
+        logger.info(f"   📊 Accuracy - Train: {train_acc:.3f}, Test: {test_acc:.3f}")
+
+        # Guardar modelo
+        joblib.dump(self.model, self.model_file, compress=9)
+        logger.info(f"   Modelo RACHA binario guardado en {os.path.basename(self.model_file)}")
+
+        # Marcar que este modelo usa el modo binario
+        self._racha_binary_mode = True
+
+        return {'train_score': train_acc, 'test_score': test_acc}
+
+    def _predecir_racha_binario(self, df):
+        """
+        [IMP-RACHA-002] Predicción usando Negative Selection.
+        Predecimos la probabilidad de cada número (1-20) y seleccionamos los 10 más probables.
+        """
+        n_balls = self.config['n_balls']
+        max_num = self.config['max']
+        min_num = self.config['min_val']
+
+        target_cols = [f"n{i}" for i in range(1, n_balls + 1)]
+        available = [c for c in target_cols if c in df.columns]
+
+        df = df.sort_values('sorteo', ascending=True).reset_index(drop=True)
+
+        # Último sorteo conocido (para calcular features)
+        last_idx = len(df) - 1
+
+        # Día objetivo
+        if 'fecha' in df.columns:
+            dia = pd.to_datetime(df.iloc[last_idx]['fecha'], errors='coerce')
+            target_dow = dia.weekday() if pd.notna(dia) else datetime.now().weekday()
+        else:
+            target_dow = datetime.now().weekday()
+
+        # Sorteo anterior
+        sorteo_anterior = set()
+        for col in available:
+            try:
+                val = int(float(df.iloc[last_idx][col]))
+                sorteo_anterior.add(val)
+            except:
+                continue
+
+        # Generar features para cada número
+        predictions = []
+
+        for num in range(min_num, max_num + 1):
+            features = []
+
+            # 1. Recencia
+            recencia = 0
+            for j in range(last_idx, -1, -1):
+                found = False
+                for col in available:
+                    try:
+                        if int(float(df.iloc[j][col])) == num:
+                            found = True
+                            break
+                    except:
+                        continue
+                if found:
+                    recencia = last_idx - j
+                    break
+                recencia += 1
+            features.append(recencia / max(last_idx + 1, 1))
+
+            # 2-4. Frecuencias
+            for lookback in [10, 50, 100]:
+                freq = 0
+                for j in range(max(0, last_idx + 1 - lookback), last_idx + 1):
+                    for col in available:
+                        try:
+                            if int(float(df.iloc[j][col])) == num:
+                                freq += 1
+                                break
+                        except:
+                            continue
+                features.append(freq / lookback)
+
+            # 5. ¿Salió en el último?
+            features.append(1 if num in sorteo_anterior else 0)
+
+            # 6. Día
+            features.append(target_dow / 6)
+
+            # 7. Número normalizado
+            features.append((num - min_num) / (max_num - min_num))
+
+            # 8. Paridad
+            features.append(num % 2)
+
+            # Predecir probabilidad
+            X_num = np.array([features])
+            if hasattr(self.model, 'predict_proba'):
+                prob = self.model.predict_proba(X_num)[0][1]  # Prob de clase 1 (saldrá)
+            else:
+                prob = self.model.predict(X_num)[0]
+
+            predictions.append((num, prob))
+
+        # Ordenar por probabilidad descendente y tomar los 10 más probables
+        predictions.sort(key=lambda x: x[1], reverse=True)
+
+        # Log de predicciones con probabilidades
+        logger.info("   🎲 RACHA Negative Selection - Probabilidades:")
+        for num, prob in predictions[:10]:
+            logger.info(f"      #{num}: {prob:.1%}")
+
+        resultado = sorted([p[0] for p in predictions[:n_balls]])
+        return resultado
+
     def _calcular_mapa_calor(self, X_raw, current_idx, lookback=10):
         """
         Calcula la frecuencia normalizada de cada número en los últimos 'lookback' sorteos.
@@ -240,14 +666,26 @@ class OraculoNeural:
             features = []
             for w in range(1, self.window_size + 1):
                 features.extend(X_raw[i-w])
-            
+
             features.append(dias[i])
-            
+
             # [IMP-FEAT-001] Inyección de Rachas (Mapa de Calor)
             # Analizamos los 10 sorteos previos a 'i'
             heat_map = self._calcular_mapa_calor(X_raw, i, lookback=10)
             features.extend(heat_map)
-            
+
+            # [IMP-FEAT-004] Vector de Gaps (Recencia) - EL ESLABÓN PERDIDO
+            gaps = self._calcular_gaps(X_raw, i)
+            features.extend(gaps)
+
+            # [IMP-FEAT-006] Deltas Promedio (Velocidad)
+            deltas = self._calcular_deltas_promedio(X_raw, i, lookback=3)
+            features.extend(deltas)
+
+            # [IMP-FEAT-007] Meta-Features del Biométrico
+            meta_features = self._calcular_meta_features(X_raw, i, lookback=5)
+            features.extend(meta_features)
+
             X.append(features)
             
             if target_type == 'SET':
@@ -264,6 +702,7 @@ class OraculoNeural:
         """
         Entrena el modelo con train/test split temporal (80/20).
         AUDITORÍA v4: Previene overfitting y proporciona métricas realistas.
+        [IMP-RACHA-001] RACHA ahora usa clasificación binaria (Negative Selection).
         """
         msg = f" (Sorteo límite: #{sorteo_limite})" if sorteo_limite else " (Toda la historia)"
         logger.info(f"ORÁCULO {self.version}: Iniciando entrenamiento para {self.game_id}{msg}")
@@ -279,6 +718,10 @@ class OraculoNeural:
         if len(df) < 50:
             logger.warning(f"Datos insuficientes ({len(df)} filas). Mínimo 50.")
             return
+
+        # [IMP-RACHA-001] RACHA usa estrategia especial de Clasificación Binaria
+        if self.game_id == "RACHA":
+            return self._entrenar_racha_binario(df)
 
         X, y, _, _ = self._preparar_dataset(df)
         if X is None: return
@@ -389,11 +832,99 @@ class OraculoNeural:
         logger.info(f"      [TRAIN] Accuracy: {metrics['train_accuracy']:.4f} | Precision: {metrics['train_precision']:.4f} | Recall: {metrics['train_recall']:.4f} | F1-Score: {metrics['train_f1']:.4f}")
         logger.info(f"      [TEST]  Accuracy: {metrics['test_accuracy']:.4f} | Precision: {metrics['test_precision']:.4f} | Recall: {metrics['test_recall']:.4f} | F1-Score: {metrics['test_f1']:.4f}")
 
+        # --- [IMP-VAL-001] HIT RATE @ K (Métrica Real para Lotería) ---
+        if self.config['type'] == 'SET':
+            hit_rate_train, avg_hits_train = self._calcular_hit_rate_at_k(X_train, y_train, k=10)
+            hit_rate_test, avg_hits_test = self._calcular_hit_rate_at_k(X_test, y_test, k=10)
+
+            logger.info(f"   🎯 Hit Rate @ 10 (Métrica Real):")
+            logger.info(f"      [TRAIN] Hit Rate: {hit_rate_train:.2%} | Avg Hits/Sorteo: {avg_hits_train:.2f}")
+            logger.info(f"      [TEST]  Hit Rate: {hit_rate_test:.2%} | Avg Hits/Sorteo: {avg_hits_test:.2f}")
+
+            # Contexto: para LOTO (6 de 41), azar puro = 6/41 = 14.6%
+            # Para RACHA (10 de 20), azar puro = 50%
+            azar = self.config['n_balls'] / self.config['max']
+            if hit_rate_test > azar:
+                logger.info(f"      ✅ Modelo SUPERA el azar ({azar:.1%})")
+            else:
+                logger.warning(f"      ⚠️ Modelo NO supera el azar ({azar:.1%})")
+
+            metrics['hit_rate_train'] = hit_rate_train
+            metrics['hit_rate_test'] = hit_rate_test
+            metrics['avg_hits_train'] = avg_hits_train
+            metrics['avg_hits_test'] = avg_hits_test
+
         return {
             'train_score': train_score,
             'test_score': test_score,
             **metrics  # Include all extended ML metrics
         }
+
+    def _calcular_hit_rate_at_k(self, X, y, k=10):
+        """
+        [IMP-VAL-001] Hit Rate @ K
+        Métrica más realista para lotería: de los K números que el modelo predijo
+        con mayor probabilidad, ¿cuántos estaban realmente en el sorteo ganador?
+
+        Esta métrica refleja el valor real del modelo. Si consistentemente metemos
+        1-2 números ganadores en el Top K, ya tenemos ventaja sobre el azar.
+
+        Args:
+            X: Features de prueba
+            y: Labels reales (one-hot encoded para SET)
+            k: Cuántos números top considerar (default 10)
+
+        Returns:
+            hit_rate: Proporción promedio de aciertos en Top K
+            avg_hits: Número promedio de aciertos por sorteo
+        """
+        if not hasattr(self.model, 'predict_proba'):
+            return 0.0, 0.0
+
+        try:
+            probs = self.model.predict_proba(X)
+        except Exception as e:
+            logger.debug(f"predict_proba falló: {e}")
+            return 0.0, 0.0
+
+        total_hits = 0
+        total_possible = 0
+
+        for sample_idx in range(len(X)):
+            # Extraer probabilidades para esta muestra
+            sample_probs = []
+            for num_val, prob_arr in enumerate(probs):
+                if len(prob_arr) > 0 and prob_arr[sample_idx].shape[0] > 1:
+                    prob_success = prob_arr[sample_idx][1]
+                else:
+                    prob_success = 0
+                if self.config['min_val'] <= num_val <= self.config['max']:
+                    sample_probs.append((num_val, prob_success))
+
+            # Ordenar por probabilidad descendente y tomar Top K
+            sample_probs.sort(key=lambda x: x[1], reverse=True)
+            top_k_nums = set([x[0] for x in sample_probs[:k]])
+
+            # Extraer números reales del sorteo
+            if self.config['type'] == 'SET':
+                # y es one-hot: los índices con valor 1 son los números que salieron
+                real_nums = set([i for i, val in enumerate(y[sample_idx]) if val == 1])
+            else:
+                # y es lista de valores
+                real_nums = set([int(v) for v in y[sample_idx]])
+
+            # Contar hits
+            hits = len(top_k_nums & real_nums)
+            total_hits += hits
+            total_possible += len(real_nums)
+
+        if total_possible == 0:
+            return 0.0, 0.0
+
+        hit_rate = total_hits / total_possible
+        avg_hits = total_hits / len(X) if len(X) > 0 else 0
+
+        return hit_rate, avg_hits
 
     def _calcular_metricas_ml(self, X_train, y_train, X_test, y_test):
         """
@@ -467,22 +998,53 @@ class OraculoNeural:
                 'test_accuracy': 0.0, 'test_precision': 0.0, 'test_recall': 0.0, 'test_f1': 0.0,
             }
 
-    def _build_model(self):
-        """Construye el modelo base con hiperparámetros conservadores"""
-        depth = 5 
-        est = 100 
+    def _build_model(self, use_xgboost=None):
+        """
+        Construye el modelo base.
+        [IMP-ML-009] Ahora usa XGBoost por defecto si está disponible.
+        XGBoost maneja mejor los datos tabulares desbalanceados y valores nulos.
+        """
+        # Auto-detección: usar XGBoost si está disponible y no se especifica lo contrario
+        if use_xgboost is None:
+            use_xgboost = XGB_AVAILABLE
+
+        depth = 6  # Aumentamos ligeramente para XGBoost
+        est = 100
         min_leaf = 20
-        
-        rf = RandomForestClassifier(
-            n_estimators=est,
-            max_depth=depth,
-            min_samples_leaf=min_leaf,
-            max_features='sqrt',
-            class_weight='balanced' if (self.version == "v3" and self.config['type'] == 'SET') else None,
-            n_jobs=-1,
-            random_state=42
-        )
-        return MultiOutputClassifier(rf)
+
+        if use_xgboost and XGB_AVAILABLE:
+            logger.info("   🚀 Usando XGBoost (mejor manejo de datos desbalanceados)")
+            # [IMP-ML-010] Configuración optimizada para lotería
+            xgb = XGBClassifier(
+                n_estimators=est,
+                max_depth=depth,
+                learning_rate=0.1,
+                min_child_weight=min_leaf,
+                subsample=0.8,
+                colsample_bytree=0.8,
+                # [IMP-ML-011] Métrica personalizada: usamos logloss que penaliza
+                # menos las predicciones "cercanas" vs accuracy binaria
+                objective='binary:logistic',
+                eval_metric='logloss',
+                use_label_encoder=False,
+                n_jobs=-1,
+                random_state=42,
+                verbosity=0
+            )
+            return MultiOutputClassifier(xgb)
+        else:
+            if use_xgboost and not XGB_AVAILABLE:
+                logger.warning("   ⚠️ XGBoost solicitado pero no disponible. Usando RandomForest.")
+            rf = RandomForestClassifier(
+                n_estimators=est,
+                max_depth=depth - 1,  # RF necesita menos profundidad
+                min_samples_leaf=min_leaf,
+                max_features='sqrt',
+                class_weight='balanced' if (self.version == "v3" and self.config['type'] == 'SET') else None,
+                n_jobs=-1,
+                random_state=42
+            )
+            return MultiOutputClassifier(rf)
 
     def _entrenar_manual(self, X_train, y_train):
         """Configuración manual de fallback (la antigua lógica)"""
@@ -497,10 +1059,15 @@ class OraculoNeural:
     # --- INFERENCIA Y AUTO-CURACIÓN ---
 
     def predecir(self, fecha_objetivo=None, estocastico=True, _intento_recuperacion=False):
-        if self.model is None: 
+        if self.model is None:
             self.entrenar()
-        
+
         if self.model is None: return []
+
+        # [IMP-RACHA-001] RACHA usa estrategia especial de Clasificación Binaria
+        if self.game_id == "RACHA" and getattr(self, '_racha_binary_mode', False):
+            df = pd.read_csv(self.maestro_file)
+            return self._predecir_racha_binario(df)
 
         # Carga fresca para el input más reciente
         df = pd.read_csv(self.maestro_file).sort_values('sorteo', ascending=True)
@@ -535,11 +1102,23 @@ class OraculoNeural:
             target_dow = datetime.now().weekday()
 
         input_features.append(target_dow)
-        
+
         # [IMP-FEAT-001] Inyección de Rachas en Inferencia
         # Calculamos el mapa de calor usando toda la historia disponible hasta hoy
         current_heat_map = self._calcular_mapa_calor(X_raw, len(X_raw), lookback=10)
         input_features.extend(current_heat_map)
+
+        # [IMP-FEAT-004] Vector de Gaps (Recencia) - EL ESLABÓN PERDIDO
+        current_gaps = self._calcular_gaps(X_raw, len(X_raw))
+        input_features.extend(current_gaps)
+
+        # [IMP-FEAT-006] Deltas Promedio (Velocidad)
+        current_deltas = self._calcular_deltas_promedio(X_raw, len(X_raw), lookback=3)
+        input_features.extend(current_deltas)
+
+        # [IMP-FEAT-007] Meta-Features del Biométrico
+        current_meta = self._calcular_meta_features(X_raw, len(X_raw), lookback=5)
+        input_features.extend(current_meta)
 
         X_pred = np.array([input_features])
         

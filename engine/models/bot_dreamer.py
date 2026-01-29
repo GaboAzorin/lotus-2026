@@ -94,6 +94,14 @@ except ImportError:
     ejecutar_loto3_ultra = None
     logger.warning("Loto3Ultra no disponible. Usando sistema legacy para LOTO3.")
 
+try:
+    from loto3_especialista import Loto3Especialista, ejecutar_loto3_especialista
+    logger.debug("Loto3Especialista importado correctamente")
+except ImportError:
+    Loto3Especialista = None
+    ejecutar_loto3_especialista = None
+    logger.warning("Loto3Especialista no disponible. Predicciones PAR/TERMINACION desactivadas.")
+
 # --- CONFIGURACIÓN ---
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 DATA_DIR = os.path.join(BASE_DIR, '..', '..', 'data')
@@ -312,12 +320,25 @@ def soñar():
             try:
                 # Ejecutar sistema ultra (genera y guarda automaticamente)
                 # NOTA: Al llamar con guardar=True, ya se escribe en CSV y JSON.
-                # No necesitamos añadirlo a nuevas_filas para la queue, 
+                # No necesitamos añadirlo a nuevas_filas para la queue,
                 # porque loto3_ultra maneja su propia persistencia.
                 resultados_ultra = ejecutar_loto3_ultra(guardar=True)
-                
+
                 if resultados_ultra:
                     logger.info(f"LOTO3 ULTRA: {len(resultados_ultra)} predicciones generadas y guardadas.")
+
+                    # === LOTO3 ESPECIALISTA: Predicciones PAR y TERMINACION ===
+                    if Loto3Especialista is not None:
+                        logger.info("Activando LOTO3 ESPECIALISTA (PAR & TERMINACION)...")
+                        try:
+                            resultados_esp = ejecutar_loto3_especialista(guardar=True)
+                            if resultados_esp:
+                                logger.info(f"LOTO3 ESPECIALISTA: {len(resultados_esp)} predicciones PAR/TERM guardadas.")
+                            else:
+                                logger.warning("LOTO3 ESPECIALISTA no genero resultados.")
+                        except Exception as e_esp:
+                            logger.error(f"Error en LOTO3 ESPECIALISTA: {e_esp}")
+
                     continue  # Saltar el procesamiento legacy para LOTO3
                 else:
                     logger.warning("LOTO3 ULTRA no genero resultados, usando sistema legacy...")

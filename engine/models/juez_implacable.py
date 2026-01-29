@@ -70,13 +70,43 @@ def cargar_maestros():
             
     return memoria
 
-def calcular_afinidad(prediccion, realidad_obj, juego):
-    """Calcula score 0-100 dependiendo de las reglas del juego."""
+def calcular_afinidad(prediccion, realidad_obj, juego, modalidad=None):
+    """
+    Calcula score 0-100 dependiendo de las reglas del juego.
+
+    Args:
+        prediccion: Numeros predichos (lista o string para modalidades especiales)
+        realidad_obj: Diccionario con {"numeros": [...], "comodin": X}
+        juego: Nombre del juego (LOTO, LOTO3, LOTO4, RACHA)
+        modalidad: Modalidad especial (PAR_INICIAL, PAR_FINAL, TERMINACION, o None para EXACTA)
+    """
     if not prediccion or not realidad_obj: return 0.0
-    
+
     # Extraemos los datos del objeto realidad
     realidad = realidad_obj["numeros"]
     comodin_real = realidad_obj.get("comodin")
+
+    # === MODALIDADES ESPECIALES LOTO3 ===
+    if modalidad == 'PAR_INICIAL' and juego == 'LOTO3':
+        # Comparar par predicho con los primeros 2 digitos reales
+        par_real = f"{realidad[0]}{realidad[1]}"
+        prediccion_str = str(prediccion) if not isinstance(prediccion, str) else prediccion
+        return 100.0 if prediccion_str == par_real else 0.0
+
+    elif modalidad == 'PAR_FINAL' and juego == 'LOTO3':
+        # Comparar par predicho con los ultimos 2 digitos reales
+        par_real = f"{realidad[1]}{realidad[2]}"
+        prediccion_str = str(prediccion) if not isinstance(prediccion, str) else prediccion
+        return 100.0 if prediccion_str == par_real else 0.0
+
+    elif modalidad == 'TERMINACION' and juego == 'LOTO3':
+        # Comparar digito predicho con el ultimo digito real
+        terminacion_real = realidad[2]
+        try:
+            pred_int = int(prediccion) if isinstance(prediccion, str) else prediccion
+            return 100.0 if pred_int == terminacion_real else 0.0
+        except (ValueError, TypeError):
+            return 0.0
     
     # --- REGLAS RACHA (Curva Monótona de Afinidad) ---
     if juego == "RACHA":
@@ -222,40 +252,61 @@ def juzgar(target_games=None):
             realidad_obj = maestros[juego][target_id]
             nums_real = realidad_obj["numeros"]
             
+            # Detectar modalidad especial (PAR_INICIAL, PAR_FINAL, TERMINACION)
+            modalidad = row.get('modalidad', None) if 'modalidad' in df_sim.columns else None
+            if pd.isna(modalidad):
+                modalidad = None
+
             try:
                 raw_nums = row['numeros']
-                if isinstance(raw_nums, str):
+
+                # Para modalidades especiales, los numeros pueden ser strings simples
+                if modalidad in ['PAR_INICIAL', 'PAR_FINAL', 'TERMINACION']:
+                    nums_pred = str(raw_nums).strip()
+                elif isinstance(raw_nums, str):
                     # SEC-FIX: Usar json.loads en lugar de ast.literal_eval
                     # para evitar ejecución de código arbitrario.
                     try:
                         nums_pred = json.loads(raw_nums)
                     except json.JSONDecodeError:
-                        # Fallback seguro solo si es estrictamente necesario, 
+                        # Fallback seguro solo si es estrictamente necesario,
                         # pero preferimos loggear el error.
                         # Intentamos limpiar formato python a json si es necesario
                         nums_pred = ast.literal_eval(raw_nums)
                 else:
                     nums_pred = raw_nums
 
-                if not isinstance(nums_pred, list):
-                    continue
+                # Para modalidades estandar, necesitamos lista
+                if modalidad not in ['PAR_INICIAL', 'PAR_FINAL', 'TERMINACION']:
+                    if not isinstance(nums_pred, list):
+                        continue
             except (ValueError, SyntaxError, TypeError):
                 # Números mal formateados, saltar predicción
                 continue
-            
+
             # Calcular Aciertos para display (Lógica original)
-            if juego == "LOTO3":
+            if modalidad in ['PAR_INICIAL', 'PAR_FINAL']:
+                # Para pares: 1 si acierta, 0 si no
+                aciertos_display = 0  # Se actualizara con el score
+            elif modalidad == 'TERMINACION':
+                # Para terminacion: 1 si acierta, 0 si no
+                aciertos_display = 0  # Se actualizara con el score
+            elif juego == "LOTO3":
                  aciertos_display = 0
                  r_cp = list(nums_real)
                  for n in nums_pred:
-                     if n in r_cp: 
+                     if n in r_cp:
                          aciertos_display +=1
                          r_cp.remove(n)
             else:
                 aciertos_display = len(set(nums_pred) & set(nums_real))
 
-            # Score interno (NUEVA ESCALA)
-            score_final = calcular_afinidad(nums_pred, realidad_obj, juego)
+            # Score interno (NUEVA ESCALA con soporte de modalidad)
+            score_final = calcular_afinidad(nums_pred, realidad_obj, juego, modalidad=modalidad)
+
+            # Actualizar aciertos para modalidades especiales basado en score
+            if modalidad in ['PAR_INICIAL', 'PAR_FINAL', 'TERMINACION']:
+                aciertos_display = 1 if score_final == 100.0 else 0
             
             old_score = float(row['score_afinidad']) if not pd.isna(row['score_afinidad']) else -1.0
             

@@ -594,8 +594,16 @@ async def _run_scraper_internal(proxy_config=None, games_to_scrape=None):
                             consecutive_errors += 1
                             continue
 
+                        # [IMP-VAL-003] Validación de Esquema JSON - No entrenar con ceros
                         # Validación 1: ¿Viene vacío o sin resultados?
-                        if not json_data or not json_data.get('results'):
+                        if not json_data:
+                            logger.warning(f"Sorteo #{current_id}: JSON vacío recibido. Saltando.")
+                            current_id += 1
+                            consecutive_errors += 1
+                            continue
+
+                        results = json_data.get('results')
+                        if not results:
                             # Puede ser un sorteo futuro o un salto de folio
                             ts = json_data.get('drawDate')
                             if ts and datetime.fromtimestamp(ts/1000) > datetime.now():
@@ -603,9 +611,21 @@ async def _run_scraper_internal(proxy_config=None, games_to_scrape=None):
                                 break  # Salimos del bucle de este juego
 
                             # Si no es futuro, quizás es un ID vacío, probamos el siguiente
+                            logger.warning(f"Sorteo #{current_id}: 'results' vacío o nulo. No se guardará.")
                             current_id += 1
                             consecutive_errors += 1
                             continue
+
+                        # Validación 2: Verificar que results contenga datos válidos (no solo ceros)
+                        # Esto evita entrenar modelos con datos corruptos
+                        if isinstance(results, list):
+                            # Verificar que al menos hay un resultado no vacío
+                            valid_results = [r for r in results if r and (isinstance(r, dict) and r.get('value'))]
+                            if not valid_results:
+                                logger.error(f"Sorteo #{current_id}: 'results' contiene solo datos vacíos/ceros. NO se guardará para evitar contaminar entrenamiento.")
+                                current_id += 1
+                                consecutive_errors += 1
+                                continue
 
                         # Validación 2: Parseo
                         try:
