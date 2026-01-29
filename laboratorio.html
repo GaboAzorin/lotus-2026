@@ -113,44 +113,91 @@
             </div>
         </div>
 
-        <!-- PREDICCIONES ESPECIALIZADAS PAR/TERMINACION -->
+        <!-- BOLETA DE APUESTA PAR/TERMINACION -->
         <div id="loto3-especialista" class="card" style="display:none;">
-            <div class="especialista-header">
-                <h3>Predicciones Especializadas</h3>
-                <div class="especialista-target">
-                    <span class="status-badge" style="background:var(--warning);">
-                        Sorteo #<span id="esp-sorteo">--</span>
-                    </span>
-                    <span id="esp-fecha" style="font-size:0.8rem; color:var(--text-muted);">--</span>
+            <div class="boleta-header">
+                <div class="boleta-titulo">
+                    <i data-lucide="ticket" style="color:var(--warning);"></i>
+                    <h3>Boleta de Apuesta - LOTO3</h3>
+                </div>
+                <div class="boleta-sorteo">
+                    <div class="sorteo-info">
+                        <span class="sorteo-label">PROXIMO SORTEO</span>
+                        <span class="sorteo-numero">#<span id="esp-sorteo">--</span></span>
+                    </div>
+                    <div class="sorteo-tiempo">
+                        <span id="esp-franja" class="franja-badge">--</span>
+                        <span id="esp-countdown" class="countdown">--:--:--</span>
+                    </div>
                 </div>
             </div>
 
-            <div class="especialista-grid">
-                <!-- PAR INICIAL -->
-                <div class="esp-card esp-par">
-                    <div class="esp-title">PAR INICIAL (n1n2)</div>
-                    <div class="esp-subtitle">Primeros 2 digitos - Premio 20x</div>
-                    <div id="esp-par-inicial" class="esp-numbers"></div>
+            <div class="boleta-body">
+                <!-- APUESTA RECOMENDADA #1: PAR -->
+                <div class="apuesta-card apuesta-par">
+                    <div class="apuesta-header">
+                        <span class="apuesta-tipo">APUESTA PAR</span>
+                        <span class="apuesta-premio">Premio: <strong>$2.000</strong> x $100</span>
+                    </div>
+                    <div class="apuesta-contenido">
+                        <div class="apuesta-opcion">
+                            <span class="opcion-label">PAR INICIAL (n1n2)</span>
+                            <div class="opcion-numeros" id="esp-par-inicial-top"></div>
+                        </div>
+                        <div class="apuesta-separador">o</div>
+                        <div class="apuesta-opcion">
+                            <span class="opcion-label">PAR FINAL (n2n3)</span>
+                            <div class="opcion-numeros" id="esp-par-final-top"></div>
+                        </div>
+                    </div>
+                    <div class="apuesta-alternativas">
+                        <span class="alt-label">Alternativas:</span>
+                        <div id="esp-par-alternativas" class="alt-numeros"></div>
+                    </div>
                 </div>
 
-                <!-- PAR FINAL -->
-                <div class="esp-card esp-par">
-                    <div class="esp-title">PAR FINAL (n2n3)</div>
-                    <div class="esp-subtitle">Ultimos 2 digitos - Premio 20x</div>
-                    <div id="esp-par-final" class="esp-numbers"></div>
+                <!-- APUESTA RECOMENDADA #2: TERMINACION -->
+                <div class="apuesta-card apuesta-term">
+                    <div class="apuesta-header">
+                        <span class="apuesta-tipo">APUESTA TERMINACION</span>
+                        <span class="apuesta-premio">Premio: <strong>$400</strong> x $100</span>
+                    </div>
+                    <div class="apuesta-contenido">
+                        <div class="terminacion-principal">
+                            <span class="term-label">Apostar al digito:</span>
+                            <div id="esp-terminacion-top" class="term-numero"></div>
+                        </div>
+                    </div>
+                    <div class="apuesta-alternativas">
+                        <span class="alt-label">Alternativas:</span>
+                        <div id="esp-term-alternativas" class="alt-numeros"></div>
+                    </div>
                 </div>
 
-                <!-- TERMINACION -->
-                <div class="esp-card esp-term">
-                    <div class="esp-title">TERMINACION (n3)</div>
-                    <div class="esp-subtitle">Ultimo digito - Premio 4x</div>
-                    <div id="esp-terminacion" class="esp-numbers"></div>
+                <!-- RESUMEN INVERSION -->
+                <div class="boleta-resumen">
+                    <div class="resumen-linea">
+                        <span>1x Apuesta PAR</span>
+                        <span>$100</span>
+                    </div>
+                    <div class="resumen-linea">
+                        <span>1x Apuesta TERMINACION</span>
+                        <span>$100</span>
+                    </div>
+                    <div class="resumen-total">
+                        <span>INVERSION TOTAL</span>
+                        <span>$200</span>
+                    </div>
+                    <div class="resumen-retorno">
+                        <span>Retorno potencial:</span>
+                        <span class="retorno-valor">$400 - $2.400</span>
+                    </div>
                 </div>
             </div>
 
-            <div class="esp-disclaimer">
-                Predicciones generadas por <strong>Loto3 Especialista v1</strong> -
-                Solo para entretenimiento - NO garantiza resultados
+            <div class="boleta-footer">
+                <i data-lucide="alert-circle" style="width:14px; color:var(--warning);"></i>
+                <span>Solo entretenimiento - NO garantiza resultados - Juega responsable</span>
             </div>
         </div>
 

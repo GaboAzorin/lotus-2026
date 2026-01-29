@@ -1299,14 +1299,113 @@ function renderSafePlanLoto3() {
 }
 
 // =========================================================
-// 6. PREDICCIONES ESPECIALIZADAS (PAR/TERMINACION)
+// 6. BOLETA DE APUESTA PAR/TERMINACION
 // =========================================================
+
+// Horarios de sorteo LOTO3 en Chile continental
+const HORARIOS_LOTO3 = [14, 18, 21];
+const FRANJAS_NOMBRE = {14: 'DIA', 18: 'TARDE', 21: 'NOCHE'};
+
+// Variable global para el intervalo del countdown
+let countdownInterval = null;
+
+/**
+ * Calcula el proximo sorteo de LOTO3 basado en hora actual de Chile
+ * @returns {Object} {sorteo, fecha, franja, horaNum}
+ */
+function calcularProximoSorteoLoto3() {
+    // Obtener hora actual en Chile (UTC-3 en verano, UTC-4 en invierno)
+    const ahora = new Date();
+
+    // Chile continental: usar offset aproximado (-3 o -4)
+    // En enero estamos en horario de verano (UTC-3)
+    const offsetChile = -3;
+    const ahoraChile = new Date(ahora.getTime() + (ahora.getTimezoneOffset() + offsetChile * 60) * 60 * 1000);
+
+    const horaActual = ahoraChile.getHours();
+    const minutoActual = ahoraChile.getMinutes();
+
+    // Buscar el proximo horario de sorteo
+    let proximaHora = null;
+    let diasExtra = 0;
+
+    for (let h of HORARIOS_LOTO3) {
+        if (horaActual < h || (horaActual === h && minutoActual < 0)) {
+            proximaHora = h;
+            break;
+        }
+    }
+
+    // Si no hay mas sorteos hoy, el proximo es manana a las 14:00
+    if (proximaHora === null) {
+        proximaHora = HORARIOS_LOTO3[0];
+        diasExtra = 1;
+    }
+
+    // Construir fecha del proximo sorteo
+    const fechaSorteo = new Date(ahoraChile);
+    fechaSorteo.setDate(fechaSorteo.getDate() + diasExtra);
+    fechaSorteo.setHours(proximaHora, 0, 0, 0);
+
+    return {
+        fecha: fechaSorteo,
+        franja: FRANJAS_NOMBRE[proximaHora],
+        horaNum: proximaHora,
+        ahoraChile: ahoraChile
+    };
+}
+
+/**
+ * Formatea el tiempo restante como HH:MM:SS
+ */
+function formatCountdown(ms) {
+    if (ms <= 0) return '00:00:00';
+
+    const totalSeconds = Math.floor(ms / 1000);
+    const hours = Math.floor(totalSeconds / 3600);
+    const minutes = Math.floor((totalSeconds % 3600) / 60);
+    const seconds = totalSeconds % 60;
+
+    return `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+}
+
+/**
+ * Actualiza el countdown cada segundo
+ */
+function actualizarCountdown() {
+    const countdownEl = document.getElementById('esp-countdown');
+    if (!countdownEl) return;
+
+    const proximo = calcularProximoSorteoLoto3();
+    const ahora = new Date();
+    const offsetChile = -3;
+    const ahoraChile = new Date(ahora.getTime() + (ahora.getTimezoneOffset() + offsetChile * 60) * 60 * 1000);
+
+    const diferencia = proximo.fecha.getTime() - ahoraChile.getTime();
+
+    countdownEl.textContent = formatCountdown(diferencia);
+
+    // Agregar clase urgente si queda menos de 30 minutos
+    if (diferencia < 30 * 60 * 1000) {
+        countdownEl.classList.add('urgente');
+    } else {
+        countdownEl.classList.remove('urgente');
+    }
+}
+
+/**
+ * Renderiza la boleta de apuesta con predicciones para el proximo sorteo
+ */
 function renderEspecialistaLoto3() {
     const container = document.getElementById('loto3-especialista');
 
     // Solo mostrar si estamos en LOTO3
     if (CURRENT_UNIVERSE !== 'LOTO3') {
         container.style.display = 'none';
+        if (countdownInterval) {
+            clearInterval(countdownInterval);
+            countdownInterval = null;
+        }
         return;
     }
 
@@ -1322,6 +1421,9 @@ function renderEspecialistaLoto3() {
         container.style.display = 'none';
         return;
     }
+
+    // Calcular proximo sorteo
+    const proximoSorteo = calcularProximoSorteoLoto3();
 
     // Agrupar por sorteo objetivo
     const porSorteo = {};
@@ -1341,7 +1443,7 @@ function renderEspecialistaLoto3() {
         else if (d.modalidad === 'TERMINACION') porSorteo[d.objetivo].terminacion.push(d);
     });
 
-    // Obtener el sorteo mas reciente/proximo
+    // Obtener el sorteo mas proximo (numero mas alto = mas reciente)
     const sorteos = Object.keys(porSorteo).map(Number).sort((a,b) => b - a);
     const targetSorteo = sorteos[0];
     const data = porSorteo[targetSorteo];
@@ -1351,24 +1453,61 @@ function renderEspecialistaLoto3() {
         return;
     }
 
-    // Renderizar
+    // Mostrar la boleta
     container.style.display = 'block';
 
+    // Actualizar header
     document.getElementById('esp-sorteo').textContent = data.sorteo;
-    document.getElementById('esp-fecha').textContent = formatFechaLanzamiento(data.fecha);
+    document.getElementById('esp-franja').textContent = proximoSorteo.franja;
 
-    // Funcion helper para renderizar numeros
-    const renderNums = (items, cssClass) => {
-        return items
-            .sort((a, b) => b.score - a.score) // Ordenar por score
-            .slice(0, 5) // Top 5
-            .map(d => `<div class="esp-num ${cssClass}">${d.numeros}<span class="esp-score">${d.score}%</span></div>`)
-            .join('');
-    };
+    // Iniciar countdown
+    actualizarCountdown();
+    if (countdownInterval) clearInterval(countdownInterval);
+    countdownInterval = setInterval(actualizarCountdown, 1000);
 
-    document.getElementById('esp-par-inicial').innerHTML = renderNums(data.par_inicial, 'par');
-    document.getElementById('esp-par-final').innerHTML = renderNums(data.par_final, 'par');
-    document.getElementById('esp-terminacion').innerHTML = renderNums(data.terminacion, 'term');
+    // Ordenar por score
+    const parInicialOrdenado = data.par_inicial.sort((a, b) => b.score - a.score);
+    const parFinalOrdenado = data.par_final.sort((a, b) => b.score - a.score);
+    const terminacionOrdenado = data.terminacion.sort((a, b) => b.score - a.score);
+
+    // Renderizar PAR INICIAL - Top 1
+    const topParInicial = parInicialOrdenado[0];
+    document.getElementById('esp-par-inicial-top').innerHTML = topParInicial
+        ? `<div class="num-apuesta">${topParInicial.numeros}<span class="score">${topParInicial.score}%</span></div>`
+        : '<div class="num-apuesta">--</div>';
+
+    // Renderizar PAR FINAL - Top 1
+    const topParFinal = parFinalOrdenado[0];
+    document.getElementById('esp-par-final-top').innerHTML = topParFinal
+        ? `<div class="num-apuesta">${topParFinal.numeros}<span class="score">${topParFinal.score}%</span></div>`
+        : '<div class="num-apuesta">--</div>';
+
+    // Renderizar alternativas de PAR (resto de ambos)
+    const alternativasPar = [
+        ...parInicialOrdenado.slice(1, 3).map(d => ({num: d.numeros, score: d.score, tipo: 'ini'})),
+        ...parFinalOrdenado.slice(1, 3).map(d => ({num: d.numeros, score: d.score, tipo: 'fin'}))
+    ].sort((a, b) => b.score - a.score).slice(0, 4);
+
+    document.getElementById('esp-par-alternativas').innerHTML = alternativasPar
+        .map(d => `<span class="num-alt">${d.num} <span class="score">${d.score}%</span></span>`)
+        .join('');
+
+    // Renderizar TERMINACION - Top 1
+    const topTerminacion = terminacionOrdenado[0];
+    document.getElementById('esp-terminacion-top').innerHTML = topTerminacion
+        ? `<div class="num-apuesta term">${topTerminacion.numeros}<span class="score">${topTerminacion.score}%</span></div>`
+        : '<div class="num-apuesta term">-</div>';
+
+    // Renderizar alternativas de TERMINACION
+    document.getElementById('esp-term-alternativas').innerHTML = terminacionOrdenado
+        .slice(1, 4)
+        .map(d => `<span class="num-alt">${d.numeros} <span class="score">${d.score}%</span></span>`)
+        .join('');
+
+    // Actualizar iconos de Lucide
+    if (typeof lucide !== 'undefined') {
+        lucide.createIcons();
+    }
 }
 
 // Iniciar
