@@ -113,6 +113,47 @@
             </div>
         </div>
 
+        <!-- PREDICCIONES ESPECIALIZADAS PAR/TERMINACION -->
+        <div id="loto3-especialista" class="card" style="display:none;">
+            <div class="especialista-header">
+                <h3>Predicciones Especializadas</h3>
+                <div class="especialista-target">
+                    <span class="status-badge" style="background:var(--warning);">
+                        Sorteo #<span id="esp-sorteo">--</span>
+                    </span>
+                    <span id="esp-fecha" style="font-size:0.8rem; color:var(--text-muted);">--</span>
+                </div>
+            </div>
+
+            <div class="especialista-grid">
+                <!-- PAR INICIAL -->
+                <div class="esp-card esp-par">
+                    <div class="esp-title">PAR INICIAL (n1n2)</div>
+                    <div class="esp-subtitle">Primeros 2 digitos - Premio 20x</div>
+                    <div id="esp-par-inicial" class="esp-numbers"></div>
+                </div>
+
+                <!-- PAR FINAL -->
+                <div class="esp-card esp-par">
+                    <div class="esp-title">PAR FINAL (n2n3)</div>
+                    <div class="esp-subtitle">Ultimos 2 digitos - Premio 20x</div>
+                    <div id="esp-par-final" class="esp-numbers"></div>
+                </div>
+
+                <!-- TERMINACION -->
+                <div class="esp-card esp-term">
+                    <div class="esp-title">TERMINACION (n3)</div>
+                    <div class="esp-subtitle">Ultimo digito - Premio 4x</div>
+                    <div id="esp-terminacion" class="esp-numbers"></div>
+                </div>
+            </div>
+
+            <div class="esp-disclaimer">
+                Predicciones generadas por <strong>Loto3 Especialista v1</strong> -
+                Solo para entretenimiento - NO garantiza resultados
+            </div>
+        </div>
+
         <div class="kpi-grid" id="financial-panel" style="display:none; border-top: 1px solid var(--border); padding-top: 25px; margin-top:20px;">
             <div class="card money-card">
                 <h3>Inversion Hipotetica</h3>

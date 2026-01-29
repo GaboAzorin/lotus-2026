@@ -290,6 +290,7 @@ function processSimulations(text) {
                 obj.hora = parseInt(parts[8]);
                 obj.algoritmo = parts[9] || 'unknown';
                 obj.fechaLanzamiento = parts[11] ? parts[11].replace(/\r/g, '').trim() : '';
+                obj.modalidad = parts[12] ? parts[12].replace(/\r/g, '').trim() : '';
             } else {
                 // Soporte Legacy
                 obj.juego = 'LOTO';
@@ -668,6 +669,7 @@ function applyFilters() {
     calculateFinance(data, selectedDraw);
 
     renderSafePlanLoto3();
+    renderEspecialistaLoto3();
     updateEvolutionChart();
 }
 
@@ -1294,6 +1296,79 @@ function renderSafePlanLoto3() {
     document.getElementById('plan-n1').textContent = nums[0];
     document.getElementById('plan-n2').textContent = nums[1];
     document.getElementById('plan-n3').textContent = nums[2];
+}
+
+// =========================================================
+// 6. PREDICCIONES ESPECIALIZADAS (PAR/TERMINACION)
+// =========================================================
+function renderEspecialistaLoto3() {
+    const container = document.getElementById('loto3-especialista');
+
+    // Solo mostrar si estamos en LOTO3
+    if (CURRENT_UNIVERSE !== 'LOTO3') {
+        container.style.display = 'none';
+        return;
+    }
+
+    // Filtrar predicciones especializadas PENDIENTES
+    const especializadas = RAW_SIMULATIONS.filter(d =>
+        d.juego === 'LOTO3' &&
+        d.estado === 'PENDIENTE' &&
+        d.modalidad &&
+        ['PAR_INICIAL', 'PAR_FINAL', 'TERMINACION'].includes(d.modalidad)
+    );
+
+    if (especializadas.length === 0) {
+        container.style.display = 'none';
+        return;
+    }
+
+    // Agrupar por sorteo objetivo
+    const porSorteo = {};
+    especializadas.forEach(d => {
+        if (!porSorteo[d.objetivo]) {
+            porSorteo[d.objetivo] = {
+                sorteo: d.objetivo,
+                fecha: d.fechaLanzamiento,
+                par_inicial: [],
+                par_final: [],
+                terminacion: []
+            };
+        }
+
+        if (d.modalidad === 'PAR_INICIAL') porSorteo[d.objetivo].par_inicial.push(d);
+        else if (d.modalidad === 'PAR_FINAL') porSorteo[d.objetivo].par_final.push(d);
+        else if (d.modalidad === 'TERMINACION') porSorteo[d.objetivo].terminacion.push(d);
+    });
+
+    // Obtener el sorteo mas reciente/proximo
+    const sorteos = Object.keys(porSorteo).map(Number).sort((a,b) => b - a);
+    const targetSorteo = sorteos[0];
+    const data = porSorteo[targetSorteo];
+
+    if (!data) {
+        container.style.display = 'none';
+        return;
+    }
+
+    // Renderizar
+    container.style.display = 'block';
+
+    document.getElementById('esp-sorteo').textContent = data.sorteo;
+    document.getElementById('esp-fecha').textContent = formatFechaLanzamiento(data.fecha);
+
+    // Funcion helper para renderizar numeros
+    const renderNums = (items, cssClass) => {
+        return items
+            .sort((a, b) => b.score - a.score) // Ordenar por score
+            .slice(0, 5) // Top 5
+            .map(d => `<div class="esp-num ${cssClass}">${d.numeros}<span class="esp-score">${d.score}%</span></div>`)
+            .join('');
+    };
+
+    document.getElementById('esp-par-inicial').innerHTML = renderNums(data.par_inicial, 'par');
+    document.getElementById('esp-par-final').innerHTML = renderNums(data.par_final, 'par');
+    document.getElementById('esp-terminacion').innerHTML = renderNums(data.terminacion, 'term');
 }
 
 // Iniciar
