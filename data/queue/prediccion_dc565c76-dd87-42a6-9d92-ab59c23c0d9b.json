@@ -1,0 +1,21 @@
+{
+  "id": 1769702990,
+  "fecha_generacion": "2026-01-29 12:52:11",
+  "fecha_lanzamiento": "29/01/2026 21:00",
+  "juego": "LOTO",
+  "numeros": [
+    5,
+    12,
+    16,
+    17,
+    26,
+    28
+  ],
+  "sorteo_objetivo": 5380,
+  "estado": "PENDIENTE",
+  "aciertos": 0,
+  "score_afinidad": 42.65,
+  "hora_dia": 12,
+  "algoritmo": "consenso_meritocratico_v2",
+  "nota_especial": "🔥 ALTA CONFIANZA"
+}
