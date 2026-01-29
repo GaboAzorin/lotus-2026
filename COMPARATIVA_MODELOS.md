@@ -1,5 +1,5 @@
 # 📊 Auditoría de Modelos: v3 vs v4
-Actualizado el: 2026-01-28 22:18:42
+Actualizado el: 2026-01-29 01:41:11
 
 ## 🌡️ Alerta de Silenciamiento (Salud del Filtro)
 - ✅ **LOTO**: v4 tiene una tasa de aceptación saludable.
@@ -22,12 +22,12 @@ Actualizado el: 2026-01-28 22:18:42
 | juego   | algoritmo         |   sorteo_objetivo |   score_afinidad |   aciertos |
 |:--------|:------------------|------------------:|-----------------:|-----------:|
 | RACHA   | oraculo_neural_v4 |             10320 |               75 |          8 |
+| RACHA   | oraculo_neural_v4 |             10320 |               75 |          8 |
+| RACHA   | oraculo_neural_v4 |             10320 |               75 |          8 |
+| RACHA   | oraculo_neural_v4 |             10320 |               75 |          8 |
+| RACHA   | oraculo_neural_v4 |             10320 |               75 |          8 |
 | RACHA   | oraculo_neural_v3 |             10322 |               75 |          8 |
 | RACHA   | oraculo_neural_v4 |             10320 |               75 |          8 |
-| RACHA   | oraculo_neural_v3 |             10313 |               75 |          8 |
 | RACHA   | oraculo_neural_v4 |             10320 |               75 |          8 |
-| RACHA   | oraculo_neural_v3 |             10303 |               75 |          8 |
-| RACHA   | oraculo_neural_v4 |             10320 |               75 |          8 |
-| RACHA   | oraculo_neural_v4 |             10320 |               75 |          8 |
-| RACHA   | oraculo_neural_v4 |             10320 |               75 |          8 |
+| RACHA   | oraculo_neural_v3 |             10317 |               75 |          8 |
 | RACHA   | oraculo_neural_v4 |             10320 |               75 |          8 |
