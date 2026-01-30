@@ -1,0 +1,25 @@
+{
+  "id": 1769772943,
+  "fecha_generacion": "2026-01-30 08:17:04",
+  "fecha_lanzamiento": "30/01/2026 15:00",
+  "juego": "RACHA",
+  "numeros": [
+    1,
+    5,
+    6,
+    7,
+    8,
+    11,
+    12,
+    17,
+    18,
+    20
+  ],
+  "sorteo_objetivo": 10327,
+  "estado": "PENDIENTE",
+  "aciertos": 0,
+  "score_afinidad": 4.9,
+  "hora_dia": 8,
+  "algoritmo": "oraculo_neural_v3",
+  "nota_especial": "NORMAL"
+}
