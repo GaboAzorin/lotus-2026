@@ -1,0 +1,19 @@
+{
+  "id": 1769786067,
+  "fecha_generacion": "2026-01-30 11:56:08",
+  "fecha_lanzamiento": "30/01/2026 14:00",
+  "juego": "LOTO4",
+  "numeros": [
+    1,
+    9,
+    16,
+    17
+  ],
+  "sorteo_objetivo": 11594,
+  "estado": "PENDIENTE",
+  "aciertos": 0,
+  "score_afinidad": 48.1,
+  "hora_dia": 11,
+  "algoritmo": "consenso_meritocratico_v2",
+  "nota_especial": "🔥 ALTA CONFIANZA"
+}
