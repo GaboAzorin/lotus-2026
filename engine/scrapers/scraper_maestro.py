@@ -17,6 +17,12 @@ from datetime import datetime, timedelta
 from http.cookies import SimpleCookie
 from playwright.async_api import async_playwright
 
+# Fix para Windows: manejar emojis sin crashear
+if sys.stdout and hasattr(sys.stdout, 'reconfigure'):
+    sys.stdout.reconfigure(errors='replace')
+if sys.stderr and hasattr(sys.stderr, 'reconfigure'):
+    sys.stderr.reconfigure(errors='replace')
+
 # Configurar logging
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.INFO)
@@ -620,7 +626,8 @@ async def _run_scraper_internal(proxy_config=None, games_to_scrape=None):
                         # Esto evita entrenar modelos con datos corruptos
                         if isinstance(results, list):
                             # Verificar que al menos hay un resultado no vacío
-                            valid_results = [r for r in results if r and (isinstance(r, dict) and r.get('value'))]
+                            # La API usa 'number' (no 'value') como key para los números
+                            valid_results = [r for r in results if r and (isinstance(r, dict) and r.get('number') is not None)]
                             if not valid_results:
                                 logger.error(f"Sorteo #{current_id}: 'results' contiene solo datos vacíos/ceros. NO se guardará para evitar contaminar entrenamiento.")
                                 current_id += 1
