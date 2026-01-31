@@ -1,0 +1,21 @@
+{
+  "id": 1769901463,
+  "fecha_generacion": "2026-01-31 20:17:43",
+  "fecha_lanzamiento": "01/02/2026 21:00",
+  "juego": "LOTO",
+  "numeros": [
+    13,
+    14,
+    20,
+    26,
+    29,
+    41
+  ],
+  "sorteo_objetivo": 5381,
+  "estado": "PENDIENTE",
+  "aciertos": 0,
+  "score_afinidad": 0.0,
+  "hora_dia": 20,
+  "algoritmo": "forense_biometrico_v1",
+  "nota_especial": "NORMAL"
+}
