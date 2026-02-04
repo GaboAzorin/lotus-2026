@@ -1,0 +1,21 @@
+{
+  "id": 1770190037,
+  "fecha_generacion": "2026-02-04 04:09:58",
+  "fecha_lanzamiento": "05/02/2026 21:00",
+  "juego": "LOTO",
+  "numeros": [
+    2,
+    6,
+    7,
+    20,
+    35,
+    37
+  ],
+  "sorteo_objetivo": 5383,
+  "estado": "PENDIENTE",
+  "aciertos": 0,
+  "score_afinidad": 5.95,
+  "hora_dia": 4,
+  "algoritmo": "oraculo_neural_v3",
+  "nota_especial": "NORMAL"
+}
