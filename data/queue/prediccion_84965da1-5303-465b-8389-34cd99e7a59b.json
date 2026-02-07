@@ -1,0 +1,21 @@
+{
+  "id": 1770459874,
+  "fecha_generacion": "2026-02-07 07:21:12",
+  "fecha_lanzamiento": "08/02/2026 21:00",
+  "juego": "LOTO",
+  "numeros": [
+    6,
+    7,
+    12,
+    24,
+    27,
+    37
+  ],
+  "sorteo_objetivo": 5384,
+  "estado": "PENDIENTE",
+  "aciertos": 0,
+  "score_afinidad": 0.0,
+  "hora_dia": 7,
+  "algoritmo": "delta_dna_v1",
+  "nota_especial": "NORMAL"
+}
