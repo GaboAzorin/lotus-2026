@@ -1,0 +1,21 @@
+{
+  "id": 1770627806,
+  "fecha_generacion": "2026-02-09 06:03:26",
+  "fecha_lanzamiento": "10/02/2026 21:00",
+  "juego": "LOTO",
+  "numeros": [
+    4,
+    11,
+    23,
+    24,
+    28,
+    37
+  ],
+  "sorteo_objetivo": 5385,
+  "estado": "PENDIENTE",
+  "aciertos": 0,
+  "score_afinidad": 0.0,
+  "hora_dia": 6,
+  "algoritmo": "forense_biometrico_v1",
+  "nota_especial": "NORMAL"
+}
