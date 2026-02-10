@@ -1,0 +1,21 @@
+{
+  "id": 1770761349,
+  "fecha_generacion": "2026-02-10 19:07:28",
+  "fecha_lanzamiento": "10/02/2026 21:00",
+  "juego": "LOTO",
+  "numeros": [
+    5,
+    16,
+    23,
+    29,
+    30,
+    36
+  ],
+  "sorteo_objetivo": 5385,
+  "estado": "PENDIENTE",
+  "aciertos": 0,
+  "score_afinidad": 0.0,
+  "hora_dia": 19,
+  "algoritmo": "gaussiano_inteligente_v1",
+  "nota_especial": "NORMAL"
+}
