@@ -1,0 +1,21 @@
+{
+  "id": 1770979320,
+  "fecha_generacion": "2026-02-13 07:24:21",
+  "fecha_lanzamiento": "15/02/2026 21:00",
+  "juego": "LOTO",
+  "numeros": [
+    3,
+    14,
+    20,
+    23,
+    30,
+    38
+  ],
+  "sorteo_objetivo": 5387,
+  "estado": "PENDIENTE",
+  "aciertos": 0,
+  "score_afinidad": 36.19,
+  "hora_dia": 7,
+  "algoritmo": "consenso_meritocratico_v2",
+  "nota_especial": "🔥 ALTA CONFIANZA"
+}
