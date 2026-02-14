@@ -591,6 +591,58 @@ def scrape_resultado(juego: str, notifier: TelegramNotifier = None) -> Optional[
 # EVALUADOR DE PREDICCIONES
 # =============================================================================
 
+def parse_numeros(valor) -> List[int]:
+    """Parsea el campo numeros handleando múltiples formatos"""
+    # Caso 1: ya es una lista
+    if isinstance(valor, list):
+        return valor
+    
+    # Caso 2: es un número (int o float) - dato corrupto
+    if isinstance(valor, (int, float)):
+        s = str(int(valor))
+        if len(s) >= 3:
+            return [int(c) for c in s[:3]]
+        return []
+    
+    # Caso 3: es string
+    valor = str(valor).strip()
+    if not valor:
+        return []
+    
+    # Si empieza con [ es JSON
+    if valor.startswith('['):
+        try:
+            result = json.loads(valor)
+            if isinstance(result, list):
+                return result
+            # Es un solo número
+            return [result] if isinstance(result, (int, float)) else []
+        except:
+            pass
+    
+    # Si es un número solo (ej: "34"), dividirlo en dígitos
+    if valor.isdigit():
+        if len(valor) >= 3:
+            return [int(c) for c in valor[:3]]
+        elif len(valor) >= 1:
+            # Un solo dígito - dato corrupto
+            return [int(valor)]
+    
+    # Intentar JSON con comillas
+    try:
+        result = json.loads(valor.replace("'", '"'))
+        if isinstance(result, list):
+            return result
+        return [result] if isinstance(result, (int, float)) else []
+    except:
+        pass
+    
+    # Último intento: parser manual
+    import re
+    nums = re.findall(r'\d+', valor)
+    return [int(n) for n in nums] if nums else []
+
+
 def evaluar_predicciones(resultado: Dict, notifier: TelegramNotifier = None) -> bool:
     """
     Compara predicciones con resultado real.
@@ -615,26 +667,39 @@ def evaluar_predicciones(resultado: Dict, notifier: TelegramNotifier = None) -> 
             logger.info("No hay predicciones pendientes")
             return False
         
-        mensaje = f"📊 *Evaluación {juego}*\n"
+        # Limitar a las últimas 50 predicciones para evitar mensaje muy largo
+        pendientes = pendientes.tail(50)
+        
+        # Resumen por algoritmo
+        resumen = {}
         cambios = []
         
         for idx, pred in pendientes.iterrows():
             try:
-                nums_pred = json.loads(pred['numeros'].replace("'", '"'))
+                nums_pred = parse_numeros(pred['numeros'])
+                
+                if not nums_pred or len(nums_pred) == 0:
+                    continue
                 
                 # Calcular aciertos
                 aciertos = sum(1 for n in nums_pred if n in numeros_reales)
                 
                 # Score: aciertos * 100 / 3
-                score = (aciertos * 100) // 3
+                score = (aciertos * 100) // 3 if len(nums_pred) > 0 else 0
                 
-                acierto = aciertos == 3
-                emoji = "✅" if acierto else "❌"
+                algoritmo = pred.get('algoritmo', 'Unknown')
                 
-                nums_pred_str = ", ".join(str(n) for n in nums_pred)
-                nums_real_str = ", ".join(str(n) for n in numeros_reales)
+                # Acumular para resumen
+                if algoritmo not in resumen:
+                    resumen[algoritmo] = {'aciertos_3': 0, 'aciertos_2': 0, 'aciertos_1': 0, 'total': 0}
                 
-                mensaje += f"{emoji} *{pred['algoritmo']}*: {nums_pred_str} vs {nums_real_str} (aciertos: {aciertos}/3)\n"
+                resumen[algoritmo]['total'] += 1
+                if aciertos == 3:
+                    resumen[algoritmo]['aciertos_3'] += 1
+                elif aciertos == 2:
+                    resumen[algoritmo]['aciertos_2'] += 1
+                elif aciertos == 1:
+                    resumen[algoritmo]['aciertos_1'] += 1
                 
                 cambios.append({
                     'idx': idx,
@@ -645,6 +710,18 @@ def evaluar_predicciones(resultado: Dict, notifier: TelegramNotifier = None) -> 
                 
             except Exception as e:
                 logger.warning(f"Error evaluando predicción {idx}: {e}")
+        
+        # Construir mensaje de resumen
+        mensaje = f"📊 *Evaluación {juego}*\n"
+        mensaje += f"Números: *{', '.join(str(n) for n in numeros_reales)}*\n\n"
+        
+        for alg, stats in resumen.items():
+            total = stats['total']
+            a3 = stats['aciertos_3']
+            a2 = stats['aciertos_2']
+            a1 = stats['aciertos_1']
+            pct = (a3 * 100) // total if total > 0 else 0
+            mensaje += f"• *{alg}*: {a3}🔥 {a2}☑️ {a1}✔️ / {total} ({pct}%)\n"
         
         # Actualizar CSV
         for cambio in cambios:
@@ -657,6 +734,7 @@ def evaluar_predicciones(resultado: Dict, notifier: TelegramNotifier = None) -> 
         if notifier:
             notifier.send_message(mensaje)
         
+        logger.info(f"✅ {len(cambios)} predicciones evaluadas")
         return True
         
     except Exception as e:

@@ -272,11 +272,110 @@ async def scrape_un_juego(nombre_juego: str) -> Optional[Dict]:
     return await scrape_juego(game)
 
 
+# =============================================================================
+# EVALUACIÓN POST-SCRAPING
+# =============================================================================
+
+def evaluar_predicciones_del_juego(juego: str, numeros_reales: List[int]) -> bool:
+    """
+    Evalúa las predicciones pendientes con el resultado real.
+    """
+    try:
+        # Importar evaluador
+        sys.path.insert(0, CURRENT_DIR)
+        from loto_orquestador import evaluar_predicciones
+        from telegram_notifier import TelegramNotifier
+        
+        notifier = TelegramNotifier()
+        
+        resultado = {
+            'juego': juego,
+            'numeros': numeros_reales
+        }
+        
+        return evaluar_predicciones(resultado, notifier)
+        
+    except Exception as e:
+        logger.warning(f"Error en evaluación: {e}")
+        return False
+
+
+def obtener_ultimo_resultado(csv_path: str) -> Optional[Dict]:
+    """Obtiene el último resultado guardado en el CSV"""
+    if not os.path.exists(csv_path):
+        return None
+    
+    try:
+        df = pd.read_csv(csv_path)
+        if len(df) == 0:
+            return None
+        
+        ultimo = df.iloc[-1]
+        
+        # Detectar juego por columnas
+        if 'LOTO_n1' in df.columns:
+            juego = "LOTO"
+            numeros = [ultimo.get(f'LOTO_n{i}', 0) for i in range(1, 7)]
+        elif 'n4' in df.columns:
+            juego = "LOTO4"
+            numeros = [ultimo.get(f'n{i}', 0) for i in range(1, 5)]
+        elif 'n3' in df.columns:
+            juego = "LOTO3"
+            numeros = [ultimo.get(f'n{i}', 0) for i in range(1, 4)]
+        elif 'n10' in df.columns:
+            juego = "RACHA"
+            numeros = [ultimo.get(f'n{i}', 0) for i in range(1, 11)]
+        else:
+            return None
+        
+        return {
+            'juego': juego,
+            'sorteo': ultimo.get('sorteo'),
+            'numeros': numeros,
+            'fecha': ultimo.get('fecha')
+        }
+        
+    except Exception as e:
+        logger.warning(f"Error leyendo último resultado: {e}")
+        return None
+
+
+def procesar_y_evaluar(game_name: str, csv_path: str) -> bool:
+    """
+    Procesa el último resultado y evalúa predicciones.
+    """
+    resultado = obtener_ultimo_resultado(csv_path)
+    
+    if resultado:
+        logger.info(f"🎯 Evaluando predicciones para {game_name}...")
+        return evaluar_predicciones_del_juego(resultado['juego'], resultado['numeros'])
+    
+    return False
+
+
 # Main
 if __name__ == "__main__":
     import sys
-    if len(sys.argv) > 1:
-        asyncio.run(scrape_un_juego(sys.argv[1]))
+    
+    # Flags
+    evaluar = '--eval' in sys.argv or '-e' in sys.argv
+    
+    if len(sys.argv) > 1 and '--eval' not in sys.argv and '-e' not in sys.argv:
+        # Modo: scrape un juego específico
+        nombre = sys.argv[1]
+        asyncio.run(scrape_un_juego(nombre))
+        
+        if evaluar:
+            # Encontrar el juego y evaluar
+            game = next((g for g in GAME_CONFIG if g['name'].lower() == nombre.lower()), None)
+            if game:
+                procesar_y_evaluar(game['name'], game['csv'])
     else:
+        # Modo: scrape todos los juegos
         resultados = asyncio.run(scrape_todos_los_juegos())
         print(f"[OK] {len(resultados)} juegos procesados")
+        
+        if evaluar:
+            # Evaluar cada juego
+            for game in GAME_CONFIG:
+                procesar_y_evaluar(game['name'], game['csv'])
