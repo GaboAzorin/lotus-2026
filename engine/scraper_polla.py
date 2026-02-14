@@ -276,7 +276,7 @@ async def scrape_un_juego(nombre_juego: str) -> Optional[Dict]:
 # EVALUACIÓN POST-SCRAPING
 # =============================================================================
 
-def evaluar_predicciones_del_juego(juego: str, numeros_reales: List[int]) -> bool:
+def evaluar_predicciones_del_juego(juego: str, numeros_reales: List[int], numero_sorteo: int = None) -> bool:
     """
     Evalúa las predicciones pendientes con el resultado real.
     """
@@ -290,7 +290,8 @@ def evaluar_predicciones_del_juego(juego: str, numeros_reales: List[int]) -> boo
         
         resultado = {
             'juego': juego,
-            'numeros': numeros_reales
+            'numeros': numeros_reales,
+            'sorteo': numero_sorteo
         }
         
         return evaluar_predicciones(resultado, notifier)
@@ -348,7 +349,11 @@ def procesar_y_evaluar(game_name: str, csv_path: str) -> bool:
     
     if resultado:
         logger.info(f"🎯 Evaluando predicciones para {game_name}...")
-        return evaluar_predicciones_del_juego(resultado['juego'], resultado['numeros'])
+        return evaluar_predicciones_del_juego(
+            resultado['juego'], 
+            resultado['numeros'],
+            resultado.get('sorteo')
+        )
     
     return False
 

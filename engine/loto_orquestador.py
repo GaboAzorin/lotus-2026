@@ -645,13 +645,21 @@ def parse_numeros(valor) -> List[int]:
 
 def evaluar_predicciones(resultado: Dict, notifier: TelegramNotifier = None) -> bool:
     """
-    Compara predicciones con resultado real.
+    Compara predicciones con resultado real usando categorías oficiales del LOTO 3.
+    
+    Categorías:
+    - EXACTA: 3 números iguales en orden (400x)
+    - TRIO PAR: 2 iguales + 1 distinto en cualquier orden (130x)
+    - TRIO AZAR: 3 distintos en cualquier orden (65x)
+    - PAR: 2 primeros o 2 últimos (20x)
+    - TERMINACIÓN: último número (4x)
     """
     logger.info("📊 Evaluando predicciones...")
     
     try:
         numeros_reales = resultado.get('numeros', [])
         juego = resultado.get('juego', 'LOTO3')
+        sorteo_target = resultado.get('sorteo')
         
         if not numeros_reales:
             return False
@@ -661,14 +669,23 @@ def evaluar_predicciones(resultado: Dict, notifier: TelegramNotifier = None) -> 
             return False
         
         df_sim = pd.read_csv(CSV_SIMULACIONES)
-        pendientes = df_sim[(df_sim['juego'] == juego) & (df_sim['estado'] == 'PENDIENTE')]
+        
+        # Filtrar por juego Y por sorteo específico
+        filtros = (df_sim['juego'] == juego) & (df_sim['estado'] == 'PENDIENTE')
+        
+        # Si tenemos sorteo objetivo, filtrar por ese
+        if juego == 'LOTO3' and resultado.get('sorteo'):
+            filtros = filtros & (df_sim['sorteo_objetivo'] == resultado['sorteo'])
+        
+        pendientes = df_sim[filtros]
         
         if len(pendientes) == 0:
-            logger.info("No hay predicciones pendientes")
+            logger.info("No hay predicciones pendientes para este sorteo")
+            if notifier:
+                notifier.send_status(f"No hay predicciones pendientes para {juego}")
             return False
         
-        # Limitar a las últimas 50 predicciones para evitar mensaje muy largo
-        pendientes = pendientes.tail(50)
+        logger.info(f"Evaluando {len(pendientes)} predicciones para {juego}")
         
         # Resumen por algoritmo
         resumen = {}
@@ -681,25 +698,38 @@ def evaluar_predicciones(resultado: Dict, notifier: TelegramNotifier = None) -> 
                 if not nums_pred or len(nums_pred) == 0:
                     continue
                 
-                # Calcular aciertos
-                aciertos = sum(1 for n in nums_pred if n in numeros_reales)
-                
-                # Score: aciertos * 100 / 3
-                score = (aciertos * 100) // 3 if len(nums_pred) > 0 else 0
+                # Evaluar según categorías del LOTO 3
+                categorias = evaluar_categorias_loto3(nums_pred, numeros_reales)
                 
                 algoritmo = pred.get('algoritmo', 'Unknown')
                 
                 # Acumular para resumen
                 if algoritmo not in resumen:
-                    resumen[algoritmo] = {'aciertos_3': 0, 'aciertos_2': 0, 'aciertos_1': 0, 'total': 0}
+                    resumen[algoritmo] = {
+                        'exacta': 0, 'trio_par': 0, 'trio_azar': 0, 
+                        'par': 0, 'terminacion': 0, 'total': 0
+                    }
                 
                 resumen[algoritmo]['total'] += 1
-                if aciertos == 3:
-                    resumen[algoritmo]['aciertos_3'] += 1
-                elif aciertos == 2:
-                    resumen[algoritmo]['aciertos_2'] += 1
-                elif aciertos == 1:
-                    resumen[algoritmo]['aciertos_1'] += 1
+                if categorias['exacta']:
+                    resumen[algoritmo]['exacta'] += 1
+                if categorias['trio_par']:
+                    resumen[algoritmo]['trio_par'] += 1
+                if categorias['trio_azar']:
+                    resumen[algoritmo]['trio_azar'] += 1
+                if categorias['par']:
+                    resumen[algoritmo]['par'] += 1
+                if categorias['terminacion']:
+                    resumen[algoritmo]['terminacion'] += 1
+                
+                # Calcular score total
+                score = (categorias['exacta'] * 400 + 
+                        categorias['trio_par'] * 130 + 
+                        categorias['trio_azar'] * 65 + 
+                        categorias['par'] * 20 + 
+                        categorias['terminacion'] * 4)
+                
+                aciertos = sum(categorias.values())
                 
                 cambios.append({
                     'idx': idx,
@@ -711,17 +741,38 @@ def evaluar_predicciones(resultado: Dict, notifier: TelegramNotifier = None) -> 
             except Exception as e:
                 logger.warning(f"Error evaluando predicción {idx}: {e}")
         
-        # Construir mensaje de resumen
-        mensaje = f"📊 *Evaluación {juego}*\n"
-        mensaje += f"Números: *{', '.join(str(n) for n in numeros_reales)}*\n\n"
+        # Construir mensaje de resumen claro
+        nums_str = " - ".join(str(n) for n in numeros_reales)
+        mensaje = f"📊 *{juego}* | Resultados: {nums_str}\n"
         
+        # Solo mostrar mejores resultados de cada algoritmo
         for alg, stats in resumen.items():
             total = stats['total']
-            a3 = stats['aciertos_3']
-            a2 = stats['aciertos_2']
-            a1 = stats['aciertos_1']
-            pct = (a3 * 100) // total if total > 0 else 0
-            mensaje += f"• *{alg}*: {a3}🔥 {a2}☑️ {a1}✔️ / {total} ({pct}%)\n"
+            exacta = stats['exacta']
+            trio_par = stats['trio_par']
+            trio_azar = stats['trio_azar']
+            par = stats['par']
+            term = stats['terminacion']
+            
+            # Construir string de aciertos
+            aciertos_str = []
+            if exacta > 0:
+                aciertos_str.append(f"{exacta} EXACTA")
+            if trio_par > 0:
+                aciertos_str.append(f"{trio_par} TRIO PAR")
+            if trio_azar > 0:
+                aciertos_str.append(f"{trio_azar} TRIO")
+            if par > 0:
+                aciertos_str.append(f"{par} PAR")
+            if term > 0:
+                aciertos_str.append(f"{term} TERM")
+            
+            if aciertos_str:
+                msg = f"• *{alg}*: {', '.join(aciertos_str)}"
+            else:
+                msg = f"• *{alg}*: sin aciertos"
+            
+            mensaje += msg + "\n"
         
         # Actualizar CSV
         for cambio in cambios:
@@ -740,6 +791,50 @@ def evaluar_predicciones(resultado: Dict, notifier: TelegramNotifier = None) -> 
     except Exception as e:
         logger.error(f"Error en evaluación: {e}")
         return False
+
+
+def evaluar_categorias_loto3(predichos: List[int], reales: List[int]) -> Dict[str, bool]:
+    """
+    Evalúa las categorías de apuesta del LOTO 3.
+    
+    Returns:
+        Dict con keys: exacta, trio_par, trio_azar, par, terminacion
+    """
+    if len(predichos) != 3 or len(reales) != 3:
+        return {'exacta': False, 'trio_par': False, 'trio_azar': False, 'par': False, 'terminacion': False}
+    
+    p = predichos
+    r = reales
+    
+    # EXACTA: 3 números iguales en orden exacto
+    exacta = (p[0] == r[0] and p[1] == r[1] and p[2] == r[2])
+    
+    # TRIO PAR: 2 iguales + 1 distinto, cualquier orden
+    # Ej: 122, 212, 221
+    p_sorted = sorted(p)
+    r_sorted = sorted(r)
+    # Contar repetidos
+    p_rep = [p.count(x) for x in p]
+    r_rep = [r.count(x) for x in r]
+    trio_par = (sorted(p_rep) == [1, 2] and sorted(r_rep) == [1, 2])
+    
+    # TRIO AZAR: 3 distintos, cualquier orden
+    # Ej: 123, 321, 231, etc
+    trio_azar = (len(set(p)) == 3 and len(set(r)) == 3 and not exacta)
+    
+    # PAR: 2 primeros o 2 últimos
+    par = (p[0] == r[0] and p[1] == r[1]) or (p[1] == r[1] and p[2] == r[2])
+    
+    # TERMINACIÓN: último número
+    terminacion = (p[2] == r[2])
+    
+    return {
+        'exacta': exacta,
+        'trio_par': trio_par,
+        'trio_azar': trio_azar,
+        'par': par,
+        'terminacion': terminacion
+    }
 
 
 # =============================================================================
