@@ -14,18 +14,18 @@
 
 ## 🚀 Fase Actual: Telegram Bot y Automatización (Febrero 2026)
 
-### 🔴 En Progreso
-- [ ] **[TELEGRAM-001] Bot interactivo**: Comando `/predicciones`, `/status`, `/resultados`
-- [ ] **[TELEGRAM-002] Integración con crons**: Scraping y predictions automatizados
-- [ ] **[TELEGRAM-003] Notificacionespush**: Alertas de nuevos sorteos y resultados
+### ✅ Done
+- [x] **[TELEGRAM-001] Bot interactivo**: `/predicciones`, `/status`, `/resultados`, `/historial`, `/eval`
+- [x] **[TELEGRAM-002] Integración con crons**: Scraping y predictions automatizados
+- [x] **[TELEGRAM-003] Notificacionespush**: Alertas de nuevos sorteos y resultados
+- [x] **[TELEGRAM-004] Historial de predicciones**: Ver predicciones anteriores via bot
 
 ### 🟡 Pendiente
-- [ ] **[TELEGRAM-004] Historial de predicciones**: Ver predicciones anteriores via bot
 - [ ] **[TELEGRAM-005] Comandos de configuración**: Cambiar preferencias de notificación
 
 ---
 
-## 📊 Fase 1: Estabilización (Completada)
+## 🤖 Fase Siguiente: Machine Learning
 
 ### ✅ Done
 - [x] Fix Race Condition en `consolidar_cola.py`
