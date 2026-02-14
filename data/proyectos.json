@@ -1,0 +1,20 @@
+{
+  "loto": {
+    "nombre": "LOTO",
+    "descripcion": "Sistema de predicciones de lotería chilena con ML, scraper y bot de Telegram",
+    "estado": "activo",
+    "tags": [
+      "ia",
+      "loteria",
+      "python"
+    ],
+    "creado": "2026-02-14",
+    "actualizado": "2026-02-14 13:32",
+    "notas": [
+      {
+        "fecha": "2026-02-14 13:32",
+        "nota": "Completado: bot interactivo, crons, scraper, evaluacion con categorias reales. Siguiente: metricas HitRate@K"
+      }
+    ]
+  }
+}

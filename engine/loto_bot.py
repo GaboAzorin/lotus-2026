@@ -39,6 +39,9 @@ class LOTOBot:
     
     def __init__(self):
         self.notifier = TelegramNotifier()
+        # Importar gestor de proyectos
+        from proyectos import cmd_proyectos
+        self.cmd_proyectos = cmd_proyectos
     
     def handle_command(self, comando: str, args: List[str] = None) -> str:
         """Procesa un comando y retorna la respuesta"""
@@ -65,6 +68,9 @@ class LOTOBot:
         elif comando == '/probar':
             return self.cmd_probar()
         
+        elif comando == '/proyectos':
+            return self.cmd_proyectos(args if args else [])
+        
         else:
             return f"❓ Comando no reconocido: {comando}\nUsa /ayuda para ver los comandos disponibles."
     
@@ -79,10 +85,14 @@ class LOTOBot:
 • /historial [juego] - Ver predicciones anteriores
 • /eval [juego] [numeros] - Evaluar una predicción
 • /probar - Prueba de conexión
+• /proyectos - Gestión de proyectos
 
 *Ejemplos:*
 /resultados LOTO3
 /historial LOTO3
+/proyectos add LOTO - Sistema de predicciones - ia,loteria
+/proyectos status
+/proyectos prox
 /eval LOTO3 5 7 2"""
     
     def cmd_predicciones(self) -> str:
