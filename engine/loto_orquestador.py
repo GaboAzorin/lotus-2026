@@ -832,17 +832,18 @@ def evaluar_categorias_loto3(predichos: List[int], reales: List[int]) -> Dict[st
     exacta = (p[0] == r[0] and p[1] == r[1] and p[2] == r[2])
     
     # TRIO PAR: 2 iguales + 1 distinto, cualquier orden
-    # Ej: 122, 212, 221
-    p_sorted = sorted(p)
-    r_sorted = sorted(r)
-    # Contar repetidos
+    # Ej: 122, 212, 221 vs el real debe tener mismo pattern
     p_rep = [p.count(x) for x in p]
     r_rep = [r.count(x) for x in r]
-    trio_par = (sorted(p_rep) == [1, 2] and sorted(r_rep) == [1, 2])
+    # Ambos deben tener pattern [1,2] y los mismos números (sin importar orden)
+    trio_par = (sorted(p_rep) == [1, 2] and sorted(r_rep) == [1, 2] 
+                and set(p) == set(r))
     
     # TRIO AZAR: 3 distintos, cualquier orden
     # Ej: 123, 321, 231, etc
-    trio_azar = (len(set(p)) == 3 and len(set(r)) == 3 and not exacta)
+    # Debe tener los 3 mismos números (en cualquier orden)
+    trio_azar = (len(set(p)) == 3 and len(set(r)) == 3 and 
+                 set(p) == set(r) and not exacta)
     
     # PAR: 2 primeros o 2 últimos
     par = (p[0] == r[0] and p[1] == r[1]) or (p[1] == r[1] and p[2] == r[2])
