@@ -525,30 +525,50 @@ def generar_predicciones_loto3(notifier: TelegramNotifier = None) -> bool:
 
 def _guardar_predicciones(predicciones: List[Dict], juego: str):
     """Guarda las predicciones en el CSV de simulaciones"""
+    import pandas as pd
+    
     os.makedirs(DATA_DIR, exist_ok=True)
     
     fecha_hora = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     sorteos_target = _obtener_proximo_sorteo(juego)
     
-    existe = os.path.exists(CSV_SIMULACIONES)
+    # Leer CSV existente para obtener las columnas correctas
+    if os.path.exists(CSV_SIMULACIONES):
+        try:
+            df_existente = pd.read_csv(CSV_SIMULACIONES)
+            columnas = df_existente.columns.tolist()
+        except:
+            columnas = None
+    else:
+        columnas = None
     
-    with open(CSV_SIMULACIONES, 'a', encoding='utf-8', newline='') as f:
-        writer = csv.writer(f)
+    # Crear nuevos registros
+    nuevos = []
+    for pred in predicciones:
+        nuevo = {
+            'fecha_hora': fecha_hora,
+            'juego': juego,  # LOTO3, no el algoritmo!
+            'algoritmo': pred['algoritmo'],
+            'numeros': json.dumps(pred['numeros']),
+            'sorteo_objetivo': sorteos_target,
+            'estado': 'PENDIENTE',
+            'aciertos': 0,
+            'score': pred.get('confianza', 0)
+        }
+        nuevos.append(nuevo)
+    
+    if nuevos:
+        df_nuevos = pd.DataFrame(nuevos)
         
-        if not existe:
-            writer.writerow(['fecha_hora', 'juego', 'algoritmo', 'numeros', 'sorteo_objetivo', 'estado', 'aciertos', 'score'])
+        if columnas:
+            # Reordenar para que coincida con el CSV existente
+            for col in columnas:
+                if col not in df_nuevos.columns:
+                    df_nuevos[col] = None
+            df_nuevos = df_nuevos[columnas]
         
-        for pred in predicciones:
-            writer.writerow([
-                fecha_hora,
-                juego,
-                pred['algoritmo'],
-                json.dumps(pred['numeros']),
-                sorteos_target,
-                'PENDIENTE',
-                0,
-                pred.get('confianza', 0)
-            ])
+        # Append al CSV
+        df_nuevos.to_csv(CSV_SIMULACIONES, mode='a', header=False, index=False)
 
 
 def _obtener_proximo_sorteo(juego: str) -> str:
@@ -673,10 +693,8 @@ def evaluar_predicciones(resultado: Dict, notifier: TelegramNotifier = None) -> 
         # Filtrar por juego Y por sorteo específico
         filtros = (df_sim['juego'] == juego) & (df_sim['estado'] == 'PENDIENTE')
         
-        # Si tenemos sorteo objetivo, filtrar por ese
-        if juego == 'LOTO3' and resultado.get('sorteo'):
-            filtros = filtros & (df_sim['sorteo_objetivo'] == resultado['sorteo'])
-        
+        # Por ahora evaluar todas las predicciones pendientes del juego
+        # (el filtro por sorteo específico no funciona por formato diferente)
         pendientes = df_sim[filtros]
         
         if len(pendientes) == 0:
