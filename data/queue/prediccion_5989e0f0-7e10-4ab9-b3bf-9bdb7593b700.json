@@ -1,0 +1,21 @@
+{
+  "id": 1771082335,
+  "fecha_generacion": "2026-02-14 12:01:16",
+  "fecha_lanzamiento": "15/02/2026 21:00",
+  "juego": "LOTO",
+  "numeros": [
+    8,
+    13,
+    18,
+    35,
+    37,
+    38
+  ],
+  "sorteo_objetivo": 5387,
+  "estado": "PENDIENTE",
+  "aciertos": 0,
+  "score_afinidad": 36.34,
+  "hora_dia": 12,
+  "algoritmo": "consenso_meritocratico_v2",
+  "nota_especial": "🔥 ALTA CONFIANZA"
+}
