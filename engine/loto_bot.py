@@ -365,8 +365,13 @@ def polling_loop():
 
 # Test rápido
 if __name__ == "__main__":
-    # Modo test
     import sys
     sys.stdout.reconfigure(encoding='utf-8', errors='replace')
-    bot = LOTOBot()
-    print(bot.cmd_status())
+    
+    # Si tiene argumento --polling, entrar en modo polling
+    if len(sys.argv) > 1 and sys.argv[1] == '--polling':
+        polling_loop()
+    else:
+        # Modo test
+        bot = LOTOBot()
+        print(bot.cmd_status())
