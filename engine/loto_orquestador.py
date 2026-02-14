@@ -706,21 +706,39 @@ def evaluar_predicciones(resultado: Dict, notifier: TelegramNotifier = None) -> 
                 # Acumular para resumen
                 if algoritmo not in resumen:
                     resumen[algoritmo] = {
-                        'exacta': 0, 'trio_par': 0, 'trio_azar': 0, 
-                        'par': 0, 'terminacion': 0, 'total': 0
+                        'predicciones': [],  # Lista de predicciones con aciertos
+                        'total': 0
                     }
                 
                 resumen[algoritmo]['total'] += 1
-                if categorias['exacta']:
-                    resumen[algoritmo]['exacta'] += 1
-                if categorias['trio_par']:
-                    resumen[algoritmo]['trio_par'] += 1
-                if categorias['trio_azar']:
-                    resumen[algoritmo]['trio_azar'] += 1
-                if categorias['par']:
-                    resumen[algoritmo]['par'] += 1
-                if categorias['terminacion']:
-                    resumen[algoritmo]['terminacion'] += 1
+                
+                # Si tiene algún acierto, guardar la predicción
+                if any(categorias.values()):
+                    # Construir string de categorías ganadas
+                    cats_ganadas = []
+                    if categorias['exacta']:
+                        cats_ganadas.append("EXACTA")
+                    if categorias['trio_par']:
+                        cats_ganadas.append("TRIO PAR")
+                    if categorias['trio_azar']:
+                        cats_ganadas.append("TRIO")
+                    if categorias['par']:
+                        cats_ganadas.append("PAR")
+                    if categorias['terminacion']:
+                        cats_ganadas.append("TERM")
+                    
+                    # Calcular premio
+                    premio = (categorias['exacta'] * 400 + 
+                             categorias['trio_par'] * 130 + 
+                             categorias['trio_azar'] * 65 + 
+                             categorias['par'] * 20 + 
+                             categorias['terminacion'] * 4)
+                    
+                    resumen[algoritmo]['predicciones'].append({
+                        'numeros': nums_pred,
+                        'categorias': cats_ganadas,
+                        'premio': premio
+                    })
                 
                 # Calcular score total
                 score = (categorias['exacta'] * 400 + 
@@ -743,36 +761,22 @@ def evaluar_predicciones(resultado: Dict, notifier: TelegramNotifier = None) -> 
         
         # Construir mensaje de resumen claro
         nums_str = " - ".join(str(n) for n in numeros_reales)
-        mensaje = f"📊 *{juego}* | Resultados: {nums_str}\n"
+        mensaje = f"📊 *{juego}* | Resultados: {nums_str}\n\n"
         
-        # Solo mostrar mejores resultados de cada algoritmo
+        # Mostrar cada predicción con aciertos
         for alg, stats in resumen.items():
             total = stats['total']
-            exacta = stats['exacta']
-            trio_par = stats['trio_par']
-            trio_azar = stats['trio_azar']
-            par = stats['par']
-            term = stats['terminacion']
+            predicciones = stats['predicciones']
             
-            # Construir string de aciertos
-            aciertos_str = []
-            if exacta > 0:
-                aciertos_str.append(f"{exacta} EXACTA")
-            if trio_par > 0:
-                aciertos_str.append(f"{trio_par} TRIO PAR")
-            if trio_azar > 0:
-                aciertos_str.append(f"{trio_azar} TRIO")
-            if par > 0:
-                aciertos_str.append(f"{par} PAR")
-            if term > 0:
-                aciertos_str.append(f"{term} TERM")
-            
-            if aciertos_str:
-                msg = f"• *{alg}*: {', '.join(aciertos_str)}"
+            if predicciones:
+                # Mostrar cada predicción ganadora
+                for pred in predicciones:
+                    nums_pred_str = "-".join(str(n) for n in pred['numeros'])
+                    cats_str = " + ".join(pred['categorias'])
+                    premio = pred['premio']
+                    mensaje += f"• *{alg}* [{nums_pred_str}]: {cats_str} (Premio: {premio}x)\n"
             else:
-                msg = f"• *{alg}*: sin aciertos"
-            
-            mensaje += msg + "\n"
+                mensaje += f"• *{alg}*: sin aciertos ({total} predicciones)\n"
         
         # Actualizar CSV
         for cambio in cambios:
