@@ -25,7 +25,7 @@
 
 ---
 
-## 🤖 Fase Siguiente: Machine Learning
+## 🤖 Fase Machine Learning
 
 ### ✅ Done
 - [x] Fix Race Condition en `consolidar_cola.py`
@@ -40,15 +40,15 @@
 
 ## 🤖 Fase 2: Machine Learning (En Progreso)
 
-### 🟡 Pendiente
-- [ ] **[ML-001] Reducir Overfitting**: Ajustar `max_depth=5`, `min_samples_leaf=20`
-- [ ] **[ML-002] GridSearchCV con TimeSeriesSplit**
-- [ ] **[ML-003] Integrar XGBoost/LightGBM** como alternativa a RandomForest
+### ✅ Done
+- [x] **[ML-001] Reducir Overfitting**: max_depth=6, min_samples_leaf=20
+- [x] **[ML-002] GridSearchCV con TimeSeriesSplit**
+- [x] **[ML-003] Integrar XGBoost** (instalado v3.2.0)
 
-### 🔵 Pendiente
-- [ ] **[FEAT-001] Vector de Gaps (Recencia)**: Feature crítico para预测
-- [ ] **[FEAT-002] Deltas y Velocidad**: Diferencia promedio entre sorteos
-- [ ] **[FEAT-003] Meta-Features**: Inyectar paridad, suma, terminaciones
+### ✅ Done
+- [x] **[FEAT-001] Vector de Gaps (Recencia)**: _calcular_gaps() implementado
+- [x] **[FEAT-002] Deltas y Velocidad**: _calcular_deltas_promedio()
+- [x] **[FEAT-003] Meta-Features**: _calcular_meta_features()
 
 ---
 
