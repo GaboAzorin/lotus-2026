@@ -1,0 +1,21 @@
+{
+  "id": 1771244222,
+  "fecha_generacion": "2026-02-16 08:59:23",
+  "fecha_lanzamiento": "17/02/2026 21:00",
+  "juego": "LOTO",
+  "numeros": [
+    17,
+    20,
+    22,
+    23,
+    34,
+    40
+  ],
+  "sorteo_objetivo": 5388,
+  "estado": "PENDIENTE",
+  "aciertos": 0,
+  "score_afinidad": 36.69,
+  "hora_dia": 8,
+  "algoritmo": "consenso_meritocratico_v2",
+  "nota_especial": "🔥 ALTA CONFIANZA"
+}
