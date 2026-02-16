@@ -1,0 +1,19 @@
+{
+  "id": 1771258491,
+  "fecha_generacion": "2026-02-16 12:56:52",
+  "fecha_lanzamiento": "16/02/2026 14:00",
+  "juego": "LOTO4",
+  "numeros": [
+    7,
+    9,
+    11,
+    12
+  ],
+  "sorteo_objetivo": 11628,
+  "estado": "PENDIENTE",
+  "aciertos": 0,
+  "score_afinidad": 3.25,
+  "hora_dia": 12,
+  "algoritmo": "oraculo_neural_v3",
+  "nota_especial": "NORMAL"
+}
