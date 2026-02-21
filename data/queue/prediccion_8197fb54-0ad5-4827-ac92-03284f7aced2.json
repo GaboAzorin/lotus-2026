@@ -1,0 +1,21 @@
+{
+  "id": 1771658589,
+  "fecha_generacion": "2026-02-21 04:19:47",
+  "fecha_lanzamiento": "22/02/2026 21:00",
+  "juego": "LOTO",
+  "numeros": [
+    10,
+    16,
+    23,
+    37,
+    40,
+    41
+  ],
+  "sorteo_objetivo": 5390,
+  "estado": "PENDIENTE",
+  "aciertos": 0,
+  "score_afinidad": 0.0,
+  "hora_dia": 4,
+  "algoritmo": "delta_dna_v1",
+  "nota_especial": "NORMAL"
+}
