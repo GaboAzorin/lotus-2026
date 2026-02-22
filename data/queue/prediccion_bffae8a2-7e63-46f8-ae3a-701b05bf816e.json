@@ -1,0 +1,25 @@
+{
+  "id": 1771758548,
+  "fecha_generacion": "2026-02-22 07:50:48",
+  "fecha_lanzamiento": "22/02/2026 15:00",
+  "juego": "RACHA",
+  "numeros": [
+    3,
+    4,
+    6,
+    7,
+    9,
+    11,
+    12,
+    13,
+    14,
+    16
+  ],
+  "sorteo_objetivo": 10373,
+  "estado": "PENDIENTE",
+  "aciertos": 0,
+  "score_afinidad": 0.0,
+  "hora_dia": 7,
+  "algoritmo": "forense_biometrico_v1",
+  "nota_especial": "NORMAL"
+}
