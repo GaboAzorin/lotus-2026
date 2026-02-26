@@ -1,0 +1,19 @@
+{
+  "id": 1772111648,
+  "fecha_generacion": "2026-02-26 09:55:49",
+  "fecha_lanzamiento": "26/02/2026 14:00",
+  "juego": "LOTO4",
+  "numeros": [
+    7,
+    12,
+    15,
+    22
+  ],
+  "sorteo_objetivo": 11648,
+  "estado": "PENDIENTE",
+  "aciertos": 0,
+  "score_afinidad": 56.27,
+  "hora_dia": 9,
+  "algoritmo": "consenso_meritocratico_v2",
+  "nota_especial": "🔥 ALTA CONFIANZA"
+}
