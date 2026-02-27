@@ -1,0 +1,21 @@
+{
+  "id": 1772193124,
+  "fecha_generacion": "2026-02-27 08:52:04",
+  "fecha_lanzamiento": "01/03/2026 21:00",
+  "juego": "LOTO",
+  "numeros": [
+    2,
+    12,
+    19,
+    23,
+    24,
+    39
+  ],
+  "sorteo_objetivo": 5393,
+  "estado": "PENDIENTE",
+  "aciertos": 0,
+  "score_afinidad": 0.0,
+  "hora_dia": 8,
+  "algoritmo": "forense_biometrico_v1",
+  "nota_especial": "NORMAL"
+}
