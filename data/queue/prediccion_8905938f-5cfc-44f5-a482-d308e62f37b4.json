@@ -1,0 +1,21 @@
+{
+  "id": 1772224740,
+  "fecha_generacion": "2026-02-27 17:35:38",
+  "fecha_lanzamiento": "01/03/2026 21:00",
+  "juego": "LOTO",
+  "numeros": [
+    11,
+    19,
+    22,
+    29,
+    30,
+    36
+  ],
+  "sorteo_objetivo": 5393,
+  "estado": "PENDIENTE",
+  "aciertos": 0,
+  "score_afinidad": 0.0,
+  "hora_dia": 17,
+  "algoritmo": "delta_dna_v1",
+  "nota_especial": "NORMAL"
+}
