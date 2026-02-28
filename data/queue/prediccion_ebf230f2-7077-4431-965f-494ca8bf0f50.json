@@ -1,0 +1,19 @@
+{
+  "id": 1772288982,
+  "fecha_generacion": "2026-02-28 11:18:02",
+  "fecha_lanzamiento": "28/02/2026 14:00",
+  "juego": "LOTO4",
+  "numeros": [
+    5,
+    9,
+    18,
+    19
+  ],
+  "sorteo_objetivo": 11652,
+  "estado": "PENDIENTE",
+  "aciertos": 0,
+  "score_afinidad": 0.0,
+  "hora_dia": 11,
+  "algoritmo": "forense_biometrico_v1",
+  "nota_especial": "NORMAL"
+}
