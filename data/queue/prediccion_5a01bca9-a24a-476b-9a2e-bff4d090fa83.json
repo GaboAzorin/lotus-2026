@@ -1,0 +1,21 @@
+{
+  "id": 1772468257,
+  "fecha_generacion": "2026-03-02 13:00:18",
+  "fecha_lanzamiento": "03/03/2026 21:00",
+  "juego": "LOTO",
+  "numeros": [
+    7,
+    14,
+    23,
+    24,
+    26,
+    41
+  ],
+  "sorteo_objetivo": 5394,
+  "estado": "PENDIENTE",
+  "aciertos": 0,
+  "score_afinidad": 5.95,
+  "hora_dia": 13,
+  "algoritmo": "oraculo_neural_v3",
+  "nota_especial": "NORMAL"
+}
