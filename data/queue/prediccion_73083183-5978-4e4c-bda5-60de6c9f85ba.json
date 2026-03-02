@@ -1,0 +1,21 @@
+{
+  "id": 1772419281,
+  "fecha_generacion": "2026-03-01 23:23:42",
+  "fecha_lanzamiento": "03/03/2026 21:00",
+  "juego": "LOTO",
+  "numeros": [
+    5,
+    14,
+    30,
+    31,
+    32,
+    40
+  ],
+  "sorteo_objetivo": 5394,
+  "estado": "PENDIENTE",
+  "aciertos": 0,
+  "score_afinidad": 42.54,
+  "hora_dia": 23,
+  "algoritmo": "consenso_meritocratico_v2",
+  "nota_especial": "🔥 ALTA CONFIANZA"
+}
