@@ -1,0 +1,21 @@
+{
+  "id": 1772511050,
+  "fecha_generacion": "2026-03-03 01:10:50",
+  "fecha_lanzamiento": "03/03/2026 21:00",
+  "juego": "LOTO",
+  "numeros": [
+    2,
+    4,
+    23,
+    31,
+    34,
+    35
+  ],
+  "sorteo_objetivo": 5394,
+  "estado": "PENDIENTE",
+  "aciertos": 0,
+  "score_afinidad": 0.0,
+  "hora_dia": 1,
+  "algoritmo": "forense_biometrico_v1",
+  "nota_especial": "NORMAL"
+}
