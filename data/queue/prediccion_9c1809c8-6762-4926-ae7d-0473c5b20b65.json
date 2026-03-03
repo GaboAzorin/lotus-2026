@@ -1,0 +1,19 @@
+{
+  "id": 1772582432,
+  "fecha_generacion": "2026-03-03 20:48:52",
+  "fecha_lanzamiento": "03/03/2026 21:00",
+  "juego": "LOTO4",
+  "numeros": [
+    5,
+    17,
+    20,
+    21
+  ],
+  "sorteo_objetivo": 11659,
+  "estado": "PENDIENTE",
+  "aciertos": 0,
+  "score_afinidad": 0.0,
+  "hora_dia": 20,
+  "algoritmo": "forense_biometrico_v1",
+  "nota_especial": "NORMAL"
+}
