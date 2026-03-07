@@ -1,0 +1,21 @@
+{
+  "id": 1772896724,
+  "fecha_generacion": "2026-03-07 12:18:44",
+  "fecha_lanzamiento": "08/03/2026 21:00",
+  "juego": "LOTO",
+  "numeros": [
+    2,
+    20,
+    21,
+    29,
+    38,
+    41
+  ],
+  "sorteo_objetivo": 5396,
+  "estado": "PENDIENTE",
+  "aciertos": 0,
+  "score_afinidad": 0.0,
+  "hora_dia": 12,
+  "algoritmo": "forense_biometrico_v1",
+  "nota_especial": "NORMAL"
+}
