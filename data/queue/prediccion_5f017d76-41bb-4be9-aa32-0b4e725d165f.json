@@ -1,0 +1,21 @@
+{
+  "id": 1772957334,
+  "fecha_generacion": "2026-03-08 04:51:15",
+  "fecha_lanzamiento": "08/03/2026 21:00",
+  "juego": "LOTO",
+  "numeros": [
+    2,
+    5,
+    23,
+    24,
+    28,
+    35
+  ],
+  "sorteo_objetivo": 5396,
+  "estado": "PENDIENTE",
+  "aciertos": 0,
+  "score_afinidad": 42.39,
+  "hora_dia": 4,
+  "algoritmo": "consenso_meritocratico_v2",
+  "nota_especial": "🔥 ALTA CONFIANZA"
+}
